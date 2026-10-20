@@ -105,9 +105,9 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
    <div class="st"><span><i class="dot" style="background:#dc2626"></i>หมดสต็อก</span><b id="st-out" style="color:#dc2626">0 รายการ</b></div>
    <div class="link" onclick="location.href='check-stock.html'">ดูรายละเอียดทั้งหมด →</div></div>
  </div>
- <div class="box" style="margin-top:10px"><h4>เลือกเครื่องจักร / แผนกที่ต้องการ</h4><div class="sub">เลือกเครื่องจักรเพื่อดูรายการอะไหล่เฉพาะไลน์การผลิต (กดซ้ำเพื่อยกเลิก)</div><div class="mach" id="mach"></div></div>
+ <div class="box" style="margin-top:10px"><h4>เลือกเครื่องจักร / แผนกที่ต้องการ</h4><div class="sub">เลือกเครื่องจักรเพื่อดูรายการอะไหล่เฉพาะไลน์การผลิต (กดที่เครื่องเพื่อดูรายการอะไหล่)</div><div class="mach" id="mach"></div></div>
  <div class="three">
-  <div class="box"><div class="hd"><h4>🔥 อะไหล่ที่ค้นหาบ่อย</h4><a>ดูทั้งหมด →</a></div><div id="parts"></div></div>
+  <div class="box"><div class="hd"><h4>🔥 อะไหล่ที่ค้นหาบ่อย</h4><a href="search.html" style="cursor:pointer">ดูทั้งหมด →</a></div><div id="parts"></div></div>
   <div class="box"><h4>📍 ตำแหน่งจัดเก็บ (3D)</h4><div class="sub" style="margin:0 0 8px"></div>
    <div class="wh vid" id="wh"><video id="vid3d" src="images/dept3d.mp4" poster="images/dept3d.jpg" autoplay muted loop playsinline preload="auto"></video><a class="go" href="location3d.html">ดูแผนผัง 3D →</a><span class="vtag">▶ ทัวร์ 3D แผนก</span></div>
    <div class="leg"><span>🟢 ชั้นวางปกติ</span><span>🟠 ของใกล้หมด</span><span>🔴 หมดสต็อก</span></div>
@@ -152,7 +152,7 @@ slot(document.getElementById("hero"),"hero.jpg",mSvg("#1e4fa8","#9fb4d6",1));
 var me=document.getElementById("mach");
 MACHINES.forEach(function(m){var d=document.createElement("div");d.className="m";d.dataset.k=m.k;
  d.innerHTML='<div class="pic"></div><b>'+m.k+'</b><small>'+m.d+'</small><span>ดูอะไหล่ →</span>';
- slot(d.firstChild,m.f,mSvg(m.a,m.b,m.t));d.onclick=function(){mach=(mach===m.k)?"":m.k;draw()};me.appendChild(d)});
+ slot(d.firstChild,m.f,mSvg(m.a,m.b,m.t));d.onclick=function(){location.href="search.html?mach="+encodeURIComponent(m.k)};d.style.cursor="pointer";me.appendChild(d)});
 function draw(){
  Array.prototype.forEach.call(me.children,function(e){e.className="m"+(e.dataset.k===mach?" on":"")});
  var box=document.getElementById("parts");box.innerHTML="";var i=0;

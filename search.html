@@ -122,6 +122,7 @@ function draw(){
   var tk=d.querySelector(".tk");if(tk)tk.onclick=function(){spTakeUI(d.querySelector(".tkw"),i,function(ok){if(ok)draw();else d.querySelector(".tkw").innerHTML='<button class="tk">✋ บันทึกการหยิบใช้</button>',d.querySelector(".tk").onclick=tk.onclick})};
   var ob=d.querySelector(".o");if(ob)ob.onclick=function(){location.href="request-new.html?item="+encodeURIComponent(i.c)};
   box.appendChild(d)})}
+var pm0=new URLSearchParams(location.search).get("mach");if(pm0&&SP_MACHINES.indexOf(pm0)>-1){mc.value=pm0;mach=pm0}
 var p0=new URLSearchParams(location.search).get("q");if(p0){q.value=p0;qs=p0;addR(p0)}
 drawR();draw();
 </script>
