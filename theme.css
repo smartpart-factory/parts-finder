@@ -114,11 +114,11 @@ tbody tr{transition:background .12s}tbody tr:hover{background:#f8faff}
 .chip,.f button{border-radius:99px!important;transition:.15s}
 
 /* ---------- Login ---------- */
-body:has(.lg){background:radial-gradient(1200px 600px at 15% -10%,#1e40af 0,transparent 60%),radial-gradient(900px 500px at 100% 110%,#0ea5e9 0,transparent 55%),linear-gradient(160deg,#071226,#0f2450)!important}
-body:has(.lg) .box{border-radius:18px!important;padding:32px!important;box-shadow:0 30px 60px -20px rgba(0,0,0,.65)!important;border:1px solid rgba(255,255,255,.14)!important}
-body:has(.lg) .box:hover{box-shadow:0 30px 60px -20px rgba(0,0,0,.65)!important}
-.lg b{color:var(--navy-900)!important}.lg small{color:var(--mute)!important}
-body:has(.lg) button{background:linear-gradient(180deg,#3b82f6,#2563eb)!important;border-radius:9px!important;font-weight:600;box-shadow:0 8px 16px -8px rgba(37,99,235,.8)}
+body.loginpg{background:radial-gradient(1200px 600px at 15% -10%,#1e40af 0,transparent 60%),radial-gradient(900px 500px at 100% 110%,#0ea5e9 0,transparent 55%),linear-gradient(160deg,#071226,#0f2450)!important}
+body.loginpg .box{border-radius:18px!important;padding:32px!important;box-shadow:0 30px 60px -20px rgba(0,0,0,.65)!important;border:1px solid rgba(255,255,255,.14)!important}
+body.loginpg .box:hover{box-shadow:0 30px 60px -20px rgba(0,0,0,.65)!important}
+.loginpg .lg b{color:var(--navy-900)!important}.loginpg .lg small{color:var(--mute)!important}
+body.loginpg button{background:linear-gradient(180deg,#3b82f6,#2563eb)!important;border-radius:9px!important;font-weight:600;box-shadow:0 8px 16px -8px rgba(37,99,235,.8)}
 
 /* ---------- 3D canvas ---------- */
 #cv{border-radius:12px!important;border:1px solid var(--line)}
