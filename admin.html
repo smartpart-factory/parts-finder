@@ -156,7 +156,7 @@ $("p-add").onclick=function(){openP()};$("pc").onclick=function(){$("ov-p").clas
 $("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim(),q=parseInt($("f-q").value,10),mn=parseInt($("f-min").value,10);
  function spNextNC(extra){var mx=0;SP_ITEMS.concat(extra||[]).forEach(function(i){var m=/^NC-(\d+)$/i.exec(String(i.c));if(m)mx=Math.max(mx,+m[1])});return "NC-"+("000"+(mx+1)).slice(-4)}
 function bad(t){$("pe").textContent=t}
- if(!n)return bad("กรุณากรอกชื่ออะไหล่");if(!c)c=editing?editing.c:spNextNC();
+ if(!n)return bad("กรุณากรอกชื่ออะไหล่");if(/^[\s\-–—._]*$/.test(c))c=(editing&&/^NC-\d+$/i.test(editing.c))?editing.c:spNextNC();
  if(SP_ITEMS.some(function(x){return x!==editing&&x.c.toLowerCase()===c.toLowerCase()}))return bad("รหัสนี้มีอยู่แล้ว");
  if(!(q>=0)||!(mn>=0))return bad("ตัวเลขต้องไม่ติดลบ");
  var m=[];Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(x){if(x.checked)m.push(x.value)});
