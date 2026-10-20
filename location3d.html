@@ -59,16 +59,16 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a class="on">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a class="on">📍 กำหนดตำแหน่ง (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
- <h2>📍 ตำแหน่งจัดเก็บ (3D)</h2>
+ <h2>📍 กำหนดตำแหน่งอะไหล่ (3D)</h2>
  <div class="sum" id="sum"></div>
  <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="n">เรียงตามชื่อ</option><option value="q">จำนวนน้อยสุดก่อน</option><option value="r">เรียงตามชั้นวาง</option></select></div>
  <div class="grid">
-  <div class="card"><div class="hd"><span></span><span>อะไหล่</span><span>เครื่องจักร</span><span>คงเหลือ</span><span>สถานะ</span></div><div id="list"></div></div>
-  <div class="card map"><h3>📍 ตำแหน่งจัดเก็บ (3D)</h3><div class="hint" style="margin:0">ลากเพื่อหมุน · เลื่อนล้อเมาส์/บีบนิ้วเพื่อซูม · คลิกกล่องอะไหล่เพื่อดูรายละเอียด</div><div id="cv"></div>
-   <div id="info">เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง</div>
-   <div class="leg"><span>🟩 มีของ</span><span>🟧 ใกล้หมด</span><span>🟥 หมด</span><span>🟪 กำลังซ่อม</span><span>🟦 ที่เลือก</span></div></div>
+  <div class="card"><div class="hd"><span></span><span>อะไหล่</span><span>ที่เก็บ (ที่พิมพ์ไว้)</span><span>หมุดใน 3D</span><span></span></div><div id="list"></div></div>
+  <div class="card map"><h3>🗺️ แผนที่ห้องอะไหล่ (3D)</h3><div class="hint" style="margin:0">เลือกอะไหล่จากรายการ → กด “📌 วางตำแหน่ง” → คลิกจุดที่วางในโมเดล · ลากเพื่อหมุน · ล้อเมาส์/บีบนิ้วเพื่อซูม</div><div id="cv"></div>
+   <div id="info">เลือกอะไหล่จากรายการ เพื่อวางหมุดหรือดูเส้นทางสีแดงไปยังที่เก็บ</div>
+   <div class="leg"><span>🔴 เส้นนำทางจากประตูทางเข้า</span><span>🔻 หมุดตำแหน่งอะไหล่</span></div></div>
  </div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -78,25 +78,26 @@ var ICON={"BRG":"⚙️","BEL":"⭕","SEN":"🔌","SEA":"🔘","FLT":"🧪","MTR
 var CLR={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"};
 var filt="all",qs="",mach="",sort="n",sel=null;
 // ---- สรุป + ตัวกรอง ----
-function counts(){var c={all:SP_ITEMS.length,stock:0,low:0,out:0,repair:0};SP_ITEMS.forEach(function(i){c[spStatus(i)]++});return c}
-function drawSum(){var c=counts(),h="";[["all","ทั้งหมด"],["stock","มีของ"],["low","ใกล้หมด"],["out","หมด"],["repair","กำลังซ่อม"]].forEach(function(x){
- h+='<div class="sc'+(filt===x[0]?" on":"")+'" data-k="'+x[0]+'"><small>'+x[1]+'</small><b style="color:'+(CLR[x[0]]||"#1e293b")+'">'+c[x[0]]+'</b></div>'});
+function placed(i){return !!(i.pos||(i.r&&SP_RACKS[i.r]))}
+function counts(){var c={all:SP_ITEMS.length,on:0,off:0};SP_ITEMS.forEach(function(i){placed(i)?c.on++:c.off++});return c}
+function drawSum(){var c=counts(),h="";[["all","ทั้งหมด","#1e293b"],["on","วางหมุดแล้ว","#16a34a"],["off","ยังไม่วางหมุด","#dc2626"]].forEach(function(x){
+ h+='<div class="sc'+(filt===x[0]?" on":"")+'" data-k="'+x[0]+'"><small>'+x[1]+'</small><b style="color:'+x[2]+'">'+c[x[0]]+'</b></div>'});
  var s=document.getElementById("sum");s.innerHTML=h;Array.prototype.forEach.call(s.children,function(e){e.onclick=function(){filt=e.dataset.k;draw()}})}
 var mc=document.getElementById("mc");mc.innerHTML='<option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option>'+m+'</option>'}).join("");
 mc.onchange=function(){mach=mc.value;draw()};document.getElementById("so").onchange=function(e){sort=e.target.value;draw()};
 document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase();draw()};
 // ---- รายการ ----
 function draw(){drawSum();
- var a=SP_ITEMS.filter(function(i){return (filt==="all"||spStatus(i)===filt)&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
+ var a=SP_ITEMS.filter(function(i){return (filt==="all"||(filt==="on")===placed(i))&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
  a.sort(function(x,y){return sort==="q"?x.q-y.q:sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
  var l=document.getElementById("list");l.innerHTML="";
- if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มรายการในไฟล์ data.js แล้วรีเฟรชหน้านี้')+'</div>';
+ if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มอะไหล่ที่หน้า “จัดการระบบ” ก่อน แล้วกลับมากำหนดตำแหน่งที่นี่')+'</div>';
  a.forEach(function(i){var s=spStatus(i),p=Math.min(100,i.q/(i.min*2)*100),d=document.createElement("div");d.className="rw"+(sel&&sel.c===i.c?" sel":"");
   d.innerHTML='<div class="im">'+(ICON[i.c.slice(0,3)]||"📦")+'<img src="'+spImg(i)+'" alt="" onerror="this.remove()"></div>'
-  +'<div><b>'+i.n+'</b><small>'+i.c+' · '+esc(spLocShort(i))+'</small></div>'
-  +'<div class="mc mt">'+i.m.slice(0,3).map(function(m){return '<span>'+m+'</span>'}).join("")+(i.m.length>3?'<span>+'+(i.m.length-3)+'</span>':"")+'</div>'
-  +'<div class="qc"><b>'+i.q+'</b> '+i.u+' <small style="display:inline">/ ขั้นต่ำ '+i.min+'</small><div class="qb"><i style="width:'+p+'%;background:'+CLR[s]+'"></i></div></div>'
-  +'<span class="tg s-'+s+'">'+SP_TXT[s]+'</span>';
+  +'<div><b>'+i.n+'</b><small>'+i.c+'</small></div>'
+  +'<div class="mc mt"><span>'+esc(i.tx||i.r||"-")+'</span></div>'
+  +'<div class="qc"><b style="color:'+(placed(i)?"#16a34a":"#dc2626")+'">'+(placed(i)?"วางแล้ว":"ยังไม่วาง")+'</b></div>'
+  +'<span></span>';
   d.onclick=function(){showOnMap(i.c,true)};l.appendChild(d)})}
 // ---- 3D ----
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}

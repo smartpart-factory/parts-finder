@@ -262,7 +262,22 @@ D.routeTo=function(c,rect){var N=D.nodes,best=null;
  path.push(best.pt);
  if(rect)path.push([Math.max(rect[0],Math.min(rect[2],best.pt[0])),Math.max(rect[1],Math.min(rect[3],best.pt[1]))]);else path.push(c);
  return path.map(function(q){return[q[0],.15,q[1]]})};
-D.route=function(key,racks){var r=racks[key];return r?D.routeTo([r.x,r.z],[r.x-r.w/2,r.z-r.d/2,r.x+r.w/2,r.z+r.d/2]):null};
+// ===== เส้นนำทางแบบ A* บนกริด: เลี่ยงกำแพง/ตู้/ชั้นวาง ไม่ทะลุโมเดล =====
+D.pathTo=function(tgt,racks){
+ var col=D.colliders(racks),B=D.bounds,R=.22,S=.1,x0=B[0]-.5,z0=B[1]-.5,W=Math.ceil((B[2]-B[0]+1.5)/S),H=Math.ceil((B[3]-B[1]+2.2)/S);
+ function blk(x,z){for(var k=0;k<col.length;k++){var c=col[k],qx=Math.max(c[0],Math.min(c[2],x)),qz=Math.max(c[1],Math.min(c[3],z));if(Math.hypot(x-qx,z-qz)<R)return true}return false}
+ var g=new Uint8Array(W*H);for(var j=0;j<H;j++)for(var i=0;i<W;i++)g[j*W+i]=blk(x0+(i+.5)*S,z0+(j+.5)*S)?1:0;
+ function cell(p){return[Math.max(0,Math.min(W-1,Math.floor((p[0]-x0)/S))),Math.max(0,Math.min(H-1,Math.floor((p[1]-z0)/S)))]}
+ function near(c){if(!g[c[1]*W+c[0]])return c;for(var r=1;r<80;r++){var b=null,bd=1e9;for(var dj=-r;dj<=r;dj++)for(var di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;var a=c[0]+di,e=c[1]+dj;if(a<0||e<0||a>=W||e>=H||g[e*W+a])continue;var d=di*di+dj*dj;if(d<bd){bd=d;b=[a,e]}}if(b)return b}return c}
+ var st=D.entry,s=near(cell([st[0],st[1]-.8])),t=near(cell(tgt)),N=W*H,gs=new Float32Array(N).fill(1e9),pv=new Int32Array(N).fill(-1),cl=new Uint8Array(N),open=[[0,s[1]*W+s[0]]];gs[s[1]*W+s[0]]=0;var ti=t[1]*W+t[0],found=false;
+ while(open.length){var bi=0;for(var q=1;q<open.length;q++)if(open[q][0]<open[bi][0])bi=q;var cur=open.splice(bi,1)[0][1];if(cl[cur])continue;cl[cur]=1;if(cur===ti){found=true;break}
+  var cx=cur%W,cz=(cur-cx)/W;for(var dj=-1;dj<=1;dj++)for(var di=-1;di<=1;di++){if(!di&&!dj)continue;var a=cx+di,e=cz+dj;if(a<0||e<0||a>=W||e>=H||g[e*W+a])continue;if(di&&dj&&(g[cz*W+a]||g[e*W+cx]))continue;var n=e*W+a,ng=gs[cur]+(di&&dj?1.414:1);if(ng<gs[n]){gs[n]=ng;pv[n]=cur;open.push([ng+Math.hypot(a-t[0],e-t[1]),n])}}}
+ if(!found)return null;
+ var pts=[];for(var n=ti;n>=0;n=pv[n]){var nx=n%W;pts.unshift([x0+(nx+.5)*S,z0+((n-nx)/W+.5)*S])}
+ function los(a,b){var L=Math.hypot(b[0]-a[0],b[1]-a[1]),k=Math.max(1,Math.ceil(L/.05));for(var u=0;u<=k;u++){var c=cell([a[0]+(b[0]-a[0])*u/k,a[1]+(b[1]-a[1])*u/k]);if(g[c[1]*W+c[0]])return false}return true}
+ var out=[pts[0]],i0=0;while(i0<pts.length-1){var j2=pts.length-1;while(j2>i0+1&&!los(pts[i0],pts[j2]))j2--;out.push(pts[j2]);i0=j2}
+ return out.map(function(q){return[q[0],.15,q[1]]})};
+D.route=function(key,racks){var r=racks[key];return r?D.pathTo([r.x,r.z],racks):null};
 D.colliders=function(racks){var c=[];
  D.walls.forEach(function(w){var horiz=Math.abs(w[1]-w[3])<1e-6,a=horiz?w[0]:w[1],b=horiz?w[2]:w[3],fix=horiz?w[1]:w[0],cur=Math.min(a,b),end=Math.max(a,b),segs=[];
   (w[4]||[]).slice().sort(function(p,q){return p[0]-q[0]}).forEach(function(q){if(q[0]>cur)segs.push([cur,q[0]]);cur=q[1]});if(end>cur)segs.push([cur,end]);

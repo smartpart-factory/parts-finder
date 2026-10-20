@@ -54,13 +54,13 @@ function canEdit(){return !!(window.spCanEdit&&spCanEdit())}
 function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" style="float:right;width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;margin:0 0 6px 10px">':'')+'<b>'+esc(i.n)+'</b> ('+esc(i.c)+') <span class="tg s-'+s+'" style="margin-left:4px">'+SP_TXT[s]+'</span><br>คงเหลือ '+i.q+' '+esc(i.u||"")+' (ขั้นต่ำ '+i.min+')<br>ตำแหน่ง: '+esc(spLoc(i))+'<br>ใช้กับ: '+(i.m||[]).map(esc).join(", ")+(i.rep?'<br>หมายเหตุ: '+esc(i.rep):'')}
 function drawRoute(pts){clear(routeG);if(!pts)return;
  for(var k=0;k<pts.length-1;k++){var a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[2]-a[2]);if(L<.01)continue;
-  var m=new THREE.Mesh(new THREE.BoxGeometry(.11,.02,L+.11),new THREE.MeshBasicMaterial({color:0xf59e0b}));m.position.set((a[0]+b[0])/2,.17,(a[2]+b[2])/2);m.rotation.y=Math.atan2(b[0]-a[0],b[2]-a[2]);routeG.add(m)}}
+  var m=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,L+.12),new THREE.MeshBasicMaterial({color:0xef1c1c}));m.position.set((a[0]+b[0])/2,.17,(a[2]+b[2])/2);m.rotation.y=Math.atan2(b[0]-a[0],b[2]-a[2]);routeG.add(m)}}
 function show(i){sel=i;paint();drawRoute(null);if(mark){sc.remove(mark);mark=null}
  var p=slotPos(i),r=SP_RACKS[i.r],h=head(i),btn="";
  if(canEdit())btn='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
  infoEl.innerHTML=h+btn;wire(i);
  if(!p){infoEl.insertAdjacentHTML("afterbegin",'<div style="color:#dc2626;margin-bottom:4px">ยังไม่มีตำแหน่งในโมเดล 3D'+(i.r?' (ชั้นวาง '+esc(i.r)+' ไม่มีในผัง)':'')+'</div>');return}
- var pts=(r&&i.r&&spDept.route(i.r,SP_RACKS))||spDept.routeTo([p.x,p.z],null);drawRoute(pts);
+ var pts=spDept.pathTo([p.x,p.z],SP_RACKS);drawRoute(pts);
  mark=new THREE.Mesh(new THREE.ConeGeometry(.17,.38,16),new THREE.MeshBasicMaterial({color:0xf59e0b}));mark.rotation.x=Math.PI;mark.userData.y0=p.y+p.bh/2+.55;mark.position.set(p.x,mark.userData.y0,p.z);sc.add(mark);
  if(innerWidth<1100)host.scrollIntoView({behavior:"smooth",block:"center"})}
 function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelector('[data-a=rm]');
