@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sbox{flex:1;max-width:490px;position:relative}.sbox input{width:100%;padding:11px 40px 11px 14px;border:0;border-radius:6px;font:inherit}
+.sbox span{position:absolute;right:12px;top:9px;color:#64748b}
+.sp{flex:1}.bell{position:relative;font-size:20px}.bell i{position:absolute;top:-6px;right:-8px;background:#ef4444;font-style:normal;font-size:10px;border-radius:99px;padding:0 5px}
+.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}
+.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+.side .ft{position:absolute;bottom:20px;left:14px;font-size:11px;color:#a9bde6}.side .fb{display:flex;gap:10px;align-items:center;margin-bottom:60px;font-size:12px}
+main{margin:66px 0 0 207px;padding:10px 12px}
+.pic{position:relative;overflow:hidden;background:#cfdbee}.pic svg{position:absolute;inset:0;width:100%;height:100%}
+.pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero{height:132px;border-radius:6px;position:relative;overflow:hidden;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 30px}
+.hero .pic{position:absolute;inset:0}.hero:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(8,26,70,.92) 35%,rgba(8,26,70,.55))}
+.hero>*:not(.pic){position:relative;z-index:2}
+.hero h1{margin:0 0 6px;font-size:28px}.hero p{margin:0;color:#d5e1f7;font-size:16px}
+.hero .r{display:flex;gap:14px;align-items:center;font-size:12px;color:#d5e1f7}.hero .r b{display:block;color:#fff;font-size:15px}
+.row{display:grid;grid-template-columns:repeat(3,1fr) 1.15fr;gap:10px;margin-top:10px}
+.act{border-radius:6px;padding:16px;border:1px solid;position:relative;overflow:hidden}
+.act .ico{width:70px;height:70px;border-radius:8px;color:#fff;font-size:34px;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.act h3{margin:0 0 6px;font-size:22px}.act p{margin:0 0 16px;color:#64748b;font-size:13px;min-height:40px}
+.act button{padding:10px 26px;border:0;border-radius:6px;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.a1{background:linear-gradient(#e6f0ff,#f4f8ff);border-color:#cfe0ff}.a1 .ico,.a1 button{background:#1565d8}.a1 h3{color:#0f3d9c}
+.a2{background:linear-gradient(#e3f6ea,#f3fbf6);border-color:#c5ecd5}.a2 .ico,.a2 button{background:#1b9a50}.a2 h3{color:#146c39}
+.a3{background:linear-gradient(#fff0dc,#fff9f0);border-color:#fbdcb0}.a3 .ico,.a3 button{background:#f59e0b}.a3 h3{color:#c2410c}
+.box{background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:14px}
+.box h4{margin:0 0 4px;font-size:16px}.box .sub{color:#64748b;font-size:12px;margin-bottom:10px}
+.st{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f1f5f9}.st b{font-size:15px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+.link{display:block;text-align:center;margin-top:10px;padding:8px;border:1px solid #e2e8f0;border-radius:6px;color:#1565d8;font-size:12px;cursor:pointer}
+.mach{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.m{border:2px solid #e8edf5;border-radius:6px;padding:10px;background:#f7f9fc;cursor:pointer}.m:hover{border-color:#93b4f5}.m.on{border-color:#1565d8;background:#eaf2ff}
+.m .pic{height:92px;border-radius:4px;margin-bottom:8px}.m b{display:block;font-size:15px}.m small{color:#64748b;font-size:11px;display:block;margin-bottom:8px;min-height:16px}
+.m span{display:block;text-align:center;background:#1565d8;color:#fff;padding:7px;border-radius:4px;font-size:12px}
+.three{display:grid;grid-template-columns:1.05fr 1.15fr 1fr;gap:10px;margin-top:10px}
+.hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.hd h4{margin:0}.hd a{color:#1565d8;font-size:12px;cursor:pointer}
+.p{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9}
+.p .n{width:14px;color:#64748b}.p .im{width:42px;height:42px;border-radius:6px;flex:none}
+.p .t{flex:1}.p small{color:#64748b;display:block;font-size:12px}
+.tag{background:#e0ecff;color:#1565d8;font-size:11px;padding:3px 8px;border-radius:4px;white-space:nowrap}.cnt{width:84px;text-align:right;color:#475569;font-size:12px}
+.wh{height:240px;border-radius:10px;position:relative;overflow:hidden;background:#cfdaec}.wh video{width:100%;height:100%;object-fit:cover;display:block}.wh .vtag{position:absolute;left:10px;bottom:10px;background:rgba(11,33,80,.78);color:#fff;font-size:12px;padding:4px 10px;border-radius:999px}.wh .go{text-decoration:none}.wh .go{position:absolute;top:10px;right:10px;z-index:3;background:#1565d8;color:#fff;border:0;border-radius:6px;padding:7px 14px;font:inherit;font-size:12px;cursor:pointer}
+
+.leg{display:flex;gap:14px;font-size:12px;margin:8px 0;color:#475569;flex-wrap:wrap}
+.th{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.th .pic{height:46px;border-radius:4px}.th small{display:block;font-size:11px;margin-top:2px}
+.req{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9;gap:8px;font-size:13px}
+.req .d{display:flex;gap:8px}.req .d i{width:8px;height:8px;border-radius:50%;background:#1565d8;margin-top:6px;flex:none}.req small{color:#64748b;display:block;font-size:11px}
+.req .tm{color:#94a3b8;font-size:11px;margin-left:auto}
+.bd{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:600;white-space:nowrap}.w{background:#fff0d6;color:#d97706}.o{background:#d9f7e4;color:#16a34a}.x{background:#fde2e2;color:#dc2626}
+.foot{display:grid;grid-template-columns:repeat(4,1fr);margin-top:10px;background:#eaf2ff;border-radius:6px;padding:14px 8px;border:1px solid #d6e4fb}
+.foot div{display:flex;gap:12px;align-items:center;padding:0 14px;border-right:1px solid #cfe0ff}.foot div:last-child{border:0}.foot .i{font-size:26px}.foot small{color:#64748b;display:block;font-size:11px}
+.empty{padding:16px;text-align:center;color:#94a3b8}
+@media(max-width:1150px){.row{grid-template-columns:1fr 1fr}.mach{grid-template-columns:repeat(3,1fr)}.three{grid-template-columns:1fr}}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}.row,.foot{grid-template-columns:1fr}.mach{grid-template-columns:repeat(2,1fr)}.hero .r{display:none}.foot div{border:0;padding:6px 14px}}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top">
+ <div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+ <div class="sbox"><input id="q" placeholder="ค้นหาอะไหล่, รหัสสินค้า, หรือชิ้นส่วน..." onkeydown="if(event.key==='Enter'&&this.value.trim())location.href='search.html?q='+encodeURIComponent(this.value.trim())"><span>🔍</span></div>
+ <div class="sp"></div><div class="bell">🔔<i>3</i></div>
+ <div class="user"><div class="av">👤</div><div id="u-name"></div></div>
+</div>
+<div class="side">
+ <a class="on" href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a>
+ <div class="ft"><div class="fb">🏭<div>โรงงานผลิตน้ำดื่ม<br>ฝ่ายซ่อมบำรุง</div></div>Version 1.0.0</div>
+</div>
+<main>
+ <div class="hero"><div class="pic" id="hero"></div>
+  <div><h1>ระบบจัดการอะไหล่และตำแหน่งจัดเก็บ</h1><p>ค้นหาเช็คสต็อก ขออะไหล่ และดูตำแหน่งจัดเก็บแบบ 3D ได้ในที่เดียว</p></div>
+  <div class="r"><span style="font-size:40px">🏭</span><div><b>โรงงานผลิตน้ำดื่ม</b>เพิ่มประสิทธิภาพการทำงาน<br>ด้วยระบบดิจิทัล</div></div></div>
+ <div class="row">
+  <div class="act a1"><div class="ico">📦</div><h3>เช็คของ</h3><p>ตรวจสอบจำนวนสินค้า / สต็อก ดูสถานะการจัดเก็บ และตำแหน่งที่เก็บ</p><button onclick="location.href='check-stock.html'">ไปที่เช็คของ →</button></div>
+  <div class="act a2"><div class="ico">🔍</div><h3>ค้นหาอะไหล่</h3><p>ค้นหาอะไหล่ รหัสสินค้า หรือรุ่น พร้อมดูข้อมูลและตำแหน่งจัดเก็บ</p><button onclick="location.href='search.html'">ไปที่ค้นหาอะไหล่ →</button></div>
+  <div class="act a3"><div class="ico">📝</div><h3>ขอเบิกคลังใหญ่</h3><p>ใช้เมื่อของไม่มีในแผนก (ถ้ามีของแล้วหยิบได้เลย ไม่ต้องขอ)</p><button onclick="location.href='request-new.html'">ไปที่ขอเบิกคลังใหญ่ →</button></div>
+  <div class="box"><h4>📊 สรุปสถานะสต็อก</h4><div class="sub">อัปเดตล่าสุด <span id="upd"></span></div>
+   <div class="st"><span>จำนวนอะไหล่ทั้งหมด</span><b id="st-all">0 รายการ</b></div>
+   <div class="st"><span><i class="dot" style="background:#16a34a"></i>มีในสต็อก</span><b id="st-ok" style="color:#16a34a">0 รายการ</b></div>
+   <div class="st"><span><i class="dot" style="background:#f59e0b"></i>ใกล้หมด</span><b id="st-low" style="color:#d97706">0 รายการ</b></div>
+   <div class="st"><span><i class="dot" style="background:#dc2626"></i>หมดสต็อก</span><b id="st-out" style="color:#dc2626">0 รายการ</b></div>
+   <div class="link" onclick="location.href='check-stock.html'">ดูรายละเอียดทั้งหมด →</div></div>
+ </div>
+ <div class="box" style="margin-top:10px"><h4>เลือกเครื่องจักร / แผนกที่ต้องการ</h4><div class="sub">เลือกเครื่องจักรเพื่อดูรายการอะไหล่เฉพาะไลน์การผลิต (กดซ้ำเพื่อยกเลิก)</div><div class="mach" id="mach"></div></div>
+ <div class="three">
+  <div class="box"><div class="hd"><h4>🔥 อะไหล่ที่ค้นหาบ่อย</h4><a>ดูทั้งหมด →</a></div><div id="parts"></div></div>
+  <div class="box"><h4>📍 ตำแหน่งจัดเก็บ (3D)</h4><div class="sub" style="margin:0 0 8px"></div>
+   <div class="wh vid" id="wh"><video id="vid3d" src="images/dept3d.mp4" poster="images/dept3d.jpg" autoplay muted loop playsinline preload="auto"></video><a class="go" href="location3d.html">ดูแผนผัง 3D →</a><span class="vtag">▶ ทัวร์ 3D แผนก</span></div>
+   <div class="leg"><span>🟢 ชั้นวางปกติ</span><span>🟠 ของใกล้หมด</span><span>🔴 หมดสต็อก</span></div>
+   <div style="text-align:right;margin-top:6px"><a href="location3d.html" style="color:#1565d8;font-size:12px">เปิดโมเดล 3D เต็มจอ →</a></div></div>
+  <div class="box"><div class="hd"><h4>📄 คำขอล่าสุด</h4><a href="request-new.html" id="reqall">ดูทั้งหมด →</a></div>
+   <div id="reqs"></div></div>
+ </div>
+ <div class="foot">
+  <div><span class="i">📦</span><div><b>ค้นหาเร็ว</b><small>ด้วยรหัสสินค้า / ชื่อ / รุ่น</small></div></div>
+  <div><span class="i">📍</span><div><b>รู้ตำแหน่งชัดเจน</b><small>แสดงตำแหน่งจัดเก็บแบบ 3D</small></div></div>
+  <div><span class="i">🛡️</span><div><b>ลดปัญหาของขาด</b><small>แจ้งเตือนของใกล้หมด / หมดสต็อก</small></div></div>
+  <div><span class="i">⚙️</span><div><b>ทำงานได้ทุกที่</b><small>รองรับทุกอุปกรณ์</small></div></div>
+ </div>
+</main>
+<script src="data.js"></script><script src="requests.js"></script>
+<script>
+/* ===== ภาพ: วางไฟล์รูปจริงในโฟลเดอร์ images/ ชื่อตามด้านล่าง ถ้าไม่มีไฟล์ จะแสดงภาพวาดแทนอัตโนมัติ ===== */
+function slot(el,file,svg){el.insertAdjacentHTML("afterbegin",svg+'<img src="'+(/^data:/.test(file)?file:"images/"+file)+'" alt="" onerror="this.remove()">')}
+function mSvg(a,b,t){var s='<svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice"><rect width="160" height="100" fill="#dfe7f3"/><rect y="82" width="160" height="18" fill="#b8c4d8"/>';
+ if(t==1){s+='<rect x="20" y="18" width="38" height="66" rx="8" fill="'+a+'"/><rect x="66" y="10" width="38" height="74" rx="8" fill="'+b+'"/><rect x="112" y="22" width="30" height="62" rx="8" fill="'+a+'"/><rect x="14" y="60" width="132" height="6" fill="#8aa0c4"/>'}
+ else{s+='<rect x="14" y="24" width="86" height="58" rx="4" fill="'+a+'"/><rect x="24" y="34" width="48" height="26" rx="3" fill="#cfe3ff" opacity=".85"/><rect x="104" y="40" width="42" height="42" rx="4" fill="'+b+'"/><rect x="30" y="10" width="22" height="16" fill="#8aa0c4"/>';
+  for(var i=0;i<5;i++)s+='<rect x="'+(108+i*8)+'" y="58" width="5" height="16" rx="2" fill="#9fd0ff"/>'}
+ return s+'</svg>'}
+function pSvg(k){var b='<svg viewBox="0 0 40 40"><rect width="40" height="40" fill="#e9eef6"/>';
+ if(k==0)return b+'<circle cx="20" cy="20" r="15" fill="#8b95a5"/><circle cx="20" cy="20" r="9" fill="#cfd6e0"/><circle cx="20" cy="20" r="5" fill="#3b4558"/></svg>';
+ if(k==1)return b+'<ellipse cx="20" cy="20" rx="16" ry="12" fill="none" stroke="#111827" stroke-width="6"/></svg>';
+ if(k==2)return b+'<rect x="10" y="14" width="20" height="12" rx="2" fill="#2f3f56" transform="rotate(-30 20 20)"/><rect x="26" y="9" width="8" height="8" fill="#9aa5b8" transform="rotate(-30 20 20)"/></svg>';
+ if(k==3)return b+'<circle cx="20" cy="20" r="15" fill="#111827"/><circle cx="20" cy="20" r="9" fill="#cbd2dc"/><circle cx="20" cy="20" r="6" fill="#e9eef6"/></svg>';
+ return b+'<rect x="10" y="9" width="20" height="24" rx="3" fill="#e5e7eb" stroke="#9ca3af"/><rect x="10" y="9" width="20" height="4" fill="#6b7280"/><path d="M14 16v14M18 16v14M22 16v14M26 16v14" stroke="#9ca3af"/></svg>'}
+function wSvg(h){var s='<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice"><rect width="320" height="200" fill="#dbe4f0"/><rect y="120" width="320" height="80" fill="#a9b5c6"/><path d="M130 70h60v50h-60z" fill="#eef2f8"/>';
+ var cc=["#1e63c9","#f59e0b","#16a34a","#dc2626","#7c8aa0"];
+ [0,1].forEach(function(side){for(var r=0;r<4;r++){var x=side?190+r*0:0;
+  for(var c=0;c<3;c++){var bx=side?196+c*40:14+c*40,by=20+r*34;
+   s+='<rect x="'+bx+'" y="'+by+'" width="36" height="30" fill="none" stroke="#1e63c9" stroke-width="2"/><rect x="'+bx+'" y="'+(by+27)+'" width="36" height="3" fill="#f59e0b"/>';
+   s+='<rect x="'+(bx+3)+'" y="'+(by+8)+'" width="13" height="19" fill="'+cc[(r*3+c+h)%5]+'"/><rect x="'+(bx+19)+'" y="'+(by+12)+'" width="13" height="15" fill="'+cc[(r+c*2+h+2)%5]+'"/>'}}});
+ return s+'</svg>'}
+var PAL=[["#1e4fa8","#9fb4d6",0],["#5b6f8f","#2b4f9e",0],["#3a4a66","#1e63c9",0],["#7c8aa0","#4a6a9e",0],["#4a86d8","#9fb4d6",1],["#1b3f8a","#6b7a92",0]];
+var MACHINES=SP_MACH.map(function(m,i){var p=PAL[i%PAL.length];return{k:m.k,d:m.d||"",f:m.img||m.f||(m.k.toLowerCase().replace(/[^a-z0-9]/g,"")+".jpg"),a:p[0],b:p[1],t:p[2]}});
+var PARTS=SP_ITEMS.map(function(i){return{n:i.n,c:i.c,m:i.m,t:i.m.length>=SP_MACHINES.length?"ทุกเครื่องจักร":i.m.slice(0,2).join(" / "),u:"คงเหลือ "+i.q,f:i.c+".jpg"}});
+var mach="",qs="";
+slot(document.getElementById("hero"),"hero.jpg",mSvg("#1e4fa8","#9fb4d6",1));
+var me=document.getElementById("mach");
+MACHINES.forEach(function(m){var d=document.createElement("div");d.className="m";d.dataset.k=m.k;
+ d.innerHTML='<div class="pic"></div><b>'+m.k+'</b><small>'+m.d+'</small><span>ดูอะไหล่ →</span>';
+ slot(d.firstChild,m.f,mSvg(m.a,m.b,m.t));d.onclick=function(){mach=(mach===m.k)?"":m.k;draw()};me.appendChild(d)});
+function draw(){
+ Array.prototype.forEach.call(me.children,function(e){e.className="m"+(e.dataset.k===mach?" on":"")});
+ var box=document.getElementById("parts");box.innerHTML="";var i=0;
+ PARTS.forEach(function(p,k){
+  if((!mach||p.m.indexOf(mach)>-1)&&(p.n+p.c).toLowerCase().indexOf(qs)>-1){i++;
+   var d=document.createElement("div");d.className="p";
+   d.innerHTML='<span class="n">'+i+'</span><div class="im pic"></div><div class="t"><b>'+p.n+'</b><small>'+p.c+'</small></div><span class="tag">'+p.t+'</span><span class="cnt">'+p.u+'</span>';
+   slot(d.querySelector(".im"),p.f,pSvg(k));box.appendChild(d)}});
+ if(!i)box.innerHTML='<div class="empty">'+(PARTS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ')+'</div>'}
+document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase();draw()};
+draw();
+/* วิดีโอทัวร์ 3D: ถ้าเล่นอัตโนมัติไม่ได้ (บางเบราว์เซอร์) ให้เล่นเมื่อกดที่วิดีโอ */
+(function(){var v=document.getElementById("vid3d");if(!v)return;var p=v.play&&v.play();if(p&&p.catch)p.catch(function(){v.controls=true})})();
+</script>
+<script>window.showOnMap=function(c){location.href="check-stock.html?item="+encodeURIComponent(c)}</script>
+<script>
+(function(){var c={all:SP_ITEMS.length,ok:0,low:0,out:0};SP_ITEMS.forEach(function(i){var t=spStatus(i);if(t==="stock")c.ok++;else if(t==="low")c.low++;else if(t==="out")c.out++});
+ function f(n){return n.toLocaleString("en-US")+" รายการ"}
+ document.getElementById("st-all").textContent=f(c.all);document.getElementById("st-ok").textContent=f(c.ok);document.getElementById("st-low").textContent=f(c.low);document.getElementById("st-out").textContent=f(c.out);
+ document.getElementById("upd").textContent=new Date().toLocaleString("th-TH",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+" น.";
+ if(spCanEdit())document.getElementById("reqall").href="requests.html";
+ var R=spReqLoad().filter(function(r){return spCanEdit()||r.byId===SP_USER.id}).slice(-5).reverse(),b=document.getElementById("reqs");
+ if(!R.length){b.innerHTML='<div class="empty" style="padding:20px">ยังไม่มีคำขอ</div>';return}
+ b.innerHTML=R.map(function(r){var k=spReqClass(r.status);return '<div class="req"><div class="d"><i></i><div>'+r.id+'<small>ขอ '+r.item.replace(/</g,"&lt;")+' ('+r.machine+')</small></div></div><span class="tm">'+spReqTime(r.time)+'</span><span class="bd '+(k==="c"?"x":k)+'"'+(k==="c"?' style="background:#e5e7eb;color:#6b7280"':'')+'>'+SP_REQ_TXT[r.status]+'</span></div>'}).join("")})();
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

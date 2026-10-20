@@ -1,0 +1,158 @@
+/* ===== โมเดล 3D แผนก (ใช้ร่วมกันหน้า "เช็คของ" และ "ตำแหน่งจัดเก็บ") =====
+ spScene({host,info,onChange,onSelect}) → {show(item), paint(), place(on,item)}
+ - คลิกที่อะไหล่ในโมเดลเพื่อดูรายละเอียด
+ - โหมด 📌 วางอะไหล่ (admin/manager): คลิกจุดใดก็ได้ (พื้น/โต๊ะ/บนตู้/ชั้นเชล) แล้วเลือกอะไหล่ที่จะวางตรงนั้น */
+window.spScene=function(o){
+var host=o.host,infoEl=o.info,HEX={stock:0x16a34a,low:0xd97706,out:0xdc2626,repair:0x7c3aed};
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function loadScript(u){return new Promise(function(ok,no){var t=document.createElement("script");t.src=u;t.onload=ok;t.onerror=no;document.head.appendChild(t)})}
+var GLTF_URL="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js",gltfP=null;
+function gltf(){if(THREE.GLTFLoader)return Promise.resolve();return gltfP||(gltfP=loadScript(GLTF_URL))}
+var W=host.clientWidth||600,H=host.clientHeight||400,sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,W/H,.1,300);
+var ren=new THREE.WebGLRenderer({antialias:true,alpha:true});ren.setSize(W,H);ren.setPixelRatio(Math.min(devicePixelRatio,2));
+ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(ren.domElement);
+var DOOR=spDept.entry,B=spDept.bounds.slice();
+Object.keys(SP_RACKS).forEach(function(k){var r=SP_RACKS[k];B[0]=Math.min(B[0],r.x-r.w/2);B[2]=Math.max(B[2],r.x+r.w/2);B[1]=Math.min(B[1],r.z-r.d/2);B[3]=Math.max(B[3],r.z+r.d/2)});
+B[3]=Math.max(B[3],DOOR[1]);
+var cx=(B[0]+B[2])/2,cz=(B[1]+B[3])/2,span=Math.max(B[2]-B[0],B[3]-B[1]);
+sc.add(new THREE.HemisphereLight(0xffffff,0x7b8597,.62));
+var dl=new THREE.DirectionalLight(0xffffff,.7);dl.position.set(cx+span*.3,span*.8,cz+span*.25);dl.target.position.set(cx,0,cz);sc.add(dl,dl.target);
+dl.castShadow=true;dl.shadow.mapSize.set(2048,2048);var sh=dl.shadow.camera,sp=span*.62;sh.left=-sp;sh.right=sp;sh.top=sp;sh.bottom=-sp;sh.near=1;sh.far=span*2;dl.shadow.bias=-.0006;
+var fl=new THREE.Mesh(new THREE.PlaneGeometry(span*3,span*3),new THREE.MeshStandardMaterial({color:0x8f8f8b,roughness:.97}));fl.rotation.x=-Math.PI/2;fl.position.set(cx,-.01,cz);fl.receiveShadow=true;fl.userData.surf="บนพื้น";sc.add(fl);
+var door=new THREE.Mesh(new THREE.BoxGeometry(2,.1,.6),new THREE.MeshBasicMaterial({color:0x16a34a}));door.position.set(DOOR[0],.06,DOOR[1]);sc.add(door);
+var DEPT=spDept.build(THREE,sc,SP_RACKS),PICKS=[fl].concat(DEPT.userData.pick);
+var items=new THREE.Group(),modelG=new THREE.Group(),routeG=new THREE.Group(),ring=new THREE.Mesh(new THREE.RingGeometry(.13,.19,32),new THREE.MeshBasicMaterial({color:0xf59e0b,side:THREE.DoubleSide,depthTest:false,transparent:true}));
+ring.rotation.x=-Math.PI/2;ring.visible=false;ring.renderOrder=9;sc.add(items,modelG,routeG,ring);var mark=null,sel=null;
+// ---- ตำแหน่งกล่องอะไหล่ ----
+function slotPos(i){var r=SP_RACKS[i.r];
+ if(i.pos&&i.pos.length===3)return{x:i.pos[0],y:i.pos[1]+.12,z:i.pos[2],bw:.26,bh:.24,bd:.2,top:i.pos[1],spot:true};
+ if(!r)return null;
+ var same=SP_ITEMS.filter(function(q){return q.r===i.r&&q.s===i.s&&!(q.pos&&q.pos.length===3)}),idx=same.indexOf(i),cnt=same.length,alongX=r.w>=r.d,Lg=alongX?r.w:r.d,Sh=alongX?r.d:r.w,cw=Lg/cnt,bh=Math.min(.55,(r.h/r.n)*.6),y0=spDept.shelfY(r,i.s),
+  c=-Lg/2+(idx+.5)*cw,lw=Math.min(.7,cw*.8),sw=Math.min(.9,Sh*.7);
+ return alongX?{x:r.x+c,y:y0+bh/2,z:r.z,bw:lw,bh:bh,bd:sw,top:y0}:{x:r.x,y:y0+bh/2,z:r.z+c,bw:sw,bh:bh,bd:lw,top:y0}}
+var gcache={},pgen=0,TXC={};function imgTex(u){if(TXC[u])return TXC[u];var t=new THREE.TextureLoader().load(u,function(){});t.anisotropy=4;return TXC[u]=t}
+function glbOf(u){return gcache[u]||(gcache[u]=gltf().then(function(){return new Promise(function(ok,no){new THREE.GLTFLoader().load(u,ok,undefined,no)})}))}
+function clear(g){while(g.children.length){var c=g.children.pop();c.traverse(function(n){if(n.geometry)n.geometry.dispose();if(n.material&&n.material.dispose)n.material.dispose()})}}
+function paint(){pgen++;clear(items);
+ SP_ITEMS.forEach(function(i){var p=slotPos(i);if(!p)return;var st=spStatus(i),isSel=sel&&sel.c===i.c;
+  if(i.glb){var gen=pgen;glbOf(i.glb).then(function(g){if(gen!==pgen)return;var m=g.scene.clone(true),bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(new THREE.Vector3()),k=p.bh/Math.max(sz.y,.001);m.scale.setScalar(k);
+    var b2=new THREE.Box3().setFromObject(m);m.position.set(p.x-(b2.min.x+b2.max.x)/2,p.y-p.bh/2-b2.min.y,p.z-(b2.min.z+b2.max.z)/2);items.add(m)}).catch(function(){})}
+  var col=isSel?0x2563eb:HEX[st],cm=function(){return new THREE.MeshStandardMaterial({color:col,roughness:.65,transparent:!!i.glb,opacity:i.glb?.15:1})},mt=cm();
+  if(i.img){var pm=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7,map:imgTex(i.img)});mt=[pm,pm,cm(),cm(),pm,pm]}
+  var b=new THREE.Mesh(new THREE.BoxGeometry(p.bw,p.bh,p.bd),mt);
+  b.position.set(p.x,p.y,p.z);b.castShadow=true;b.userData.code=i.c;if(isSel)b.scale.set(1.15,1.15,1.15);
+  b.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry),new THREE.LineBasicMaterial({color:0x0f172a,transparent:true,opacity:.55})));
+  var tp=new THREE.Mesh(new THREE.BoxGeometry(p.bw*1.02,.025,p.bd*1.02),new THREE.MeshStandardMaterial({color:0xf8fafc,roughness:.7}));tp.position.y=p.bh/2;b.add(tp);
+  items.add(b);
+  if(p.spot){var st2=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.34,6),new THREE.MeshBasicMaterial({color:0x334155}));st2.position.set(p.x,p.y+p.bh/2+.2,p.z);items.add(st2);
+   var dot=new THREE.Mesh(new THREE.SphereGeometry(.065,14,10),new THREE.MeshBasicMaterial({color:col}));dot.position.set(p.x,p.y+p.bh/2+.4,p.z);dot.userData.code=i.c;items.add(dot)}})}
+// โมเดลคลังจริง (.glb) ถ้าตั้งค่าไว้
+if(SP_MODEL&&SP_MODEL.url){gltf().then(function(){new THREE.GLTFLoader().load(SP_MODEL.url,function(g){var m=g.scene;m.scale.setScalar(SP_MODEL.scale||1);m.position.set(SP_MODEL.x||0,SP_MODEL.y||0,SP_MODEL.z||0);modelG.add(m);
+  fl.visible=false;DEPT.visible=false;PICKS=[fl].concat(modelG.children)},undefined,function(){infoEl.insertAdjacentHTML("beforeend",'<div style="color:#dc2626;font-size:12px">โหลดโมเดล 3D ไม่สำเร็จ ('+esc(SP_MODEL.url)+')</div>')})}).catch(function(){})}
+// ---- ข้อมูล + เส้นทาง ----
+function canEdit(){return !!(window.spCanEdit&&spCanEdit())}
+function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" style="float:right;width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;margin:0 0 6px 10px">':'')+'<b>'+esc(i.n)+'</b> ('+esc(i.c)+') <span class="tg s-'+s+'" style="margin-left:4px">'+SP_TXT[s]+'</span><br>คงเหลือ '+i.q+' '+esc(i.u||"")+' (ขั้นต่ำ '+i.min+')<br>ตำแหน่ง: '+esc(spLoc(i))+'<br>ใช้กับ: '+(i.m||[]).map(esc).join(", ")+(i.rep?'<br>หมายเหตุ: '+esc(i.rep):'')}
+function drawRoute(pts){clear(routeG);if(!pts)return;
+ for(var k=0;k<pts.length-1;k++){var a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[2]-a[2]);if(L<.01)continue;
+  var m=new THREE.Mesh(new THREE.BoxGeometry(.11,.02,L+.11),new THREE.MeshBasicMaterial({color:0xf59e0b}));m.position.set((a[0]+b[0])/2,.17,(a[2]+b[2])/2);m.rotation.y=Math.atan2(b[0]-a[0],b[2]-a[2]);routeG.add(m)}}
+function show(i){sel=i;paint();drawRoute(null);if(mark){sc.remove(mark);mark=null}
+ var p=slotPos(i),r=SP_RACKS[i.r],h=head(i),btn="";
+ if(canEdit())btn='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
+ infoEl.innerHTML=h+btn;wire(i);
+ if(!p){infoEl.insertAdjacentHTML("afterbegin",'<div style="color:#dc2626;margin-bottom:4px">ยังไม่มีตำแหน่งในโมเดล 3D'+(i.r?' (ชั้นวาง '+esc(i.r)+' ไม่มีในผัง)':'')+'</div>');return}
+ var pts=(r&&i.r&&spDept.route(i.r,SP_RACKS))||spDept.routeTo([p.x,p.z],null);drawRoute(pts);
+ mark=new THREE.Mesh(new THREE.ConeGeometry(.17,.38,16),new THREE.MeshBasicMaterial({color:0xf59e0b}));mark.rotation.x=Math.PI;mark.userData.y0=p.y+p.bh/2+.55;mark.position.set(p.x,mark.userData.y0,p.z);sc.add(mark);
+ if(innerWidth<1100)host.scrollIntoView({behavior:"smooth",block:"center"})}
+function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelector('[data-a=rm]');
+ if(m)m.onclick=function(){place(true,i)};
+ if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
+// ---- โหมดวางอะไหล่ ----
+var placing=false,target=null,hit=null;
+function place(on,item){placing=!!on;target=item||null;hit=null;ring.visible=false;host.style.cursor=on?"crosshair":"";
+ if(on)infoEl.innerHTML='<b>📌 โหมดวางอะไหล่</b>'+(item?' — '+esc(item.n):'')+'<br>คลิกจุดที่ต้องการในโมเดล (พื้น · โต๊ะ · บนตู้ · ชั้นเชล) <button class="btn" id="pl-x" style="padding:4px 10px;margin-left:6px">ยกเลิก</button>';
+ var x=document.getElementById("pl-x");if(x)x.onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
+ if(plb){plb.classList.toggle("on",placing);plb.textContent=placing?"✖ ออกจากโหมดวางอะไหล่":"📌 วางอะไหล่ในโมเดล"}}
+function ray(e){var rc=host.getBoundingClientRect(),v=new THREE.Vector2((e.clientX-rc.left)/rc.width*2-1,-((e.clientY-rc.top)/rc.height*2-1)),r=new THREE.Raycaster();r.setFromCamera(v,cam);return r}
+function surfHit(e){var hs=ray(e).intersectObjects(PICKS,true);
+ for(var k=0;k<hs.length;k++){var h=hs[k],ob=h.object,u=ob.userData;if(!u.surf)continue;if(h.face){var n=h.face.normal.clone().transformDirection(ob.matrixWorld);if(n.y<.5)continue}
+  return{x:h.point.x,y:h.point.y,z:h.point.z,surf:u.surf,rack:u.rack,level:u.level}}return null}
+function form(h){
+ var opts='<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return '<option value="'+k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("");
+ infoEl.innerHTML='<b>📌 วางอะไหล่ที่จุดนี้</b> <small style="color:#64748b">('+esc(h.surf)+' · x '+h.x.toFixed(2)+', z '+h.z.toFixed(2)+')</small>'
+  +'<div style="display:grid;gap:6px;margin-top:6px"><select id="pl-it" style="padding:7px;border:1px solid #cbd5e1;border-radius:8px">'+opts+'</select>'
+  +'<div id="pl-new" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="pl-c" placeholder="รหัสอะไหล่ *"><input id="pl-n" placeholder="ชื่ออะไหล่ *"><input id="pl-q" type="number" min="0" value="1" placeholder="คงเหลือ"><input id="pl-m" type="number" min="0" value="0" placeholder="ขั้นต่ำ"><input id="pl-u" value="ชิ้น" placeholder="หน่วย" style="grid-column:1/3"></div>'
+  +'<label style="font-size:12px;color:#475569">📷 รูปอะไหล่ (ไม่บังคับ)</label><input id="pl-img" type="file" accept="image/*">'
+  +'<div id="pl-e" style="color:#dc2626;font-size:12px"></div><div style="display:flex;gap:6px"><button class="btn p" id="pl-ok" style="padding:7px 14px">บันทึกตำแหน่ง</button><button class="btn" id="pl-no" style="padding:7px 12px">ยกเลิก</button></div></div>';
+ var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new");
+ sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none"};sel_.onchange();
+ document.getElementById("pl-no").onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
+ document.getElementById("pl-ok").onclick=function(){var l=SP_ITEMS.slice(),it,err=document.getElementById("pl-e");
+  if(sel_.value===""){var c=document.getElementById("pl-c").value.trim(),n=document.getElementById("pl-n").value.trim(),q=parseInt(document.getElementById("pl-q").value,10),m=parseInt(document.getElementById("pl-m").value,10);
+   if(!c||!n){err.textContent="กรอกรหัสและชื่ออะไหล่";return}if(l.some(function(x){return x.c.toLowerCase()===c.toLowerCase()})){err.textContent="รหัสนี้มีอยู่แล้ว — เลือกจากรายการด้านบน";return}
+   it={c:c,n:n,k:"",m:[],q:q>=0?q:0,min:m>=0?m:0,u:document.getElementById("pl-u").value.trim()||"ชิ้น",r:"",s:0};l.push(it)}
+  else it=l[+sel_.value];
+  var fi=document.getElementById("pl-img").files[0],fin=function(){spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
+  it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.spot=true;it.at=h.surf;
+  if(h.rack){it.r=h.rack;it.s=h.level}else{it.r="";it.s=0}
+  if(fi)spResize(fi,function(d){if(d)it.img=d;fin()});else fin()}}
+// ---- กล้อง ----
+var ang=.08,el=1.05,dist=span*1.25,horiz=false,drag=false,lx=0,ly=0,pd={},moved=0,PICKQ=new URLSearchParams(location.search).get("pick");
+var tx=cx,tz=cz,walk=false,wx=DOOR[0],wz=DOOR[1]-.8,wyaw=0,wpit=-.05,keys={},COL=spDept.colliders(SP_RACKS),RAD=.24,last=Date.now(),BTN={};
+function blocked(x,z){for(var k=0;k<COL.length;k++){var c=COL[k],qx=Math.max(c[0],Math.min(c[2],x)),qz=Math.max(c[1],Math.min(c[3],z));if(Math.hypot(x-qx,z-qz)<RAD)return true}return false}
+function step(dx,dz){var nx=wx+dx,nz=wz+dz;if(!blocked(nx,wz))wx=nx;if(!blocked(wx,nz))wz=nz;wx=Math.max(B[0]-.5,Math.min(B[2]+.5,wx));wz=Math.max(B[1]-.5,Math.min(B[3]+1.2,wz))}
+function walkTick(){var now=Date.now(),dt=Math.min(.1,(now-last)/1000);last=now;if(!walk)return;
+ var f=(keys.w||keys.ArrowUp||BTN.f?1:0)-(keys.s||keys.ArrowDown||BTN.b?1:0),r=(keys.d||BTN.r?1:0)-(keys.a||BTN.l?1:0),t=(keys.ArrowRight?1:0)-(keys.ArrowLeft?1:0)+(BTN.tr?1:0)-(BTN.tl?1:0);
+ wyaw+=t*1.8*dt;var sp=(keys.Shift?4.2:2.0)*dt;
+ if(f||r){var fx=Math.sin(wyaw),fz=-Math.cos(wyaw),rx=Math.cos(wyaw),rz=Math.sin(wyaw),n=Math.hypot(f,r);step((fx*f+rx*r)/n*sp,(fz*f+rz*r)/n*sp)}}
+function setWalk(on){walk=!!on;if(walk){var m=document.getElementById("wkb");wx=DOOR[0];wz=DOOR[1]-.8;wyaw=0;wpit=-.05}
+ if(wkb)wkb.textContent=walk?"🧭 กลับมุมสูง":"🚶 เดินในโมเดล";wkh.style.display=walk?"block":"none";wkp.style.display=walk?"flex":"none";host.style.cursor=walk?"grab":""}
+if(getComputedStyle(host).position==="static")host.style.position="relative";
+var wkb=document.createElement("button"),wkh=document.createElement("div"),wkp=document.createElement("div");
+wkb.className="btn";wkb.style.cssText="position:absolute;left:10px;top:10px;z-index:3;padding:7px 14px";wkb.textContent="🚶 เดินในโมเดล";wkb.onclick=function(){setWalk(!walk)};
+wkh.style.cssText="display:none;position:absolute;left:10px;bottom:10px;z-index:3;background:rgba(11,33,80,.78);color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;pointer-events:none";wkh.textContent="W A S D / ลูกศร = เดิน · ลากเมาส์ = มองรอบ · Shift = วิ่ง · เลื่อนล้อ = เดินหน้า/ถอย";
+wkp.style.cssText="display:none;position:absolute;right:10px;bottom:10px;z-index:3;flex-direction:column;align-items:center;gap:4px;touch-action:none";
+function pad(lab,key){var b=document.createElement("button");b.textContent=lab;b.style.cssText="width:46px;height:42px;border:0;border-radius:10px;background:rgba(11,33,80,.8);color:#fff;font-size:18px;touch-action:none";
+ var on=function(e){e.preventDefault();e.stopPropagation();BTN[key]=true},off=function(e){BTN[key]=false};b.addEventListener("pointerdown",on);["pointerup","pointerleave","pointercancel"].forEach(function(n){b.addEventListener(n,off)});return b}
+(function(){var r1=document.createElement("div"),r2=document.createElement("div");r1.style.cssText=r2.style.cssText="display:flex;gap:4px";
+ r1.appendChild(pad("↶","tl"));r1.appendChild(pad("▲","f"));r1.appendChild(pad("↷","tr"));r2.appendChild(pad("◀","l"));r2.appendChild(pad("▼","b"));r2.appendChild(pad("▶","r"));wkp.appendChild(r1);wkp.appendChild(r2)})();
+function ob(txt,css,fn){var b=document.createElement("button");b.className="btn";b.style.cssText="position:absolute;z-index:3;padding:7px 12px;"+css;b.textContent=txt;b.onclick=fn;host.appendChild(b);return b}
+var plb=ob("📌 วางอะไหล่ในโมเดล","left:10px;top:52px",function(){if(!canEdit()){infoEl.innerHTML='<span style="color:#dc2626">การวางอะไหล่ทำได้เฉพาะบัญชี ผู้ดูแลระบบ / ช่าง Day time (บัญชีนี้ดูได้อย่างเดียว)</span>';return}if(walk)setWalk(false);place(!placing)});plb.id="plbtn";
+var vwb=ob("🔄 มุมมอง","right:56px;top:10px",function(){if(walk)setWalk(false);fitView(!horiz)});
+var fsb=ob("⛶","right:10px;top:10px;padding:7px 11px",function(){var el=host.parentNode;if(document.fullscreenElement){document.exitFullscreen()}else if(el.requestFullscreen){el.requestFullscreen()}else{el.classList.toggle("spfs")}});fsb.title="เต็มจอ";
+var stx=document.createElement("style");stx.textContent=".spfs{position:fixed!important;inset:0;z-index:999;background:#fff;overflow:auto}";document.head.appendChild(stx);
+var panMode=false,PK={},FREE=null;
+var panb=ob("✋ เลื่อน","left:10px;top:10px",function(){panMode=!panMode;panb.textContent=panMode?"🔄 หมุน":"✋ เลื่อน";panb.title=panMode?"ตอนนี้ลากเมาส์เพื่อเลื่อนซ้าย-ขวา (กดเพื่อกลับไปหมุน)":"กดเพื่อสลับเป็นโหมดเลื่อนซ้าย-ขวา";host.style.cursor=panMode?"grab":""});
+panb.title="กดเพื่อสลับเป็นโหมดเลื่อนซ้าย-ขวา";plb.style.top="52px";
+function pbtn(lab,css,key){var b=document.createElement("button");b.textContent=lab;b.style.cssText="position:absolute;z-index:3;width:46px;height:42px;border:0;border-radius:10px;background:rgba(11,33,80,.78);color:#fff;font-size:18px;touch-action:none;"+css;
+ var on=function(e){e.preventDefault();e.stopPropagation();PK[key]=true},off=function(){PK[key]=false};b.addEventListener("pointerdown",on);["pointerup","pointerleave","pointercancel"].forEach(function(n){b.addEventListener(n,off)});host.appendChild(b)}
+pbtn("◀","left:10px;bottom:10px","l");pbtn("▶","right:10px;bottom:10px","r");pbtn("▲","left:62px;bottom:10px","u");pbtn("▼","right:62px;bottom:10px","d");
+var hint=document.createElement("div");hint.style.cssText="position:absolute;left:50%;transform:translateX(-50%);bottom:10px;z-index:3;background:rgba(11,33,80,.7);color:#fff;font-size:12px;padding:5px 10px;border-radius:8px;pointer-events:none;white-space:nowrap;max-width:calc(100% - 240px);overflow:hidden;text-overflow:ellipsis";hint.textContent="ลาก = หมุน · คลิกขวา/Shift+ลาก/นิ้วสองนิ้ว = เลื่อน · ปุ่มลูกศร = เลื่อน · ล้อเมาส์ = ซูม";host.appendChild(hint);
+host.addEventListener("contextmenu",function(e){e.preventDefault()});
+window.addEventListener("keydown",function(e){if(true||!walk||/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||"")))return;var k=e.key.length===1?e.key.toLowerCase():e.key;if(k==="Escape"){setWalk(false);return}
+ if(["w","a","s","d","ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Shift"].indexOf(k)>-1){keys[k]=true;e.preventDefault()}});
+window.addEventListener("keyup",function(e){var k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=false});window.addEventListener("blur",function(){keys={}});
+window.addEventListener("keydown",function(e){if(/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||"")))return;var m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key];if(m){PK[m]=true;e.preventDefault()}});
+window.addEventListener("keyup",function(e){var m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key];if(m)PK[m]=false});
+function panBy(dx,dy){var k=dist*.0017;tx+=Math.cos(ang)*(-dx)*k+(-Math.sin(ang))*(-dy)*k*-1;tz+=(-Math.sin(ang))*(-dx)*k+(-Math.cos(ang))*(-dy)*k*-1;tx=Math.max(B[0]-8,Math.min(B[2]+8,tx));tz=Math.max(B[1]-8,Math.min(B[3]+8,tz))}
+function cp(){if(FREE){cam.position.set(FREE[0],FREE[1],FREE[2]);cam.lookAt(FREE[3],FREE[4],FREE[5]);return}if(walk){cam.position.set(wx,1.6,wz);cam.lookAt(wx+Math.sin(wyaw)*Math.cos(wpit),1.6+Math.sin(wpit),wz-Math.cos(wyaw)*Math.cos(wpit));return}
+cam.position.set(tx+dist*Math.sin(ang)*Math.cos(el),dist*Math.sin(el),tz+dist*Math.cos(ang)*Math.cos(el));cam.lookAt(tx,0,tz)}
+function fitView(h){horiz=h;var asp=host.clientWidth/Math.max(1,host.clientHeight),L=B[3]-B[1],Wd=B[2]-B[0],T=Math.tan(22.5*Math.PI/180);tx=cx;tz=cz;
+ if(h){ang=1.3;el=1.0;var pr=L*Math.abs(Math.sin(ang))+Wd*Math.abs(Math.cos(ang));dist=Math.max(pr*.5/(T*asp)*1.04,Wd*2.5)}else{ang=.08;el=1.1;dist=Math.max(L*.5/T*.9*Math.min(1,.55/asp+.45),Wd*2.2)}}
+fitView(host.clientWidth/Math.max(1,host.clientHeight)>.9);
+host.addEventListener("pointerdown",function(e){pd[e.pointerId]=e;drag=true;lx=e.clientX;ly=e.clientY;moved=0});
+window.addEventListener("pointerup",function(e){var was=pd[e.pointerId];delete pd[e.pointerId];drag=false;if(!was||moved>5||e.target!==ren.domElement)return;
+ if(placing){var h=surfHit(e);if(h)form(h);return}
+ if(PICKQ){var h2=surfHit(e);if(h2)infoEl.innerHTML='<b>📐 โหมดหาพิกัด</b><br>x = '+h2.x.toFixed(2)+' · y = '+h2.y.toFixed(2)+' · z = '+h2.z.toFixed(2);return}
+ var hs=ray(e).intersectObjects(items.children,false).filter(function(q){return q.object.userData.code});
+ if(hs.length){var it=SP_ITEMS.filter(function(q){return q.c===hs[0].object.userData.code})[0];if(it){show(it);if(o.onSelect)o.onSelect(it)}}});
+window.addEventListener("pointermove",function(e){if(placing&&!pd[e.pointerId]&&e.target===ren.domElement){var h=surfHit(e);hit=h;if(h){ring.visible=true;ring.position.set(h.x,h.y+.02,h.z)}else ring.visible=false}
+ if(!pd[e.pointerId])return;var ids=Object.keys(pd);moved+=Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly);
+ if(ids.length===2){var q=pd[ids[0]]===pd[e.pointerId]?pd[ids[1]]:pd[ids[0]],d0=Math.hypot(pd[e.pointerId].clientX-q.clientX,pd[e.pointerId].clientY-q.clientY),d1=Math.hypot(e.clientX-q.clientX,e.clientY-q.clientY);dist=Math.max(4,Math.min(90,dist*d0/d1));panBy((e.clientX-lx)*.5,(e.clientY-ly)*.5)}
+ else if(drag&&!walk&&(panMode||e.shiftKey||(e.buttons&2)||(e.buttons&4))){panBy(e.clientX-lx,e.clientY-ly)}
+ else if(drag&&walk){wyaw+=(e.clientX-lx)*.005;wpit=Math.max(-1.2,Math.min(1.0,wpit-(e.clientY-ly)*.004))}
+ else if(drag){ang-=(e.clientX-lx)*.01;el=Math.max(.12,Math.min(1.52,el+(e.clientY-ly)*.008))}pd[e.pointerId]=e;lx=e.clientX;ly=e.clientY});
+host.addEventListener("wheel",function(e){e.preventDefault();if(walk){step(-Math.sin(wyaw)*e.deltaY*.004,Math.cos(wyaw)*e.deltaY*.004);return}dist=Math.max(4,Math.min(90,dist+e.deltaY*.03))},{passive:false});
+function rs(){W=host.clientWidth;H=host.clientHeight;if(!W||!H)return;ren.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}window.addEventListener("resize",rs);if(window.ResizeObserver)new ResizeObserver(rs).observe(host);document.addEventListener("fullscreenchange",function(){setTimeout(function(){rs();fitView(horiz)},100)});
+(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;ren.render(sc,cam)})();
+paint();
+var API={show:show,paint:paint,place:place,canEdit:canEdit,walk:setWalk,setCam:function(a){FREE=a},shot:function(){cp();ren.render(sc,cam);return ren.domElement.toDataURL('image/jpeg',.93)},ren:ren,B:B,fit:fitView,view:function(a,e,d,x,z){if(a!=null)ang=a;if(e!=null)el=e;if(d!=null)dist=d;if(x!=null){tx=x;tz=z}},scene:sc,THREE:THREE};window.spSceneApi=API;return API};

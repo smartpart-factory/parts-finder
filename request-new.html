@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ทำเรื่องขออะไหล่ | SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sp{flex:1}.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+main{margin:66px 0 0 207px;padding:14px;max-width:1000px}h2{margin:0 0 4px;font-size:22px}.sub{color:#64748b;margin-bottom:14px}
+.box{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:14px}.box h3{margin:0 0 10px;font-size:16px}
+label{display:block;font-size:13px;color:#475569;margin:12px 0 4px}input,select,textarea{width:100%;padding:11px 13px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff}input:focus,select:focus,textarea:focus{outline:0;border-color:#1565d8}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{padding:12px 22px;border:0;border-radius:8px;background:#f59e0b;color:#fff;font:inherit;font-weight:600;font-size:15px;cursor:pointer;margin-top:16px}
+#pv{display:none;margin-top:10px;background:#eaf2ff;border:1px solid #cfe0ff;border-radius:8px;padding:10px 12px;line-height:1.7}
+.tg{font-size:12px;padding:2px 10px;border-radius:99px;color:#fff;white-space:nowrap}.s-stock{background:#16a34a}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
+#ok{display:none;background:#d9f7e4;border:1px solid #a7e6bf;color:#14663a;border-radius:8px;padding:12px 14px;margin-bottom:14px}#err{color:#dc2626;font-size:13px;min-height:18px;margin-top:8px}
+.rq{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;flex-wrap:wrap}.rq small{color:#64748b;display:block}
+.bd{font-size:12px;padding:3px 12px;border-radius:99px;font-weight:600;white-space:nowrap}.w{background:#fff0d6;color:#d97706}.o{background:#d9f7e4;color:#16a34a}.x{background:#fde2e2;color:#dc2626}.c{background:#e5e7eb;color:#6b7280}
+.cx{border:1px solid #cbd5e1;background:#fff;border-radius:6px;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}.empty{padding:18px;text-align:center;color:#94a3b8}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}.two{grid-template-columns:1fr}}
+.how{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 14px}.how>div{border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.55}.how b{display:block;font-size:15px;margin-bottom:2px}.how .g{background:#e7f7ec;border:1px solid #b7e4c4;color:#14532d}.how .o{background:#eaf2ff;border:1px solid #bcd3fb;color:#0b2150}.how a{color:#15803d;font-weight:600}@media(max-width:560px){.how{grid-template-columns:1fr}}.avail{border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px;line-height:1.5}.avail.y{background:#e7f7ec;border:1px solid #b7e4c4;color:#14532d}.avail.n{background:#fff4e5;border:1px solid #f5c77e;color:#7a4a00}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+.modes{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.modes button{border:1px solid #cfd8ea;background:#fff;color:#0b2150;padding:9px 16px;border-radius:99px;font:inherit;cursor:pointer}
+.modes button.on{background:#1e6df0;color:#fff;border-color:#1e6df0}
+.modes button#m-retro.on{background:#d97706;border-color:#d97706}
+.rnote{background:#fff7e6;border:1px solid #f5c77e;color:#7a4a00;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:14px;line-height:1.5}
+.bd.rt{background:#fff1d6;color:#b45309}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+<div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a class="on">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<main>
+ <h2>📝 ขอเบิกคลังใหญ่</h2><div class="sub">ใช้เมื่อ <b>อะไหล่ไม่มีหรือไม่พอในแผนก</b> เท่านั้น — ถ้าของมีอยู่ในแผนกแล้ว หยิบใช้ได้เลย ไม่ต้องทำเรื่องขอ</div>
+ <div class="how"><div class="g"><b>✅ มีของในแผนก</b>หยิบได้เลย ไม่ต้องทำเรื่องขอ<br><a href="search.html">ค้นหา / ดูตำแหน่ง →</a></div><div class="o"><b>📝 ไม่มี หรือไม่พอ</b>กรอกฟอร์มด้านล่าง ผู้ดูแลจะสั่งเบิกจากคลังใหญ่ให้</div></div>
+ <div id="ok"></div>
+ <div class="box"><label style="margin-top:0">อะไหล่ (เลือกจากรายการ หรือพิมพ์ชื่อเอง)</label><input id="f-item" list="dl" autocomplete="off" placeholder="ชื่อหรือรหัสอะไหล่"><datalist id="dl"></datalist><div id="pv"></div>
+  <div class="two"><div><label>จำนวน</label><input id="f-qty" type="number" min="1" value="1"></div><div><label>เครื่องจักร</label><select id="f-mc"></select></div></div>
+  <label>อาคาร / เตา ที่ใช้อะไหล่ *</label><select id="f-bd"></select>
+  <label>ความเร่งด่วน</label><select id="f-urg"><option value="0">ปกติ</option><option value="1">ด่วน</option></select>
+    <label id="l-why">เหตุผล / รายละเอียด</label><textarea id="f-why" rows="3" placeholder="เช่น ของหมดในแผนก ตลับลูกปืนเสียงดัง ต้องเปลี่ยน"></textarea>
+  <div id="err"></div><button class="btn" id="go">ส่งคำขอเบิกคลังใหญ่</button></div>
+ <div class="box"><h3>✋ หยิบใช้ล่าสุดของฉัน</h3><div class="sub" style="margin:0 0 8px">บันทึกเพื่อให้สต็อกตรงกับของจริง (ไม่ต้องรออนุมัติ)</div><div id="takes"></div></div>
+ <div class="box"><h3>คำขอของฉัน</h3><div id="mine"></div></div>
+</main>
+<script src="data.js"></script><script src="requests.js"></script><script src="pm.js"></script>
+<script>
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function $(i){return document.getElementById(i)}
+var ME=SP_USER.name,fi=$("f-item"),RETRO=false;
+function nowLocal(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
+function setMode(){}
+$("dl").innerHTML=SP_ITEMS.map(function(i){return '<option value="'+esc(i.n+" ("+i.c+")")+'">'}).join("");
+$("f-bd").innerHTML=spBldOpts();try{var lb=localStorage.getItem("sp_lastbld");if(lb)$("f-bd").value=lb}catch(e){}
+$("f-mc").innerHTML=SP_MACHINES.map(function(m){return '<option>'+esc(m)+'</option>'}).join("")+'<option>อื่นๆ</option>';
+function find(v){v=v.trim();return SP_ITEMS.filter(function(i){return i.n+" ("+i.c+")"===v||i.c===v||i.n===v})[0]}
+function avail(){var it=find(fi.value),qty=parseInt($("f-qty").value,10)||1;if(!it)return null;var s=spStatus(it);return{it:it,ok:s!=="repair"&&it.q>=qty,s:s,qty:qty}}
+function preview(){var it=find(fi.value),p=$("pv");if(!it){p.style.display="none";return}var a=avail(),s=a.s;p.style.display="block";
+ p.innerHTML='<b>'+esc(it.n)+'</b> <span class="tg s-'+s+'">'+SP_TXT[s]+'</span><br>คงเหลือในแผนก '+it.q+' '+esc(it.u||"")+' · ตำแหน่ง '+esc(spLoc(it))+
+  (a.ok?'<div class="avail y">✅ <b>มีของในแผนกพอแล้ว</b> — ไปหยิบได้เลย ไม่ต้องทำเรื่องขอ <a href="check-stock.html?item='+encodeURIComponent(it.c)+'">📍 ดูตำแหน่ง 3D</a><div id="tkw" style="margin-top:6px"><button type="button" class="btn" id="tkb" style="padding:6px 12px">✋ บันทึกการหยิบใช้</button></div></div>':
+  '<div class="avail n">📝 '+(s==="repair"?'อะไหล่นี้กำลังซ่อม ใช้ไม่ได้ในตอนนี้':'ในแผนกมี '+it.q+' '+esc(it.u||"")+' ไม่พอสำหรับ '+a.qty)+' — ขอเบิกจากคลังใหญ่ได้ที่ฟอร์มนี้</div>');if(it.m.length)$("f-mc").value=it.m[0]}
+function bindTk(){var b=$("tkb");if(b)b.onclick=function(){spTakeUI($("tkw"),find(fi.value),function(ok){if(ok){fi.value="";$("pv").style.display="none";takes()}else preview()})}}
+var _pv=preview;preview=function(){_pv();bindTk()};
+fi.oninput=fi.onchange=preview;$("f-qty").oninput=function(){if(find(fi.value))preview()};
+function mine(){var all=spReqLoad(),a=all.filter(function(r){return r.byId===SP_USER.id}).reverse(),b=$("mine");
+ if(!a.length){b.innerHTML='<div class="empty">ยังไม่มีคำขอ</div>';return}b.innerHTML="";
+ a.forEach(function(r){var k=spReqClass(r.status),d=document.createElement("div");d.className="rq";
+  d.innerHTML='<div><b>'+esc(r.id)+'</b> · '+esc(r.item)+' × '+r.qty+(r.urgent?' <span class="bd x" style="padding:1px 8px">ด่วน</span>':'')+(r.retro?' <span class="bd rt" style="padding:1px 8px">เบิกก่อนแจ้ง</span>':'')+'<small>'+spReqTime(r.time)+' · '+esc(r.machine)+(r.bld?' · '+esc(spReqBld(r)):'')+(r.rej?' · เหตุผลที่ปฏิเสธ: '+esc(r.rej):'')+'</small></div><div><span class="bd '+k+'">'+SP_REQ_TXT[r.status]+'</span></div>';
+  if(r.status==="pending"){var c=document.createElement("button");c.className="cx";c.textContent="ยกเลิก";c.onclick=function(){if(!confirm("ยกเลิกคำขอ "+r.id+" ?"))return;var l=spReqLoad(),x=l.filter(function(y){return y.id===r.id&&y.byId===SP_USER.id&&y.status==="pending"})[0];
+   if(x){x.status="cancelled";x.log=x.log||[];x.log.push({t:new Date().toISOString(),text:"ยกเลิกโดย "+ME});spReqSave(l)}mine()};d.lastChild.appendChild(document.createTextNode(" "));d.lastChild.appendChild(c)}
+  b.appendChild(d)})}
+$("go").onclick=function(){var v=fi.value.trim(),qty=parseInt($("f-qty").value,10);function bad(t){$("err").textContent=t}bad("");
+ if(!v){bad("กรุณาระบุอะไหล่");fi.focus();return}if(!(qty>0)){bad("กรุณาระบุจำนวนให้ถูกต้อง");return}var av=avail();if(av&&av.ok){bad("อะไหล่นี้มีในแผนกพอแล้ว ("+av.it.q+" "+(av.it.u||"")+") หยิบใช้ได้เลย ไม่ต้องทำเรื่องขอ");return}if(!$("f-bd").value){bad("กรุณาเลือกอาคาร / เตา ที่ใช้อะไหล่");$("f-bd").focus();return}try{localStorage.setItem("sp_lastbld",$("f-bd").value)}catch(e){}
+ var why=$("f-why").value.trim(),took=null;
+ if(RETRO){if(!why){bad("กรุณาระบุว่าเอาไปทำอะไร และทำไมไม่ได้ขอก่อน");$("f-why").focus();return}
+  took=$("f-when").value?new Date($("f-when").value):new Date();if(isNaN(took)||took>new Date(Date.now()+6e4)){bad("เวลาที่เอาไปต้องไม่เป็นอนาคต");return}}
+ var it=find(v),all=spReqLoad(),r={id:spReqNextId(all),item:it?it.n:v,code:it?it.c:"",qty:qty,machine:$("f-mc").value,bld:spBldVal($("f-bd").value).bld,furn:spBldVal($("f-bd").value).furn,urgent:$("f-urg").value==="1",why:why,by:ME,byId:SP_USER.id,status:"pending",time:new Date().toISOString(),log:[{t:new Date().toISOString(),text:RETRO?"แจ้งเบิกย้อนหลังโดย "+ME+" (เอาไปเมื่อ "+took.toLocaleString("th-TH")+")":"สร้างคำขอโดย "+ME}]};
+ if(RETRO){r.retro=true;r.tookAt=took.toISOString()}
+ all.push(r);if(!spReqSave(all)){bad("บันทึกไม่สำเร็จ (เบราว์เซอร์อาจไม่อนุญาตให้เก็บข้อมูล)");return}
+ $("ok").style.display="block";$("ok").innerHTML=(RETRO?"✅ แจ้งเบิกย้อนหลัง <b>"+r.id+"</b> เรียบร้อยแล้ว รอผู้ดูแลตรวจสอบและยืนยัน":"✅ ส่งคำขอ <b>"+r.id+"</b> เรียบร้อยแล้ว สถานะ: รออนุมัติ");
+ fi.value="";$("f-qty").value=1;$("f-why").value="";$("f-urg").value="0";setMode(false);$("pv").style.display="none";mine();window.scrollTo({top:0,behavior:"smooth"})};
+var q=new URLSearchParams(location.search).get("item"),pre=q&&SP_ITEMS.filter(function(i){return i.c===q})[0];if(pre){fi.value=pre.n+" ("+pre.c+")";preview()}
+function takes(){var a=spTakeLoad().filter(function(k){return k.byId===SP_USER.id}).reverse().slice(0,8),b=$("takes");if(!a.length){b.innerHTML='<div class="empty">ยังไม่มีการหยิบใช้</div>';return}b.innerHTML="";
+ a.forEach(function(k){var d=document.createElement("div");d.className="rq";d.innerHTML='<div><b>'+esc(k.item)+'</b> × '+k.qty+' '+esc(k.u||"")+'<small>'+spReqTime(k.time)+' · คงเหลือ '+k.left+'</small></div>';var c=document.createElement("button");c.className="cx";c.textContent="ยกเลิก (คืนสต็อก)";c.onclick=function(){if(confirm("ยกเลิกการหยิบ "+k.item+" × "+k.qty+" และคืนสต็อก ?")){spTakeUndo(k.id);takes()}};d.lastChild.appendChild(document.createTextNode(" "));d.lastChild.appendChild(c);b.appendChild(d)})}
+takes();mine();
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

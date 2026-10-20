@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>เข้าสู่ระบบ | SpareParts 3D</title>
+<script>window.SP_NOGUARD=true</script>
+<script src="auth.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,#0b2150,#1d4fa8);font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px;color:#1e293b}
+.box{background:#fff;border-radius:14px;width:380px;max-width:100%;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.lg{display:flex;align-items:center;gap:10px;margin-bottom:6px}.lg b{font-size:22px;display:block;line-height:1.1;color:#0b2150}.lg small{color:#64748b;font-size:12px}
+h2{margin:18px 0 4px;font-size:18px}.sub{color:#64748b;font-size:13px;margin-bottom:6px}
+label{display:block;font-size:13px;color:#475569;margin:12px 0 4px}
+input{width:100%;padding:11px 13px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}input:focus{outline:0;border-color:#1565d8}
+button{width:100%;margin-top:18px;padding:12px;border:0;border-radius:8px;background:#1565d8;color:#fff;font:inherit;font-weight:600;font-size:15px;cursor:pointer}button:disabled{opacity:.6}
+.err{color:#dc2626;font-size:13px;margin-top:10px;min-height:18px}.hint{margin-top:14px;color:#94a3b8;font-size:12px;line-height:1.6}
+.warn{background:#fff7e6;border:1px solid #fbdcb0;color:#a15c07;border-radius:8px;padding:10px 12px;font-size:12px;margin-top:10px}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="box">
+ <div class="lg"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+ <div id="app"></div>
+</div>
+<script>
+var app=document.getElementById("app");
+var NEXT=new URLSearchParams(location.search).get("next")||"index.html";
+if(!/^[A-Za-z0-9_\-]+\.html(\?[^#]*)?$/.test(NEXT))NEXT="index.html";
+function go(){location.replace(NEXT)}
+function field(id,label,type,ph){return '<label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+(type||"text")+'" placeholder="'+(ph||"")+'" autocomplete="off">'}
+function v(id){return document.getElementById(id).value}
+function err(t){document.getElementById("err").textContent=t}
+function busy(on){var b=document.getElementById("go");b.disabled=on}
+if(spCurrent()){go()}
+else if(!spUsers().length){
+ app.innerHTML='<h2>ตั้งค่าครั้งแรก</h2><div class="sub">สร้างบัญชีผู้ดูแลระบบ คนแรก</div>'
+  +field("name","ชื่อที่แสดง","text","เช่น ปฐวี จันทร์ร่าม")+field("un","ชื่อผู้ใช้ (ภาษาอังกฤษ/ตัวเลข 3-20 ตัว)","text","admin")+field("pw","รหัสผ่าน (อย่างน้อย 6 ตัว)","password")+field("pw2","ยืนยันรหัสผ่าน","password")
+  +'<div class="err" id="err"></div><button id="go">สร้างบัญชีและเข้าสู่ระบบ</button>'
+  +'<div class="warn">ระบบผู้ใช้นี้เก็บในเบราว์เซอร์ของเครื่องนี้ ยังไม่ใช่ระบบกลางสำหรับหลายเครื่อง</div>';
+ document.getElementById("go").onclick=function(){
+  var n=v("name").trim(),u=v("un").trim(),p=v("pw");
+  if(!n)return err("กรุณากรอกชื่อที่แสดง");
+  if(!/^[A-Za-z0-9_.\-]{3,20}$/.test(u))return err("ชื่อผู้ใช้ต้องเป็นอังกฤษ/ตัวเลข 3-20 ตัว");
+  if(p.length<6)return err("รหัสผ่านต้องมีอย่างน้อย 6 ตัว");
+  if(p!==v("pw2"))return err("รหัสผ่านไม่ตรงกัน");
+  busy(true);
+  spMakeUser(u,n,"admin",p).then(function(x){spUsersSave([x]);return spLogin(u,p)}).then(go)}
+}else{
+ app.innerHTML='<h2>เข้าสู่ระบบ</h2><div class="sub">กรอกชื่อผู้ใช้และรหัสผ่าน</div>'+field("un","ชื่อผู้ใช้")+field("pw","รหัสผ่าน","password")
+  +'<div class="err" id="err"></div><button id="go">เข้าสู่ระบบ</button><div class="hint">ลืมรหัสผ่าน: ให้ผู้ดูแลระบบรีเซ็ตให้ในหน้า "จัดการระบบ"</div>';
+ var doLogin=function(){var u=v("un"),p=v("pw");if(!u||!p)return err("กรุณากรอกให้ครบ");busy(true);
+  spLogin(u,p).then(function(x){if(x)go();else{busy(false);err("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง (หรือบัญชีถูกปิดใช้งาน)")}})};
+ document.getElementById("go").onclick=doLogin;
+ document.getElementById("pw").onkeydown=function(e){if(e.key==="Enter")doLogin()};
+ document.getElementById("un").focus()}
+</script>
+</body>
+</html>

@@ -1,0 +1,4044 @@
+{
+ "app": "spareparts3d",
+ "version": 1,
+ "exported": "2026-10-20",
+ "items": [
+  {
+   "c": "5013790",
+   "n": "Plug gauge 15.1 สั้น",
+   "k": "plug gage 1SM96291",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013791",
+   "n": "Plug gauge 15.1 ยาว",
+   "k": "plug gage 1SM96292",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012731",
+   "n": "Plug gauge 15.5 สั้น",
+   "k": "plug gage 1SM90912",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012493",
+   "n": "Plug gauge 15.5 ยาว",
+   "k": "plug gage 1SM90105",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012730",
+   "n": "Plug gauge 16.0 สั้น",
+   "k": "plug gage 1SM90911",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012405",
+   "n": "Plug gauge 16.0 ยาว",
+   "k": "plug gage 1SM90000",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013787",
+   "n": "Plug gauge 16.1 สั้น",
+   "k": "plug gage 1SM96288",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013788",
+   "n": "Plug gauge 16.1 ยาว",
+   "k": "plug gage 1SM96289",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012409",
+   "n": "Plug gauge 16.5 สั้น",
+   "k": "plug gage 1SM90004",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012408",
+   "n": "Plug gauge 16.5 ยาว",
+   "k": "plug gage 1SM90003",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012525",
+   "n": "Plug gauge 17.0 สั้น",
+   "k": "plug gage 1SM90150",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012729",
+   "n": "Plug gauge 17.0 ยาว",
+   "k": "plug gage 1SM90910",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5030111",
+   "n": "Plug gauge 17.1 ยาว 16 oz. custom",
+   "k": "plug gage new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5017830",
+   "n": "Plug gauge 17.7 สั้น",
+   "k": "plug gage",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5027985",
+   "n": "Plug gauge 18.5",
+   "k": "plug gage",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012407",
+   "n": "Ring gauge 26.80 mm",
+   "k": "ring gauge 1SM90002 min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015439",
+   "n": "Ring gauge 27.80 mm",
+   "k": "ring gauge",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012523",
+   "n": "Ring gauge 28.00 mm",
+   "k": "ring gauge 1SM90146",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015440",
+   "n": "Ring gauge 28.06 mm",
+   "k": "ring gauge",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012765",
+   "n": "Ring gauge 28.30 mm",
+   "k": "ring gauge 1SM90952",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012557",
+   "n": "Ring gauge 29.5 mm.",
+   "k": "ring gauge",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012406",
+   "n": "TO MAKE STRIPPER DWG.1SM90001",
+   "k": "stipper 1SM90001",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010382",
+   "n": "Invertor 0.75 kw",
+   "k": "Invertor 1SM70095",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010383",
+   "n": "FILTER FOR FREQUECCY INVERTER",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010384",
+   "n": "Invertor 1.5 kw",
+   "k": "1SM70097",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012734",
+   "n": "Invertor 0.75 kw for M1",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012981",
+   "n": "Interface inverter F5 KEB",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014585",
+   "n": "หลอดไฟ Osram",
+   "k": "non contract 1SM97781",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012755",
+   "n": "PATCH CABLE OPTIC FIBER 0.5 M.",
+   "k": "1SM90941",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012756",
+   "n": "OPTIC FIBER CABLE WALL",
+   "k": "1SM90942",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5030526",
+   "n": "PATCH CABLE OPTIC FIBER 3 M MTS X/05",
+   "k": " new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5030527",
+   "n": "SAFETY GLASS MTS 10/05",
+   "k": " new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900171",
+   "n": "MEASURING HEAD FOR 12 MM.",
+   "k": "1SM90421",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901152",
+   "n": "MULTI POINT THICKNESS SENSOR MTS 10/05",
+   "k": " new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012647",
+   "n": "Mounting for addition 12 mm.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5021598",
+   "n": "20MM CHROMA PROBE PROTECT PN. 15-124137",
+   "k": "UTM safity",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901471",
+   "n": "CPU A2 FOR WALL THICKNESS MEASUREMENT",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5034987",
+   "n": "MTC Adapter boxMTP toE2000",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901472",
+   "n": "COMPUTER RANGER",
+   "k": "COMPUTER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901473",
+   "n": "MAIN BORD COMPUTER RANGERMB960AF",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900326",
+   "n": "Servo gear moter",
+   "k": "servo 5600103974",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900285",
+   "n": "Servo amplifier",
+   "k": "5600210208 min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010760",
+   "n": "Cable servo motor 5m ISM",
+   "k": "92W9210185",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010759",
+   "n": "Cable hiperface 4.2m ISM",
+   "k": "92W9210184",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012703",
+   "n": "Safty clutch",
+   "k": "torque 5600108896",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901290",
+   "n": "torque limiter vertical shaft",
+   "k": "5600101870",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010776",
+   "n": "Rubber disk rotation Ø60 x 6 ของนอก",
+   "k": "Rotation 9102102442",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012752",
+   "n": "Rubber disk rotation Ø60 x 6 ของใน",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014486",
+   "n": "SHORT ROLLER HOLDER",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014480",
+   "n": "Grips",
+   "k": "5621101061",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014481",
+   "n": "ROLLER CLAMP WASHER D=45 MM.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014484",
+   "n": "Roller holding washer D = 55,2 mm",
+   "k": "5621101636",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010817",
+   "n": "Short multiple wedge shaft",
+   "k": "5611104081",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012461",
+   "n": "TO MAKE CLAMP WITH STUD (Short multiple)",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014488",
+   "n": "MULTIPLE WEDGE SHAFT L148+BALL",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014482",
+   "n": "ROLLER BOLT L=188 แกนใน (ของนอก)",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012458",
+   "n": "TO MAKE ROLLER SHAFT แกนใน(ของใน)",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010445",
+   "n": "Rotation (RH)",
+   "k": "STK min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010446",
+   "n": "Rotation (LH)",
+   "k": "STK",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014976",
+   "n": "Timing belt torque belt",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010450",
+   "n": "RE4 slide-in unit for checks",
+   "k": "check 5600101480",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012500",
+   "n": "TO MAKE EMITTER HOLDER ล็อก LED",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5009145",
+   "n": "EMITTER HOLDER",
+   "k": "ไม่มีราคา",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012501",
+   "n": "TO MAKE RECEIVER HOLDER ล็อก sensor",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014792",
+   "n": "CLAMPING FOR RECEIVER",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010782",
+   "n": "Emitter LED white ยาว",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010783",
+   "n": "Emitter LED white สั้น",
+   "k": "5600210251",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5009567",
+   "n": "Emitter body, infra red diode/LED",
+   "k": "92A9210111",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014979",
+   "n": "Receiver cable for RE4",
+   "k": "92W9250153",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012472",
+   "n": "RECEIVER LENS AND SLEEVE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012474",
+   "n": "RECEIVER WITHOUT OPT.PART D.13",
+   "k": "sensor เปล่า min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5005564",
+   "n": "RECEIVER D=13 (elect part)",
+   "k": "sensor เปล่า",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012831",
+   "n": "RECEIVER WITH OPTICAL PART 46MMM0087732",
+   "k": "sensor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010786",
+   "n": "Receiver with cable + sleeve",
+   "k": "sensor 92A9210105",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012473",
+   "n": "END PIECE RECEIVER",
+   "k": "Lens sensor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012689",
+   "n": "LED-FLASHBOX M12 TRIPLE-ADAPTE",
+   "k": "flash แปลงเป็น LED",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013775",
+   "n": "COOLING PIECE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013776",
+   "n": "HOLDER F.TRANSMITTER CBCD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012495",
+   "n": "SWIVEL HOLDER TYPE 3300-28 ขา sensor ISM",
+   "k": "9102102679",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014790",
+   "n": "FLEXIBLE JOINT # STRATO S-28 ขา sensor ranger",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013848",
+   "n": "OBJECTIVE ADAPTER COMPL.F.CBCD เลน ranger",
+   "k": " Fiber optic 5600190313",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900321",
+   "n": "LED-48-FLASHBOX F.CRACK DETECT Ranger",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013862",
+   "n": "TRANSMITTER COMPL.F.CBCD",
+   "k": "ไฟ ranger 1 point",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013849",
+   "n": "TRANS M. HOLDER 4-POINT COMPL.",
+   "k": "ไฟ ranger 4 point",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013857",
+   "n": "TRANSMITTER HOLDER 6-POINT F.",
+   "k": "ไฟ ranger 6 point",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010778",
+   "n": "Neckguide infeed R330 small",
+   "k": "guide 5600106928",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010779",
+   "n": "Infeed guide R330 (RM)",
+   "k": "5600106391",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010777",
+   "n": "Infeed guide R330 (LM)",
+   "k": "5600106388",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013959",
+   "n": "Neckguide infeed R270",
+   "k": "5600109068",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013970",
+   "n": "Infeed guide R270 (LH)",
+   "k": "5600108787 infeed 5600102201",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012621",
+   "n": "Infeed guide R270 (RH)",
+   "k": "5600108788 infeed 5600102200",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013969",
+   "n": "RETAINING COLUMN INFEED R330RM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013956",
+   "n": "RETAINING COLUMN INFEED R330LM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5034029",
+   "n": "Brush profile",
+   "k": "แปรง guide ประคองขวด new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015368",
+   "n": "17 teeth sprocket wheel",
+   "k": "Horizontal shaft 5620102126",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015380",
+   "n": "D-chain 3/8\"x7/32\",82 chain l. +lock",
+   "k": "Horizontal shaft 9102103751",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010454",
+   "n": "Incremental shaft encoder 360 pt",
+   "k": "Horizontal shaft 5600102425 ENCODER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620102123",
+   "n": "Duplex 25 teeth sprocket wheel",
+   "k": "Horizontal shaft",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013720",
+   "n": "drum stabilisation (RM)",
+   "k": "drum 5600103535",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014370",
+   "n": "drum stabilisation (LM)",
+   "k": "drum 5600103647",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5621101177",
+   "n": "Long moving shaft",
+   "k": "drum",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620101860",
+   "n": "Drive shaft for drum stabilisation",
+   "k": "drum",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015134",
+   "n": "Coupling drum stabilisation",
+   "k": "drum 9102101913",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010766",
+   "n": "Foam rubber drum, drum stabilisation",
+   "k": "drum 9102101784",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600105050",
+   "n": "Clamping bar outfeed guide holder",
+   "k": "drum",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028701",
+   "n": "Guide outfeed 500 ml.",
+   "k": "drum",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028702",
+   "n": "Guide outfeed 630 ml.",
+   "k": "drum",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014458",
+   "n": "Tension roller motor-Gearbox",
+   "k": "motor drive 5600104518",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014463",
+   "n": "Toothed belt 8MGT -480, Z=60,B=30",
+   "k": "motor drive 9102104529",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014465",
+   "n": "Toothed belt 8MGT -880, Z=60,B=30",
+   "k": "motor drive 9102104530",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010767",
+   "n": "Spring plate infeed guide",
+   "k": "infeed 5620101395",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900310",
+   "n": "worm bent ISM (RM)",
+   "k": "infeed 5600103533",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900309",
+   "n": "worm bent ISM (LM)",
+   "k": "infeed 5600103532",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015022",
+   "n": "Needle support articulated shaft",
+   "k": "infeed 5600104317",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015023",
+   "n": "Chain 3/8\"x7/32\", 41 chain l. +lock + a ½ chain",
+   "k": "infeed 5600103532",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014255",
+   "n": "12 TEETH SPROCKET WHEEL 5621102120",
+   "k": "infeed 5621102120",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014594",
+   "n": "12 TEETH SPROCKET WHEEL PN.5620102121",
+   "k": "infeed 5620102121",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010758",
+   "n": "LIMIT SWITCH 92S9101854",
+   "k": "infeed",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600103498",
+   "n": "Rejector",
+   "k": "Rejector",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600105142",
+   "n": "Rejector control ISM",
+   "k": "Rejector",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012769",
+   "n": "TO MAKE SUPPORT REJECT",
+   "k": "Rejector",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900329",
+   "n": "Gauging shaft",
+   "k": "Gauging shaft 5600104593",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600104527",
+   "n": "Stroke drive type 15-30 2-belt (RM)",
+   "k": "Stroke drive type",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600104604",
+   "n": "Stroke drive type 15-30 2-belt (LM)",
+   "k": "Stroke drive type",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5027987",
+   "n": "INA BEARING STROKE PLUG 12 PPA",
+   "k": "stroke plug",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013901",
+   "n": "STROKE AXLE",
+   "k": "stroke plug",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013902",
+   "n": "STROKE POINTER",
+   "k": "stroke plug",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5021054",
+   "n": "TO MAKE CAM SIZE 69.9x176.5x32.2 MM.",
+   "k": "stroke plug",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600103177",
+   "n": "Connecting rod for dip",
+   "k": "stroke Dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600103182",
+   "n": "Connecting rod shaft",
+   "k": "stroke Dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015386",
+   "n": "ADJUST.WASHER 15x21x0.1-ST",
+   "k": "stroke Dip แหวน",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014461",
+   "n": "SHAFT FOR CONNECTING ROD DIP",
+   "k": "stroke Dip bearing stroke Dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014459",
+   "n": "TOOTH WHEEL Z36 FOR MAIN MOTOR",
+   "k": "MAIN MOTOR",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014460",
+   "n": "60 TEETH BEVEL PINION",
+   "k": "MAIN MOTOR",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5601104211",
+   "n": "247 chain conveyor MatTop",
+   "k": "conveyor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "9102105613",
+   "n": "Sprocket wheel, asymmetric",
+   "k": "conveyor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600103295",
+   "n": "deviating shaft conveyor",
+   "k": "conveyor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600103294",
+   "n": "conveyor drive shaft",
+   "k": "conveyor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014371",
+   "n": "Flanged bearing",
+   "k": "conveyor 5600106221",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900918",
+   "n": "Image guides",
+   "k": "Fiber optic 5600190548",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901285",
+   "n": "Touchscreen 19\" for ranger",
+   "k": "จอ Ranger 5013879 95R1003001",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900287",
+   "n": "Gauging device type 45",
+   "k": "plug 5620103841",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "RG-149",
+   "n": "Overhaul kit Gauging device type 45",
+   "k": "plug ไม่มีรหัส Mat",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012419",
+   "n": "bearing pm 1301 ตัวใหญ่",
+   "k": "ชุดซ่อม plug",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012420",
+   "n": "bearing pm 1300 ตัวเล็ก",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015367",
+   "n": "rubber disk 12.5x22x5 ยางลองหัว plug กลม",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012485",
+   "n": "ADJUSTING SHIM",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014295",
+   "n": "TO MAKE SHORT ROLLER SHAFT เสา plug แกนสั้น",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012552",
+   "n": "TO MAKE SHAFT 10x227 LG MM.แกนยาว",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012554",
+   "n": "TO MAKE SHAFT DIA.=7.97MM. LONG=190MM แกน plug เลิกใช้",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5023065",
+   "n": "TO MAKE SHAFT PLUG DIA. 7.95x200MM. แกน plug",
+   "k": "แบบ 2 step min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010290",
+   "n": "FLANGE GAUGE",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012726",
+   "n": "EXTERNAL GAUGE HOLDER",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012558",
+   "n": "TO MAKE DRIVE BLOCK",
+   "k": "safity sping",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012560",
+   "n": "TO MAKE SEN PLUG GAUGE",
+   "k": "terralan",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012459",
+   "n": "SHOULDER RING",
+   "k": "บูทหัว plug 4 ตัว",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010521",
+   "n": "DRIVE PO,5, GAUGING DEVICE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620102538",
+   "n": "planity tight neck head Ø10-Ø44 mm",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010523",
+   "n": "TIGHTNESS HEAD FOR NARROW NECK หัว dip",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620101803",
+   "n": "Overhauling kit planity head narrow neck",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010522",
+   "n": "planity device",
+   "k": "dip 5620101702",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010781",
+   "n": "PLANITY SLIDE UNIT (DME)",
+   "k": "dip module",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620101802",
+   "n": "Overhauling kit planity device SL, CO, M1",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013774",
+   "n": "NUT 5621101753",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010518",
+   "n": "Multi layer wheel DIA=46 ยาง Dip (ของนอก)",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5034035",
+   "n": "ยาง DIP (ของใน)",
+   "k": "dip new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5006941",
+   "n": "TUBING POLY-ETHYLENE สายลม 4 mm.",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012410",
+   "n": "PRESSURE SENSOR 425437",
+   "k": "dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620101809",
+   "n": "Overhauling kit pump",
+   "k": "pume",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600190327",
+   "n": "Overhaul S-Infeed",
+   "k": "S-Infeed",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600190326",
+   "n": "Overhaul kit S-Outfeed",
+   "k": "S-Outfeed",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5620101902",
+   "n": "Overhauling kit for art. presence switch",
+   "k": "presence",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010519",
+   "n": "ARTICLE PRESENCE COMMULATER",
+   "k": "presence",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5034023",
+   "n": "Proximity switch cable",
+   "k": "presence สาย poximity new",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010453",
+   "n": "PROXIMITY SWITCH ARTICLE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019780",
+   "n": "Contactor DILEM-01-G",
+   "k": "Contactor 92K9251180",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "92S9251406",
+   "n": "Magnetic switch",
+   "k": "ประตู",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014598",
+   "n": "LOCK DOOR ISM & RANGER",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "92W9251516",
+   "n": "Monitor extension flix 3 m, ferrite",
+   "k": "monitor",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "92W9251169",
+   "n": "Cable apparatus connection 3 m",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600220034",
+   "n": "Monitor control cable 10-pin",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5600220035",
+   "n": "Monitor control cable 12-pin",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013715",
+   "n": "Cable touchscreen complete",
+   "k": "5600220036",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010499",
+   "n": "CONTROL PANEL WITH TOUCH 17\"",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900262",
+   "n": "OP. TERMINAL ISM 750x750",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010788",
+   "n": "ADAPTER DIA 8x3",
+   "k": "roller แหวน",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010790",
+   "n": "Stare roller dia =28x8x11 (sw) กลม",
+   "k": "9102190112",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012424",
+   "n": "to make black roller 28.00 mm. กลมแดง",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012754",
+   "n": "to make black roller 28.00 mm. แบน",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012428",
+   "n": "to make black roller 30.00 mm.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012421",
+   "n": "to make black roller 32.00 mm.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012540",
+   "n": "to make black roller 34.00 mm.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010791",
+   "n": "to make black roller 44.00 mm.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015018",
+   "n": "ROLLER KTD 150 ML.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010756",
+   "n": "AIR CONDITIONING UNIT 400WATT ตัวนอน",
+   "k": "air",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5021678",
+   "n": "Enclosure cooling unit model sub 800 ไร้น้ำ",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014368",
+   "n": "COOLING DEVICE RANGER RM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012702",
+   "n": "COOLING DEVICE RANGER LM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5011218",
+   "n": "BALL BEARING SINGLE ROW RADIAL 6000 2RSH",
+   "k": "BEARING 6000",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5011221",
+   "n": "DEEP GROOVE BALL BEARING 6001 2Z",
+   "k": "BEARING 6001",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5011225",
+   "n": "DEEP GROOVE BALL BEARING 6002 2Z",
+   "k": "BEARING 6002",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5002220",
+   "n": "DEEP GROOVE BALL BEARING 6005 2RS",
+   "k": "BEARING 6005",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5011237",
+   "n": "DEEP GROOVE BALL BEARING 6010 2Z",
+   "k": "BEARING 6010 star wheel",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5000959",
+   "n": "DEEP GROOVE BALL BEARING 6205Z",
+   "k": "BEARING 6205 เพลา dip",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5011038",
+   "n": "ROLLER BEARING 6206-2RS",
+   "k": "6206-2RS 5011268",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5002370",
+   "n": "BALL BEARING NO.3205-2Z # C323-3205-RS",
+   "k": "BEARING 3205 เพลา encorder 360",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5024408",
+   "n": "Plate plastic ranger (มีร่อง)",
+   "k": "Plate ranger",
+   "m": [
+    "RENGER"
+   ],
+   "q": 35,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5024409",
+   "n": "Plate plastic ranger (ไม่มีร่อง)",
+   "k": " plate ranger",
+   "m": [
+    "RENGER"
+   ],
+   "q": 60,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5024410",
+   "n": "Plate plastic ranger in-out",
+   "k": " plate ranger",
+   "m": [
+    "RENGER"
+   ],
+   "q": 45,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015436",
+   "n": "bottom plate plastic (ism-RH)",
+   "k": "ยกเลิกใช้งาน plate ยกเลิกแล้ว",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015433",
+   "n": "bottom plate plastic (ism-LH)",
+   "k": "ยกเลิกใช้งาน plate ยกเลิกแล้ว",
+   "m": [
+    "RENGER"
+   ],
+   "q": 4,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015435",
+   "n": "bottom plate plastic (ism-OUT)",
+   "k": " plate ism",
+   "m": [
+    "RENGER"
+   ],
+   "q": 3,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5015434",
+   "n": "bottom plate plastic (ism-IN)",
+   "k": " plate ism",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028847",
+   "n": "TO MAKE PLATE STAWEEL-LH-3 MM.-ISM",
+   "k": " plate ism",
+   "m": [
+    "RENGER"
+   ],
+   "q": 11,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028848",
+   "n": "TO MAKE PLATE STAWEEL-RH-3 MM.-ISM",
+   "k": " plate ism",
+   "m": [
+    "RENGER"
+   ],
+   "q": 11,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5017689",
+   "n": "Encoder 2000 liner (ROTATION)",
+   "k": "ENCODER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5017688",
+   "n": "Encoder SHAFT (SERVO)",
+   "k": "ENCODER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010380",
+   "n": "INCREMENTAL SHAFT ENCODER",
+   "k": "ENCODER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014978",
+   "n": "FLN HEAD COMPLETE (LED)",
+   "k": "Mould",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901277",
+   "n": "FNL 5 Muticode",
+   "k": "5010451",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019935",
+   "n": "SENSOR/ACTUATOR CABLE 17 PN. 92W9251803",
+   "k": "dom",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019936",
+   "n": "LIGHT BARRIER IPRK 18/V PN. 92E8101227 (sensor)",
+   "k": " min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019937",
+   "n": "SENSOR/ACTUATOR CABLE 5 PN. 92W9251804",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019938",
+   "n": "REFLECTOR MTKS 40 x 60.1 PN. 92B9251314",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019939",
+   "n": "OPM CARD PN. 5600210276",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5019940",
+   "n": "CHASSIS OPMI PN. 5600101481",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900261",
+   "n": "CPU V8 PN. 5600251974",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010381",
+   "n": "SAFETY MODULE",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010301",
+   "n": "CARD INV , DRIVE",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010303",
+   "n": "CONTROL INPUT CARD (INC)",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010304",
+   "n": "INPUT CARD FOR SAFETIES (IIN)",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010305",
+   "n": "CONTROL OUTPUT CARD (IOUT)",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028709",
+   "n": "OSZ CARD (OSCILLOSCOPE)",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028711",
+   "n": "CYCLE OUTPUT CARD (TOUT)",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028712",
+   "n": "CARD IME1(MEASURED ENTRY 1-16)",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028713",
+   "n": "CAED REJECTION CONTROL AWK lll",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014476",
+   "n": "IO8 CARD FOR WALL THICKNESS",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013985",
+   "n": "BOARD AD2 REV. 2.1 INCL. SOFT",
+   "k": "Card",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010448",
+   "n": "RELAY CLAMP 24V 2",
+   "k": "RELAY",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010449",
+   "n": "RELAY CLAMP 24V 1",
+   "k": "RELAY",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010497",
+   "n": "CONTROLLER TOUSH SCREEN PN. 5600220048",
+   "k": "RELAY",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010498",
+   "n": "CIRCUIT BOARD",
+   "k": "RELAY",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5007975",
+   "n": "RELAY COIL 24 VDC",
+   "k": "RELAY",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013088",
+   "n": "OPTO COUPLER AMMS 10-44/1",
+   "k": "opto",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5008425",
+   "n": "SWITCHING POWER SUPPLY CV650-650WATT (supply com Ranger)",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010452",
+   "n": "POWER SUPPLY 24V / 75W 3.2A",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013721",
+   "n": "POWER SUPPLY 180 W.24 VDC.7.5 A.",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5007331",
+   "n": "SOCKET OF RELAY",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "92U9210040",
+   "n": "Power supply for rack TXL-0522TI +/-5V., +/-12V",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "92K9251216",
+   "n": "Relay 1 two-way cotact",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010455",
+   "n": "Power supply +5V,+/-12V",
+   "k": "supply 92U9210038",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "92G8100140",
+   "n": "Power supply unit TSP 180-124",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014374",
+   "n": "Power supply Electronic Rack",
+   "k": "supply",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010976",
+   "n": "3 ทาง 6 mm.",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013351",
+   "n": "SONNENSCHEIN MAINTENANCE-FREE",
+   "k": "แบตเตอรี่",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010458",
+   "n": "WD SSD 500GB RED NAS2.5\" WDS500G1R0A-RED",
+   "k": "HDD",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014748",
+   "n": "FILTER REGULATOR G3/8\"",
+   "k": "FILTER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5008027",
+   "n": "FILTER REGLATOR",
+   "k": "FILTER",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900271",
+   "n": "INTERRUPTIBLE POWER SUPPLY OLS 1500E",
+   "k": "UPS",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010831",
+   "n": "FIXED STRAIGHT 1/2\"x12 MM",
+   "k": "Fitting",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010447",
+   "n": "MAIN MOTOR B&S (RM) (LM)",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014362",
+   "n": "CONVEYOR MOTOR",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5021165",
+   "n": "ROTATION MOTOR ISM R330",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "6000523",
+   "n": "ROTATION MOTOR ISM R330",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014448",
+   "n": "MONITOR LCD 19\" INCH",
+   "k": "จอ",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012992",
+   "n": "MOUSE USB",
+   "k": "เมาส์",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5009090",
+   "n": "TKS 30x50 REFLECTOR",
+   "k": "REFLECTOR",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5009091",
+   "n": "MTKS 50x50 REFLECTOR",
+   "k": "REFLECTOR",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014808",
+   "n": "HELICAL WORM GEARED MOTORS SA57/T",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012416",
+   "n": "BODY EMITTER H80",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012427",
+   "n": "TO MAKE STANDARD M 6/8",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900093",
+   "n": "SG COLOR WITHOUT THE SOFT",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012436",
+   "n": "KEY BOARD PCB",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012440",
+   "n": "DEFECT INTERFACE BOARD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012441",
+   "n": "I/O DRIVE BOARD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012442",
+   "n": "REJECTION INTERFACE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012443",
+   "n": "RS 232 BOARD+FLOPPY",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012444",
+   "n": "TIMING BELT 25T10/1210",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012448",
+   "n": "TIMING BELT 16T10/1010",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5011527",
+   "n": "timing belt 25T 10/270",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012454",
+   "n": "INTERMEDIATE PAD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012470",
+   "n": "TIMING BELT 90xL025",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012471",
+   "n": "BAYONET END-PIECE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012488",
+   "n": "ROUND *S* FURNITURE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014997",
+   "n": "FLAT *S* FURNITURE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012491",
+   "n": "FOAM DRUM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012502",
+   "n": "SUPPORT DIP HEAD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012514",
+   "n": "LEROY SUMER MOTOR",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012521",
+   "n": "OVERLOAD RELAY 935 (LEGRAND 03827)",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012522",
+   "n": "TG UNIT 2x11KHZ PN. 426138",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012527",
+   "n": "DRIVING PULLEY 73M0023140",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012529",
+   "n": "60 TEETH PULLEY 73M0022831 SGCC",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012575",
+   "n": "SLIDING PLATE L/O R.320 STEEL",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012577",
+   "n": "SLIDING PLATE I/O R320 PLASTIC",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012580",
+   "n": "SLIDING PLATE STD R320 PLASTIC",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012581",
+   "n": "SLIDING PLATE HEEL R320",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012583",
+   "n": "RD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012594",
+   "n": "ADJUSTABLE BODY GUIDE 1R320",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012614",
+   "n": "TO MAKE NUT LOCK",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012632",
+   "n": "IR DIODE TYPE 3",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012721",
+   "n": "SPARE PART KIT FOR DRUM M1",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012761",
+   "n": "CORA_G3020 RAMCARD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012774",
+   "n": "ARBRE INTERMEDIAIRE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012775",
+   "n": "FREIN CABLE AVEC BRIDE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012779",
+   "n": "SECTEUR ENTREE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012783",
+   "n": "AXLE-TIGHTNESS COLUMN",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012785",
+   "n": "CRANK ROD",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012786",
+   "n": "PLATE 23M0027066",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012787",
+   "n": "LOCK CAM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012788",
+   "n": "PULLEY 19 TEETH",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012789",
+   "n": "PLATE AXLE",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012791",
+   "n": "POULIE TENDER",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012799",
+   "n": "DRUM STABILIZATION",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013784",
+   "n": "STAINLESS HEX SOCKET CAP SCREW",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013927",
+   "n": "SOCKET HEAD SCREW 3 x30 MM",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5012792",
+   "n": "Rotation M1 RH",
+   "k": "",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5020840",
+   "n": "LAMPE CAPTEUR LNM PN. 49C0044349",
+   "k": "ไฟ mould",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "SEAL-35-55-8",
+   "n": "Oil seal 35-55-8",
+   "k": "ซีลออย gear box ข้าง",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "SEAL-100-130-12",
+   "n": "Oil seal 100-130-12",
+   "k": "ซีลออย gear box บน",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "SEAL-22-40-7",
+   "n": "Oil seal 22-40-7",
+   "k": "ซีลออย Rotation นอก motor main",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "SEAL-20-42-7",
+   "n": "Oil seal 20-42-7",
+   "k": "ซีลออย Rotation ใน",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "SEAL-85-105-7",
+   "n": "Oil seal 85-105-7",
+   "k": "ซีลออย Gear servo บน",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "SEAL-40-62-7",
+   "n": "Oil seal 40-62-7",
+   "k": "ซีลออย Gear servo ล่าง",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900759",
+   "n": "CELL PN. 114-04-0084",
+   "k": "MX-4 Sensor DOM",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5028517",
+   "n": "INDUCTIVE PROXIMITY SENSOR M8(NO)",
+   "k": "MX-4",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013079",
+   "n": "2500DTS D14 BEI ENCODER PN.114-01-0065",
+   "k": "MX-4",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013092",
+   "n": "Plug sensor cable PN.12-032052",
+   "k": "MX-4",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5900711",
+   "n": "Programmed Glanum",
+   "k": "MX-4",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5024098",
+   "n": "TIAMA LMW HEAD PN.468-54-0001",
+   "k": "MX-4 หัว MNR",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014080",
+   "n": "CHAINFLEX CABLE 4 CORE",
+   "k": "CE 4 CORE",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014074",
+   "n": "CHAINFLEX CABLE 5 CORE",
+   "k": "CE 5 CORE",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5034990",
+   "n": "CAMERA FOR CRACK DETECTION",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035002",
+   "n": "LIGHT SOURCE (CAMERA) SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035005",
+   "n": "SENSOR FOR CHECK DETECTION SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035006",
+   "n": "LIGHT SOURCE (SENSOR)EMITTER SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035008",
+   "n": "CAMERA FOR OVALITY DETECTION",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035007",
+   "n": "BAR LIGHT SOURCE FOR OVALITY FUNCTION SL",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035010",
+   "n": "CAMERA FOR MNR (MOULD NO. READER) DETECT",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035012",
+   "n": "LIGHT SOURCE FOR MNR SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035013",
+   "n": "SERVO DRIVE 1.5 KW. SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035014",
+   "n": "MOTOR FOR PLUG SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035016",
+   "n": "SERVO MOTOR FOR OUTFEED SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035028",
+   "n": "INFEED SCREW COMPLETE SET SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5901475",
+   "n": "PLUG WITH COMPLETE SET SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035029",
+   "n": "DIP WITH COMPLETE SET SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035030",
+   "n": "OUTFEED GUIDE COMPLETE SET SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035031",
+   "n": "ARTICLE ROTARY DRIVE UNIT COMPLETE SET",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5035074",
+   "n": "FOAM TIMING BELT SL-M",
+   "k": "Sanli-M SL-M",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014467",
+   "n": "BASE PLATE FOR INTERMEDIATE PC",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 6,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014468",
+   "n": "WEAR PLATE 4P-R330 INSIDE",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 6,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014466",
+   "n": "WEAR PLATE 4P-R330 IN/OUT FEED",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 6,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014469",
+   "n": "WEAR PLATE 4P-R330 WITH OUT",
+   "k": "plate ไม่มีร่อง",
+   "m": [
+    "RENGER"
+   ],
+   "q": 3,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014470",
+   "n": "WEAR PLATE INTERMEDIATE PIECE",
+   "k": "plate มีร่อง",
+   "m": [
+    "RENGER"
+   ],
+   "q": 4,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014745",
+   "n": "WEAR PLATE CENTER DIA.40 (LH)",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 2,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014746",
+   "n": "WEAR PLATE CENTER DIA.40 (RH)",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 3,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014359",
+   "n": "IN FEED WEAR PLATE",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 7,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014361",
+   "n": "OUT FEED WEAR PLATE 5600108759",
+   "k": "plate นอก",
+   "m": [
+    "RENGER"
+   ],
+   "q": 7,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010613",
+   "n": "TO MAKE BOTTOM PLATE DWG.NO.1SM70368",
+   "k": "plate ใน out",
+   "m": [
+    "RENGER"
+   ],
+   "q": 2,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010614",
+   "n": "TO MAKE BOTTOM PLATE DWG.NO.1SM70369",
+   "k": "plate ใน in",
+   "m": [
+    "RENGER"
+   ],
+   "q": 2,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5010615",
+   "n": "TO MAKE BOTTOM PLATE DWG.NO.1SM70370",
+   "k": "plate ในRH",
+   "m": [
+    "RENGER"
+   ],
+   "q": 5,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5014375",
+   "n": "TO MAKE BOTTOM PLATE LH.",
+   "k": "plate ใน LH",
+   "m": [
+    "RENGER"
+   ],
+   "q": 5,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "5013879",
+   "n": "TOUCHSCREEN 19\" CP7903-0021-00",
+   "k": "min-max",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "IT25080456",
+   "n": "MTC ADAPTER BOX MTP TO E2000",
+   "k": "new ใช้แปลงจาก Multi point เป็น Single point ไม่มีรหัส Mat",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "IT25080461",
+   "n": "CPU A2 FOR WALL THICKNESS MEASUREMENT",
+   "k": "new ไม่มีรหัส Mat",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "IT25080567",
+   "n": "computer ranger",
+   "k": "new ไม่มีรหัส Mat",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "IT25080568",
+   "n": "main bord computer ranger",
+   "k": "new ไม่มีรหัส Mat",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  },
+  {
+   "c": "CR26040247",
+   "n": "Roller KTD 159ml. R330",
+   "k": "new ไม่มีรหัส Mat",
+   "m": [
+    "RENGER"
+   ],
+   "q": 0,
+   "min": 0,
+   "u": "ชิ้น"
+  }
+ ]
+}

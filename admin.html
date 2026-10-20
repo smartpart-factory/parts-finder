@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>จัดการระบบ | SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sp{flex:1}.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+main{margin:66px 0 0 207px;padding:14px;max-width:1200px}h2{margin:0 0 12px;font-size:22px}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tabs button{padding:10px 18px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;font:inherit;cursor:pointer}.tabs button.on{background:#1565d8;color:#fff;border-color:#1565d8}
+.tb{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.tb input{flex:1;min-width:180px;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+.btn{padding:10px 16px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;font:inherit;cursor:pointer}.btn.p{background:#1565d8;color:#fff;border-color:#1565d8}.btn.d{color:#dc2626;border-color:#f3b4b4}.btn.s{padding:5px 10px;font-size:12px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}th{font-size:12px;color:#64748b;text-align:left;background:#f8fafc;padding:10px 12px;border-bottom:1px solid #e2e8f0}
+td{padding:9px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle}td small{color:#64748b;display:block}
+.tg{font-size:12px;padding:3px 10px;border-radius:99px;color:#fff;white-space:nowrap}.s-stock{background:#16a34a}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}.s-off{background:#94a3b8}
+.q{display:flex;align-items:center;gap:6px}.q button{width:26px;height:26px;border:1px solid #cbd5e1;background:#fff;border-radius:6px;cursor:pointer;font-size:15px;line-height:1}
+.mt{display:flex;gap:3px;flex-wrap:wrap}.mt i{font-style:normal;background:#e0ecff;color:#1565d8;font-size:11px;padding:2px 6px;border-radius:4px}
+.empty{padding:30px;text-align:center;color:#64748b}.note{color:#94a3b8;font-size:12px;margin-top:12px;line-height:1.7}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}.ov.on{display:flex}
+.md{background:#fff;border-radius:12px;width:520px;max-width:100%;max-height:92vh;overflow:auto;padding:20px}.md h3{margin:0 0 6px}
+.md label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}.md input[type=text],.md input[type=number],.md input[type=password],.md select{width:100%;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.cb{display:flex;gap:10px;flex-wrap:wrap}.cb label{margin:0;display:flex;gap:5px;align-items:center;color:#1e293b}
+.mf{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}.err{color:#dc2626;font-size:13px;min-height:18px;margin-top:8px}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+<div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a class="on" href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<main>
+ <h2>🛠️ จัดการระบบ</h2>
+ <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
+
+ <div id="pg-p">
+  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
+  <div class="card"><table><thead><tr><th>รหัส / ชื่อ</th><th>เครื่องจักร</th><th>คงเหลือ</th><th>ขั้นต่ำ</th><th>ตำแหน่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
+  <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (เช็คของ ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในเบราว์เซอร์ของเครื่องนี้ (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
+ </div>
+
+ <div id="pg-3" style="display:none">
+  <div class="card" style="padding:16px;margin-bottom:12px"><b>🏭 โมเดล 3D ของคลังจริง (ไม่บังคับ)</b>
+   <div class="note" style="margin:4px 0 10px">วางไฟล์ <b>.glb</b> ในโฟลเดอร์ <b>models</b> ข้างๆ index.html แล้วพิมพ์ path ที่นี่ เช่น <b>models/warehouse.glb</b> · ต้องเปิดเว็บผ่าน Live Server (เปิดไฟล์ตรงๆ จะโหลดโมเดลไม่ได้) · เว้นว่างไว้ = ใช้ชั้นวางกล่องจำลอง</div>
+   <div class="two"><div><label>ไฟล์โมเดล (.glb / .gltf)</label><input type="text" id="m-url" placeholder="models/warehouse.glb"></div><div><label>ขนาด (scale)</label><input type="number" id="m-sc" step="0.01" value="1"></div></div>
+   <div class="three"><div><label>ชดเชย x</label><input type="number" id="m-x" step="0.1" value="0"></div><div><label>ชดเชย y</label><input type="number" id="m-y" step="0.1" value="0"></div><div><label>ชดเชย z</label><input type="number" id="m-z" step="0.1" value="0"></div></div>
+   <label style="display:flex;gap:6px;align-items:center;color:#1e293b"><input type="checkbox" id="m-hide" checked> ซ่อนชั้นวางกล่องจำลองเมื่อมีโมเดลจริง</label>
+   <div class="err" id="me"></div><div class="mf" style="justify-content:flex-start"><button class="btn p" id="m-save">บันทึกโมเดล</button><a class="btn" href="check-stock.html?pick=1" target="_blank" style="text-decoration:none;color:inherit">📐 เปิดโหมดหาพิกัดใน 3D</a></div></div>
+  <div class="tb"><b style="align-self:center">🗄️ ผังชั้นวาง</b><button class="btn p" id="r-add">+ เพิ่มชั้นวาง</button><button class="btn" id="r-save">บันทึกผัง</button><a class="btn" href="check-stock.html" target="_blank" style="text-decoration:none;color:inherit">ดูผลใน 3D</a><button class="btn d" id="r-rst">↺ คืนค่าเริ่มต้น</button></div>
+  <div class="card"><table style="min-width:640px"><thead><tr><th>ชื่อชั้นวาง</th><th>ตำแหน่ง x</th><th>ตำแหน่ง z</th><th>กว้าง</th><th>ลึก</th><th>สูง</th><th>จำนวนชั้น</th><th></th></tr></thead><tbody id="rb"></tbody></table></div>
+  <div class="err" id="re"></div>
+  <div class="note">• x = ซ้าย(−)/ขวา(+), z = ลึกเข้าไปในคลัง(−) / ใกล้ประตู(+) · ประตูอยู่ที่ x=0, z=8.7 · ชั้นที่ 1 อยู่ล่างสุด<br>• ชื่อชั้นวางที่มีอยู่แล้วเปลี่ยนไม่ได้ (เพื่อไม่ให้อะไหล่ที่อ้างถึงหลุด) ถ้าต้องการเปลี่ยน ให้เพิ่มชื่อใหม่แล้วย้ายอะไหล่ไป<br>• อนาคต: อะไหล่แต่ละชิ้นใส่ไฟล์โมเดล 3D ของตัวเองได้ (ช่อง "ไฟล์โมเดล 3D ของอะไหล่" ในฟอร์มแก้ไขอะไหล่) และระบุพิกัดเฉพาะได้ผ่านข้อมูล <b>pos:[x,y,z]</b></div>
+ </div>
+
+ <div id="pg-m" style="display:none">
+  <div class="tb"><button class="btn p" id="mx-add">+ เพิ่มเครื่องจักร</button><button class="btn p" id="mx-save">💾 บันทึก</button><button class="btn" id="mx-rst">↺ คืนค่าเริ่มต้น</button></div>
+  <div class="card" id="mx-list" style="padding:12px;display:grid;gap:10px"></div>
+  <div class="note">• เปลี่ยนชื่อเครื่องจักร: อะไหล่ที่ผูกกับชื่อเดิมจะเปลี่ยนตามให้อัตโนมัติ · ลบเครื่องจักร: จะถูกเอาออกจากอะไหล่ทุกรายการ (ตัวอะไหล่ไม่ถูกลบ)<br>• รูปจะแสดงที่การ์ดบนหน้าหน้าหลัก · ถ้าไม่ใส่รูป จะใช้ไฟล์ images/ชื่อ.jpg หรือภาพวาดแทน</div>
+ </div>
+ <div id="pg-u" style="display:none">
+  <div class="tb"><button class="btn p" id="u-add" data-adminonly>+ เพิ่มผู้ใช้</button></div>
+  <div class="card"><table><thead><tr><th>ชื่อผู้ใช้ / ชื่อที่แสดง</th><th>บทบาท</th><th>สถานะ</th><th>สร้างเมื่อ</th><th></th></tr></thead><tbody id="ub"></tbody></table></div>
+  <div class="note">• <b>ผู้ดูแลระบบ</b>: ทำได้ทุกอย่าง รวมสร้างผู้ใช้ รีเซ็ตรหัสผ่าน และเปลี่ยนบทบาท<br>• <b>ช่าง Day time</b>: เห็นและทำได้เหมือน ผู้ดูแลระบบ (จัดการอะไหล่ ผังคลัง อนุมัติคำขอ รายงาน สำรอง/นำเข้าข้อมูล) แต่<u>สร้างผู้ใช้ รีเซ็ตรหัสผ่าน และเปลี่ยนบทบาทไม่ได้</u> ปิด/เปิดใช้งานได้เฉพาะบัญชี User และ<u>ลบผู้ใช้ไม่ได้</u><br>• <b>User</b>: ดู ค้นหา และสร้างคำขอของตัวเอง (เห็นเฉพาะคำขอของตัวเอง)<br>• ไม่สามารถลบ ปิด หรือลดสิทธิ์บัญชีของตัวเอง และต้องเหลือ ผู้ดูแลระบบ ที่ใช้งานอยู่อย่างน้อย 1 คน</div>
+ </div>
+</main>
+
+<div class="ov" id="ov-p"><div class="md"><h3 id="pm-t">เพิ่มอะไหล่</h3>
+ <div class="two"><div><label>รหัสอะไหล่ *</label><input type="text" id="f-c"></div><div><label>ชื่ออะไหล่ *</label><input type="text" id="f-n"></div></div>
+ <label>คำค้นเพิ่ม (ชื่อเรียกอื่น คั่นด้วยเว้นวรรค เช่น ลูกปืน แบริ่ง)</label><input type="text" id="f-k">
+ <label>ใช้กับเครื่องจักร</label><div class="cb" id="f-m"></div>
+ <div class="three"><div><label>คงเหลือ</label><input type="number" id="f-q" min="0" value="0"></div><div><label>ขั้นต่ำ</label><input type="number" id="f-min" min="0" value="0"></div><div><label>หน่วย</label><input type="text" id="f-u" value="ตัว"></div></div>
+ <div class="two"><div><label>ชั้นวาง</label><select id="f-r"></select></div><div><label>ชั้นที่</label><input type="number" id="f-s" min="1" value="1"></div></div>
+ <label>รูปอะไหล่ (เลือกรูปจากเครื่อง/ถ่ายรูป — ย่อให้อัตโนมัติ)</label><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><img id="f-imgp" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1;display:none"><input type="file" id="f-img" accept="image/*" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-imgx" style="padding:5px 10px">ลบรูป</button></div>
+ <label>ไฟล์โมเดล 3D ของอะไหล่ชิ้นนี้ (.glb ไม่บังคับ — เตรียมไว้ใช้ในอนาคต)</label><input type="text" id="f-glb" placeholder="models/bearing.glb">
+ <label><input type="checkbox" id="f-rp"> กำลังซ่อม</label><input type="text" id="f-rn" placeholder="หมายเหตุการซ่อม เช่น คาดเสร็จ 2 วัน">
+ <div class="err" id="pe"></div><div class="mf"><button class="btn" id="pc">ยกเลิก</button><button class="btn p" id="ps">บันทึก</button></div></div></div>
+
+<div class="ov" id="ov-u"><div class="md"><h3>เพิ่มผู้ใช้</h3>
+ <label>ชื่อผู้ใช้ (อังกฤษ/ตัวเลข 3-20 ตัว)</label><input type="text" id="u-un" autocomplete="off"><label>ชื่อที่แสดง</label><input type="text" id="u-nm">
+ <label>รหัสผ่าน (อย่างน้อย 6 ตัว)</label><input type="password" id="u-pw" autocomplete="new-password"><label>บทบาท</label><select id="u-rl"><option value="user">ช่างกะ</option><option value="manager">ช่าง Day time</option><option value="admin">ผู้ดูแลระบบ</option></select>
+ <div class="err" id="ue"></div><div class="mf"><button class="btn" id="uc">ยกเลิก</button><button class="btn p" id="us">สร้างผู้ใช้</button></div></div></div>
+
+<script src="data.js"></script><script src="pm.js"></script>
+<script>
+if(!spCanEdit()){alert("หน้านี้สำหรับ ผู้ดูแลระบบ และ ช่าง Day time เท่านั้น");location.replace("index.html")}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function $(i){return document.getElementById(i)}
+// ---- แท็บ ----
+function tab(n){["p","3","m","u"].forEach(function(k){$("pg-"+k).style.display=k===n?"":"none";$("t-"+k).className=k===n?"on":""})}
+$("t-p").onclick=function(){tab("p")};$("t-3").onclick=function(){tab("3")};$("t-u").onclick=function(){tab("u")};$("t-m").onclick=function(){tab("m");mdraw()};
+// ---- เครื่องจักร ----
+var MM=[];function mload(){MM=SP_MACH.map(function(m){return{old:m.k,k:m.k,d:m.d||"",img:m.img||"",f:m.f||""}})}mload();
+function mdraw(){var L=$("mx-list");L.innerHTML="";if(!MM.length)L.innerHTML='<div class="empty">ยังไม่มีเครื่องจักร กด "+ เพิ่มเครื่องจักร"</div>';
+ MM.forEach(function(m,ix){var r=document.createElement("div");r.style.cssText="display:grid;grid-template-columns:84px 1fr auto;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:10px;padding:10px";
+  r.innerHTML='<div style="width:84px;height:64px;border-radius:8px;background:#e2e8f0 center/cover no-repeat;'+(m.img?'background-image:url('+m.img+')':(m.f?'background-image:url(images/'+m.f+')':''))+'"></div>'
+  +'<div style="display:grid;gap:6px"><input data-f="k" placeholder="ชื่อเครื่องจักร *" value="'+esc(m.k)+'" style="padding:8px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;font-weight:700"><input data-f="d" placeholder="คำอธิบายสั้นๆ เช่น เครื่องบรรจุ" value="'+esc(m.d)+'" style="padding:8px;border:1px solid #cbd5e1;border-radius:8px;font:inherit"><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input type="file" accept="image/*" data-f="img" style="font-size:12px"><button class="btn" data-a="noimg" style="padding:4px 10px">ลบรูป</button></div></div>'
+  +'<button class="btn d" data-a="del">ลบ</button>';
+  r.querySelector('[data-f=k]').oninput=function(e){m.k=e.target.value};r.querySelector('[data-f=d]').oninput=function(e){m.d=e.target.value};
+  r.querySelector('[data-f=img]').onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){if(d){m.img=d;mdraw()}})};
+  r.querySelector('[data-a=noimg]').onclick=function(){m.img="";m.f="";mdraw()};
+  r.querySelector('[data-a=del]').onclick=function(){if(confirm('ลบเครื่องจักร "'+(m.k||"")+'" ?\n(จะถูกเอาออกจากอะไหล่ทุกรายการ)')){MM.splice(ix,1);mdraw()}};L.appendChild(r)})}
+$("mx-add").onclick=function(){MM.push({old:"",k:"",d:"",img:"",f:""});mdraw()};
+$("mx-rst").onclick=function(){if(confirm("คืนรายการเครื่องจักรเป็นค่าเริ่มต้น ?")){localStorage.removeItem("sp_machines");location.reload()}};
+$("mx-save").onclick=function(){if(!ISA){alert("เฉพาะ ผู้ดูแลระบบ เท่านั้น");return}var names={};
+ for(var i=0;i<MM.length;i++){var k=(MM[i].k||"").trim();if(!k){alert("มีเครื่องจักรที่ยังไม่ได้ตั้งชื่อ");return}if(names[k.toLowerCase()]){alert('ชื่อซ้ำ: '+k);return}names[k.toLowerCase()]=1;MM[i].k=k}
+ var ren={},keep={};MM.forEach(function(m){if(m.old){keep[m.old]=1;if(m.old!==m.k)ren[m.old]=m.k}});
+ var items=SP_ITEMS.map(function(it){var o=Object.assign({},it);o.m=(it.m||[]).map(function(n){return ren[n]||n}).filter(function(n){return names[n.toLowerCase()]});return o});
+ spItemsSave(items);spMachSave(MM.map(function(m){var o={k:m.k,d:m.d.trim()};if(m.img)o.img=m.img;else if(m.f)o.f=m.f;return o}));mload();fillM();pdraw();mdraw();alert("บันทึกเครื่องจักรแล้ว")};
+function fillM(){$("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("")}
+// ---- อะไหล่ ----
+var editing=null;
+function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
+ var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1});
+ if(!a.length){b.innerHTML='<tr><td colspan="7"><div class="empty">'+(SP_ITEMS.length?"ไม่พบรายการ":'ยังไม่มีอะไหล่ กด "+ เพิ่มอะไหล่" เพื่อเริ่มต้น')+'</div></td></tr>';return}
+ a.forEach(function(i){var s=spStatus(i),tr=document.createElement("tr");
+  tr.innerHTML='<td>'+(i.img?'<img src="'+i.img+'" alt="" style="width:34px;height:34px;object-fit:cover;border-radius:6px;float:left;margin-right:8px">':'')+'<b>'+esc(i.n)+'</b><small>'+esc(i.c)+'</small></td><td><div class="mt">'+i.m.map(function(m){return '<i>'+esc(m)+'</i>'}).join("")+'</div></td>'
+  +'<td><div class="q"><button data-d="-1">−</button><b>'+i.q+'</b><button data-d="1">+</button> <small style="display:inline">'+esc(i.u||"")+'</small></div></td><td>'+i.min+'</td><td>'+esc(spLocShort(i))+'</td>'
+  +'<td><span class="tg s-'+s+'">'+SP_TXT[s]+'</span>'+(i.rep?'<small>'+esc(i.rep)+'</small>':'')+'</td><td style="white-space:nowrap"><button class="btn s" data-a="e">แก้ไข</button> <button class="btn s d" data-a="x">ลบ</button></td>';
+  Array.prototype.forEach.call(tr.querySelectorAll(".q button"),function(x){x.onclick=function(){var l=SP_ITEMS.slice();var k=l.indexOf(i);l[k].q=Math.max(0,i.q+parseInt(x.dataset.d,10));spItemsSave(l);pdraw()}});
+  tr.querySelector('[data-a="e"]').onclick=function(){openP(i)};
+  tr.querySelector('[data-a="x"]').onclick=function(){if(!ISA)return;if(confirm('ลบ "'+i.n+'" ('+i.c+') ?')){spItemsSave(SP_ITEMS.filter(function(x){return x!==i}));pdraw()}};
+  b.appendChild(tr)})}
+$("pq").oninput=pdraw;
+$("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("");
+function fillRacks(){$("f-r").innerHTML='<option value="">— ไม่อยู่บนชั้นวาง (ปักหมุดใน 3D) —</option>'+Object.keys(SP_RACKS).map(function(k){return '<option>'+esc(k)+'</option>'}).join("")}fillRacks();
+var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block":"none";if(curImg)p.src=curImg}
+$("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){curImg=d;showImg()})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
+function openP(i){editing=i||null;curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
+ $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-q").value=i?i.q:0;$("f-min").value=i?i.min:0;$("f-u").value=i?(i.u||""):"ตัว";
+ $("f-r").value=i?i.r:Object.keys(SP_RACKS)[0];$("f-s").value=i?i.s:1;$("f-glb").value=i&&i.glb?i.glb:"";$("f-rp").checked=!!(i&&i.rep);$("f-rn").value=i&&i.rep?i.rep:"";
+ Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(c){c.checked=!!(i&&i.m.indexOf(c.value)>-1)});$("ov-p").classList.add("on");$("f-c").focus()}
+$("p-add").onclick=function(){openP()};$("pc").onclick=function(){$("ov-p").classList.remove("on")};
+$("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim(),q=parseInt($("f-q").value,10),mn=parseInt($("f-min").value,10),sh=parseInt($("f-s").value,10);
+ function bad(t){$("pe").textContent=t}
+ if(!c||!n)return bad("กรุณากรอกรหัสและชื่ออะไหล่");
+ if(SP_ITEMS.some(function(x){return x!==editing&&x.c.toLowerCase()===c.toLowerCase()}))return bad("รหัสนี้มีอยู่แล้ว");
+ if(!(q>=0)||!(mn>=0)||!(sh>=1))return bad("ตัวเลขต้องไม่ติดลบ (ชั้นที่ ≥ 1)");
+ var m=[];Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(x){if(x.checked)m.push(x.value)});
+ var glb=$("f-glb").value.trim();if(glb&&!/^(https?:\/\/|[\w\-./]+)[^\s"'<>]*\.(glb|gltf)$/i.test(glb))return bad("ไฟล์โมเดลต้องลงท้ายด้วย .glb หรือ .gltf และไม่มีช่องว่าง");
+ var o=Object.assign({},editing||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:q,min:mn,r:$("f-r").value,s:sh,u:$("f-u").value.trim()||"ตัว"});delete o.rep;delete o.glb;delete o.img;if(curImg)o.img=curImg;
+ if(glb)o.glb=glb;
+ if($("f-rp").checked)o.rep=$("f-rn").value.trim()||"กำลังซ่อม";
+ if(editing&&(editing.r!==o.r||editing.s!==o.s)){delete o.pos;delete o.at;delete o.spot}
+ var l=SP_ITEMS.slice();if(editing)l[l.indexOf(editing)]=o;else l.push(o);spItemsSave(l);$("ov-p").classList.remove("on");pdraw()};
+// สำรอง / นำเข้า / รีเซ็ต
+$("p-mrg").onclick=function(){$("p-mfile").click()};
+function pmerge(list,upd){var map={};SP_ITEMS.forEach(function(i){map[String(i.c)]=i});var add=[],ch=0;
+ list.forEach(function(i){if(!i||i.c==null||!i.n)return;var o=map[String(i.c)];if(!o){add.push(i);return}
+  if(upd){var t=0;["q","min","u","loc"].forEach(function(k){if(i[k]!==undefined&&i[k]!==""&&i[k]!==o[k]){o[k]=i[k];t=1}});ch+=t}});
+ if(!add.length&&!ch){alert("ไม่มีรายการใหม่หรือข้อมูลที่เปลี่ยน");return}
+ if(!confirm("พบ "+list.length+" รายการในไฟล์\nเพิ่มใหม่ "+add.length+" รายการ"+(upd?"\nอัปเดตจำนวน/ตำแหน่งของรายการเดิม "+ch+" รายการ":"")+"\nยืนยัน?"))return;
+ spItemsSave(SP_ITEMS.concat(add));alert("เรียบร้อย");location.reload()}
+function pxlsx(buf){var wb=XLSX.read(buf,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});var out=[];
+ rows.slice(1).forEach(function(r){var c=String(r[0]).trim(),n=String(r[1]).trim();if(!c||!n)return;var q=r[2]===""?null:Number(r[2]),mn=r[3]===""?null:Number(r[3]);
+  var it={c:c,n:n,q:q==null||isNaN(q)?0:q,min:mn==null||isNaN(mn)?0:mn,u:String(r[4]||"ชิ้น").trim(),loc:String(r[5]||"").trim(),m:String(r[6]||"").split(/[,;]/).map(function(x){return x.trim()}).filter(Boolean),k:String(r[7]||"").trim()};
+  if(q==null||isNaN(q))delete it._q;out.push(it)});pmerge(out,true)}
+$("p-mfile").onchange=function(e){var f=e.target.files[0];e.target.value="";if(!f)return;
+ if(/\.xlsx?$/i.test(f.name)){var go=function(){var r=new FileReader();r.onload=function(){try{pxlsx(new Uint8Array(r.result))}catch(x){alert("อ่านไฟล์ Excel ไม่ได้")}};r.readAsArrayBuffer(f)};
+  if(window.XLSX)return go();var sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";sc.onload=go;sc.onerror=function(){alert("โหลดตัวอ่าน Excel ไม่ได้ (ต้องต่ออินเทอร์เน็ต) ลองใช้ไฟล์ .json แทน")};document.head.appendChild(sc);return}
+ var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(!d||!Array.isArray(d.items))throw 1;pmerge(d.items,false)}catch(x){alert("ไฟล์ไม่ถูกต้อง")}};r.readAsText(f)};
+$("p-exp").onclick=function(){var d={app:"spareparts3d",version:1,exported:new Date().toISOString(),items:SP_ITEMS,requests:spReqSafe(),takes:(function(){try{return JSON.parse(localStorage.getItem("sp_takes")||"[]")}catch(e){return[]}})(),machines:SP_MACH,pm:{plans:spPlans(),rec:spPmRec(),jobs:spJobs()}};if(spIsAdmin())d.users=spUsers();
+ var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));a.download="spareparts-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()};
+function spReqSafe(){try{return JSON.parse(localStorage.getItem("sp_requests")||"[]")}catch(e){return[]}}
+$("p-imp").onclick=function(){$("p-file").click()};
+$("p-file").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){
+ try{var d=JSON.parse(r.result);if(d.app!=="spareparts3d"||!Array.isArray(d.items))throw 0;
+  if(!confirm("นำเข้าจะแทนที่ข้อมูลอะไหล่"+(d.requests?" คำขอ":"")+(d.users?" และผู้ใช้":"")+"ปัจจุบันทั้งหมด ยืนยันหรือไม่?"))return;
+  spItemsSave(d.items);if(Array.isArray(d.requests))localStorage.setItem("sp_requests",JSON.stringify(d.requests));if(Array.isArray(d.takes))localStorage.setItem("sp_takes",JSON.stringify(d.takes));if(Array.isArray(d.machines))spMachSave(d.machines);if(d.pm){if(Array.isArray(d.pm.plans))spPlansSave(d.pm.plans);if(Array.isArray(d.pm.rec))spPmRecSave(d.pm.rec);if(Array.isArray(d.pm.jobs))spJobsSave(d.pm.jobs)}
+  if(spIsAdmin()&&Array.isArray(d.users)&&d.users.some(function(u){return u.role==="admin"&&u.active}))spUsersSave(d.users);
+  alert("นำเข้าสำเร็จ");location.reload()}catch(x){alert("ไฟล์ไม่ถูกต้อง ต้องเป็นไฟล์สำรองที่ได้จากระบบนี้")}};r.readAsText(f);e.target.value=""};
+$("p-rst").onclick=function(){if(confirm("รีเซ็ตรายการอะไหล่กลับไปใช้ข้อมูลใน data.js ? (รายการที่แก้ผ่านหน้านี้จะหายไป)")){localStorage.removeItem("sp_items");location.reload()}};
+// ---- ผู้ใช้ ----
+var U=spUsers(),ISA=spIsAdmin();
+function admins(ex){return U.filter(function(x){return x.role==="admin"&&x.active&&x.id!==ex}).length}
+function usave(){spUsersSave(U);udraw()}
+function udraw(){var b=$("ub");b.innerHTML="";
+ U.forEach(function(u){var me=u.id===SP_USER.id,tr=document.createElement("tr");
+  tr.innerHTML='<td><b>'+esc(u.name)+(me?' <small style="display:inline">(คุณ)</small>':'')+'</b><small>'+esc(u.username)+'</small></td>'
+  +'<td><select '+(me||!ISA?"disabled":"")+'><option value="user"'+(u.role==="user"?" selected":"")+'>ช่างกะ</option><option value="manager"'+(u.role==="manager"?" selected":"")+'>ช่าง Day time</option><option value="admin"'+(u.role==="admin"?" selected":"")+'>ผู้ดูแลระบบ</option></select></td>'
+  +'<td><span class="tg s-'+(u.active?"stock":"off")+'">'+(u.active?"ใช้งาน":"ปิดใช้งาน")+'</span></td><td>'+new Date(u.created).toLocaleDateString("th-TH")+'</td>'
+  +'<td style="white-space:nowrap"><button class="btn s" data-a="pw" '+(ISA?"":'style="display:none"')+'>รีเซ็ตรหัสผ่าน</button> <button class="btn s" data-a="tg" '+(me||!(ISA||u.role==="user")?"disabled":"")+'>'+(u.active?"ปิดใช้งาน":"เปิดใช้งาน")+'</button> <button class="btn s d" data-a="x" '+(ISA?(me?"disabled":""):'style="display:none"')+'>ลบ</button></td>';
+  tr.querySelector("select").onchange=function(e){var v=e.target.value;if(u.role==="admin"&&v!=="admin"&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ อย่างน้อย 1 คน");udraw();return}u.role=v;usave()};
+  tr.querySelector('[data-a="pw"]').onclick=function(){var p=prompt("ตั้งรหัสผ่านใหม่ให้ "+u.username+" (อย่างน้อย 6 ตัว)");if(p===null)return;if(p.length<6){alert("รหัสผ่านสั้นเกินไป");return}
+   spHash(p,u.salt).then(function(h){u.hash=h;usave();alert("รีเซ็ตรหัสผ่านแล้ว")})};
+  tr.querySelector('[data-a="tg"]').onclick=function(){if(u.active&&u.role==="admin"&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ ที่ใช้งานอยู่อย่างน้อย 1 คน");return}u.active=!u.active;usave()};
+  tr.querySelector('[data-a="x"]').onclick=function(){if(u.role==="admin"&&u.active&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ อย่างน้อย 1 คน");return}
+   if(confirm('ลบผู้ใช้ "'+u.username+'" ?')){U=U.filter(function(x){return x!==u});usave()}};
+  b.appendChild(tr)})}
+$("u-add").onclick=function(){["u-un","u-nm","u-pw"].forEach(function(i){$(i).value=""});$("u-rl").value="user";$("ue").textContent="";$("ov-u").classList.add("on");$("u-un").focus()};
+$("uc").onclick=function(){$("ov-u").classList.remove("on")};
+$("us").onclick=function(){var un=$("u-un").value.trim(),nm=$("u-nm").value.trim(),pw=$("u-pw").value;function bad(t){$("ue").textContent=t}
+ if(!/^[A-Za-z0-9_.\-]{3,20}$/.test(un))return bad("ชื่อผู้ใช้ต้องเป็นอังกฤษ/ตัวเลข 3-20 ตัว");
+ if(U.some(function(x){return x.username.toLowerCase()===un.toLowerCase()}))return bad("ชื่อผู้ใช้นี้มีอยู่แล้ว");
+ if(!nm)return bad("กรุณากรอกชื่อที่แสดง");if(pw.length<6)return bad("รหัสผ่านต้องมีอย่างน้อย 6 ตัว");
+ spMakeUser(un,nm,$("u-rl").value,pw).then(function(x){U.push(x);usave();$("ov-u").classList.remove("on")})};
+// ---- ผังคลัง 3D ----
+var RK=JSON.parse(JSON.stringify(SP_RACKS)),RNEW={};
+function num(v,d){var x=parseFloat(v);return isFinite(x)?x:d}
+function rdraw(){var b=$("rb");b.innerHTML="";var ks=Object.keys(RK);
+ if(!ks.length)b.innerHTML='<tr><td colspan="8"><div class="empty">ยังไม่มีชั้นวาง กด "+ เพิ่มชั้นวาง"</div></td></tr>';
+ ks.forEach(function(k){var r=RK[k],tr=document.createElement("tr"),isNew=!!RNEW[k];
+  tr.innerHTML='<td><input type="text" data-f="name" value="'+esc(k)+'" '+(isNew?"":"disabled")+' style="width:90px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px"></td>'
+  +["x","z","w","d","h","n"].map(function(f){return '<td><input type="number" data-f="'+f+'" step="'+(f==="n"?1:.1)+'" value="'+r[f]+'" style="width:78px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px"></td>'}).join("")
+  +'<td><button class="btn s d">ลบ</button></td>';
+  Array.prototype.forEach.call(tr.querySelectorAll("input[type=number]"),function(inp){inp.onchange=function(){r[inp.dataset.f]=num(inp.value,r[inp.dataset.f])}});
+  if(isNew)tr.querySelector('[data-f="name"]').onchange=function(e){var nn=e.target.value.trim();if(!/^[A-Za-z0-9_\-]{1,10}$/.test(nn)||(nn!==k&&RK[nn])){alert("ชื่อชั้นวางต้องเป็นอังกฤษ/ตัวเลข 1-10 ตัว และไม่ซ้ำ");e.target.value=k;return}
+   var o={};Object.keys(RK).forEach(function(x){if(x===k)o[nn]=r;else o[x]=RK[x]});delete RNEW[k];RNEW[nn]=1;RK=o;rdraw()};
+  tr.querySelector(".btn").onclick=function(){var used=SP_ITEMS.filter(function(i){return i.r===k}).length;if(used&&!confirm("ชั้นวาง "+k+" มีอะไหล่ "+used+" รายการอ้างอยู่ ถ้าลบ อะไหล่เหล่านั้นจะไม่แสดงใน 3D จนกว่าจะย้ายชั้น ลบต่อไหม?"))return;delete RK[k];delete RNEW[k];rdraw()};
+  b.appendChild(tr)})}
+$("r-add").onclick=function(){var i=1,nm;do{nm="N"+i++}while(RK[nm]);RK[nm]={x:0,z:-5,w:3,d:1.5,h:2.4,n:3};RNEW[nm]=1;rdraw()};
+$("r-save").onclick=function(){var ks=Object.keys(RK);function bad(t){$("re").textContent=t}
+ for(var i=0;i<ks.length;i++){var r=RK[ks[i]];if(!(r.w>0&&r.d>0&&r.h>0))return bad("ชั้นวาง "+ks[i]+": กว้าง/ลึก/สูง ต้องมากกว่า 0");if(!(r.n>=1&&r.n<=12&&r.n===Math.floor(r.n)))return bad("ชั้นวาง "+ks[i]+": จำนวนชั้นต้องเป็นจำนวนเต็ม 1-12")}
+ spRacksSave(JSON.parse(JSON.stringify(RK)));RNEW={};bad("");fillRacks();rdraw();alert("บันทึกผังชั้นวางแล้ว (เปิดหน้าเช็คของเพื่อดูผล)")};
+$("r-rst").onclick=function(){if(confirm("คืนผังชั้นวางเป็นค่าเริ่มต้น (8 ชั้นวาง) ?")){localStorage.removeItem("sp_racks");location.reload()}};
+(function(){var m=SP_MODEL||{};$("m-url").value=m.url||"";$("m-sc").value=m.scale==null?1:m.scale;$("m-x").value=m.x||0;$("m-y").value=m.y||0;$("m-z").value=m.z||0;$("m-hide").checked=m.hideRacks!==false})();
+$("m-save").onclick=function(){var u=$("m-url").value.trim();function bad(t){$("me").textContent=t}
+ if(u&&!/^(https?:\/\/|[\w\-./]+)[^\s"'<>]*\.(glb|gltf)$/i.test(u))return bad("ไฟล์โมเดลต้องลงท้ายด้วย .glb หรือ .gltf และไม่มีช่องว่าง");
+ var sc=num($("m-sc").value,1);if(!(sc>0))return bad("ขนาด (scale) ต้องมากกว่า 0");
+ spModelSave({url:u,scale:sc,x:num($("m-x").value,0),y:num($("m-y").value,0),z:num($("m-z").value,0),hideRacks:$("m-hide").checked});bad("");alert("บันทึกการตั้งค่าโมเดลแล้ว (เปิดหน้าเช็คของเพื่อดูผล)")};
+["ov-p","ov-u"].forEach(function(i){$(i).onclick=function(e){if(e.target===$(i))$(i).classList.remove("on")}});
+pdraw();udraw();rdraw();
+</script>
+<script>window.showOnMap=function(c){location.href="check-stock.html?item="+encodeURIComponent(c)}</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

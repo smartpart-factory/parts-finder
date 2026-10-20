@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>จัดการคำขอ | SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sp{flex:1}.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+main{margin:66px 0 0 207px;padding:14px;max-width:1100px}
+.hh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}h2{margin:0;font-size:22px}
+.btn{padding:10px 18px;border:0;border-radius:8px;background:#1565d8;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.sum{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.sc{background:#fff;border:2px solid #e2e8f0;border-radius:8px;padding:10px 12px;cursor:pointer}.sc.on{border-color:#1565d8;background:#eaf2ff}.sc small{color:#64748b;display:block}.sc b{font-size:22px}
+.bar input{width:100%;padding:11px 14px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff;margin-bottom:12px}
+.cd{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px}
+.r1{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.r1 .id{font-weight:700;color:#1565d8}.r1 .tm{color:#94a3b8;font-size:12px;margin-left:auto}
+.bd{font-size:12px;padding:3px 12px;border-radius:99px;font-weight:600;white-space:nowrap}.w{background:#fff0d6;color:#d97706}.o{background:#d9f7e4;color:#16a34a}.x{background:#fde2e2;color:#dc2626}.c{background:#e5e7eb;color:#6b7280}
+.urg{background:#dc2626;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px}
+.nm{margin:8px 0 2px;font-size:16px;font-weight:600}.mt{color:#64748b;font-size:13px}.rs{margin-top:6px;font-size:13px}
+.ac{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.ac button{padding:7px 14px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;border:1px solid #cbd5e1;background:#fff}
+.ac .g{background:#16a34a;color:#fff;border-color:#16a34a}.ac .rd{color:#dc2626;border-color:#dc2626}.ac .lk{color:#1565d8;border-color:#1565d8;margin-left:auto}
+.log{margin-top:8px;border-top:1px dashed #e2e8f0;padding-top:8px;font-size:12px;color:#64748b;display:none}.cd.open .log{display:block}
+.empty{background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:34px;text-align:center;color:#64748b}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}.ov.on{display:flex}
+.md{background:#fff;border-radius:12px;width:480px;max-width:100%;max-height:92vh;overflow:auto;padding:20px}.md h3{margin:0 0 14px}
+.md label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}.md input,.md select,.md textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mf{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}.mf button{padding:10px 18px;border-radius:8px;font:inherit;cursor:pointer;border:1px solid #cbd5e1;background:#fff}
+.mf .p{background:#1565d8;color:#fff;border-color:#1565d8}.note{color:#94a3b8;font-size:12px;margin-top:14px}
+@media(max-width:900px){.sum{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+<div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a class="on" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<main>
+ <div class="hh"><h2>📋 จัดการคำขอ</h2><a class="btn" id="new" href="request-new.html" style="text-decoration:none">+ สร้างคำขอใหม่</a></div>
+ <div class="sum" id="sum"></div>
+ <div class="bar"><input id="q" placeholder="ค้นหาเลขที่คำขอ ชื่ออะไหล่ รหัส เครื่องจักร หรือผู้ขอ..."></div>
+ <div id="list"></div>
+ <div class="note">ข้อมูลคำขอเก็บอยู่ในเบราว์เซอร์ของเครื่องนี้เท่านั้น (ยังไม่ใช่ฐานข้อมูลกลาง) เครื่องอื่นจะยังไม่เห็นคำขอเหล่านี้</div>
+</main>
+<div class="ov" id="ov"><div class="md"><h3>📝 สร้างคำขออะไหล่</h3>
+ <label>อะไหล่ (เลือกจากรายการ หรือพิมพ์ชื่อเอง)</label><input id="f-item" list="dl" autocomplete="off" placeholder="ชื่อหรือรหัสอะไหล่"><datalist id="dl"></datalist>
+ <div class="two"><div><label>จำนวน</label><input id="f-qty" type="number" min="1" value="1"></div><div><label>เครื่องจักร</label><select id="f-mc"></select></div></div>
+ <label>อาคาร / เตา ที่ใช้อะไหล่ *</label><select id="f-bd"></select>
+ <label>ความเร่งด่วน</label><select id="f-urg"><option value="0">ปกติ</option><option value="1">ด่วน</option></select>
+ <label>เหตุผล / รายละเอียด</label><textarea id="f-why" rows="3" placeholder="เช่น ตลับลูกปืนเสียงดัง ต้องเปลี่ยน"></textarea>
+ <div class="mf"><button id="f-cancel">ยกเลิก</button><button class="p" id="f-ok">ส่งคำขอ</button></div></div></div>
+<script src="data.js"></script><script src="requests.js"></script><script src="pm.js"></script>
+<script>if(!spCanEdit()){location.replace("request-new.html")}</script>
+<script>
+var ALL=spReqLoad(),ME=SP_USER.name,ADM=spCanEdit(),REQ=ALL.filter(function(r){return spCanEdit()||r.byId===SP_USER.id}),filt="all",qs="";
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function save(){spReqSave(ALL);draw()}
+function logIt(r,t){r.log.push({t:new Date().toISOString(),text:t})}
+function drawSum(){var c={all:REQ.length,pending:0,approved:0,rejected:0,cancelled:0,done:0};REQ.forEach(function(r){c[r.status]++});
+ var h="";[["all","ทั้งหมด"],["pending","รออนุมัติ"],["approved","อนุมัติ"],["rejected","ปฏิเสธ"],["cancelled","ยกเลิก"],["done","เบิกแล้ว"]].forEach(function(x){h+='<div class="sc'+(filt===x[0]?" on":"")+'" data-k="'+x[0]+'"><small>'+x[1]+'</small><b>'+c[x[0]]+'</b></div>'});
+ var s=document.getElementById("sum");s.innerHTML=h;Array.prototype.forEach.call(s.children,function(e){e.onclick=function(){filt=e.dataset.k;draw()}})}
+function draw(){drawSum();var l=document.getElementById("list");l.innerHTML="";
+ var a=REQ.filter(function(r){return (filt==="all"||r.status===filt)&&(r.id+r.item+r.code+r.machine+r.by+spReqBld(r)).toLowerCase().indexOf(qs)>-1}).slice().reverse();
+ if(!a.length){l.innerHTML='<div class="empty">'+(REQ.length?'ไม่พบคำขอที่ตรงกับเงื่อนไข':'ยังไม่มีคำขอ<br>กดปุ่ม "+ สร้างคำขอใหม่" เพื่อเริ่มต้น')+'</div>';return}
+ a.forEach(function(r){var d=document.createElement("div");d.className="cd";
+  var h='<div class="r1"><span class="id">'+r.id+'</span><span class="bd '+spReqClass(r.status)+'">'+SP_REQ_TXT[r.status]+'</span>'+(r.urgent?'<span class="urg">ด่วน</span>':'')+(r.retro?'<span class="urg" style="background:#fff1d6;color:#b45309">⚠️ เบิกก่อนแจ้ง</span>':'')+'<span class="tm">'+spReqTime(r.time)+'</span></div>'
+  +'<div class="nm">'+esc(r.item)+(r.code?' <small style="color:#64748b;font-weight:400">('+esc(r.code)+')</small>':'')+'</div>'
+  +'<div class="mt">จำนวน '+r.qty+' · เครื่องจักร '+esc(r.machine)+(r.bld?' · '+esc(spReqBld(r)):'')+' · ผู้ขอ '+esc(r.by)+'</div>'+(r.tookAt?'<div class="rs">เอาไปเมื่อ: '+new Date(r.tookAt).toLocaleString("th-TH")+'</div>':'')+(r.why?'<div class="rs">เหตุผล: '+esc(r.why)+'</div>':'')+(r.rej?'<div class="rs" style="color:#dc2626">เหตุผลที่ปฏิเสธ: '+esc(r.rej)+'</div>':'')
+  +'<div class="ac"></div><div class="log">'+r.log.map(function(g){return '• '+new Date(g.t).toLocaleString("th-TH")+' — '+esc(g.text)}).join("<br>")+'</div>';
+  d.innerHTML=h;var ac=d.querySelector(".ac");
+  function b(t,c,fn){var e=document.createElement("button");e.textContent=t;e.className=c;e.onclick=function(ev){ev.stopPropagation();fn()};ac.appendChild(e)}
+  if(r.status==="pending"&&r.retro){if(ADM)b("✓ ยืนยันการเบิก","g",function(){if(!spReqCut(r))return;r.status="done";logIt(r,"ตรวจสอบและยืนยันการเบิกย้อนหลังโดย "+ME+" · "+r.cutNote);save()});
+   if(ADM)b("↩ ให้คืนของ","rd",function(){var w=prompt("หมายเหตุ (เช่น ให้คืนที่ชั้นเดิม)");if(w===null)return;r.status="rejected";r.rej=w||"ให้คืนอะไหล่";logIt(r,"ให้คืนอะไหล่โดย "+ME+(w?" ("+w+")":""));save()});
+   if(ADM||r.byId===SP_USER.id)b("ยกเลิกรายการ","",function(){if(confirm("ยกเลิกรายการ "+r.id+" ?")){r.status="cancelled";logIt(r,"ยกเลิกโดย "+ME);save()}})}
+  else if(r.status==="pending"){if(ADM)b("✓ อนุมัติ","g",function(){r.status="approved";logIt(r,"อนุมัติโดย "+ME);save()});
+   if(ADM)b("✕ ปฏิเสธ","rd",function(){var w=prompt("เหตุผลที่ปฏิเสธ (ไม่บังคับ)");if(w===null)return;r.status="rejected";r.rej=w;logIt(r,"ปฏิเสธโดย "+ME+(w?" ("+w+")":""));save()});
+   if(ADM||r.byId===SP_USER.id)b("ยกเลิกคำขอ","",function(){if(confirm("ยกเลิกคำขอ "+r.id+" ?")){r.status="cancelled";logIt(r,"ยกเลิกโดย "+ME);save()}})}
+  if(r.status==="approved"&&ADM)b("📦 เบิกแล้ว (ตัดสต็อก)","g",function(){if(!spReqCut(r))return;r.status="done";logIt(r,"เบิกอะไหล่แล้ว · "+r.cutNote);save()});
+  if(r.status==="done"&&r.cut&&ADM)b("↩ ยกเลิกการเบิก (คืนสต็อก)","rd",function(){if(!confirm("คืนสต็อก "+r.cut+" ชิ้น และยกเลิกการเบิก "+r.id+" ?"))return;spReqUncut(r);r.status="approved";logIt(r,"ยกเลิกการเบิกโดย "+ME+" · "+r.cutNote);save()});
+  if(r.code&&SP_ITEMS.some(function(i){return i.c===r.code}))b("📍 ดูตำแหน่ง 3D","lk",function(){location.href="check-stock.html?item="+encodeURIComponent(r.code)});
+  d.onclick=function(){d.classList.toggle("open")};l.appendChild(d)})}
+document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase();draw()};
+// ----- สร้างคำขอ -----
+var ov=document.getElementById("ov"),fi=document.getElementById("f-item");
+document.getElementById("dl").innerHTML=SP_ITEMS.map(function(i){return '<option value="'+esc(i.n+" ("+i.c+")")+'">'}).join("");
+document.getElementById("f-bd").innerHTML=spBldOpts();
+document.getElementById("f-mc").innerHTML=SP_MACHINES.map(function(m){return '<option>'+m+'</option>'}).join("")+'<option>อื่นๆ</option>';
+function openNew(code){fi.value="";document.getElementById("f-qty").value=1;document.getElementById("f-why").value="";document.getElementById("f-urg").value="0";
+ var it=SP_ITEMS.filter(function(i){return i.c===code})[0];if(it){fi.value=it.n+" ("+it.c+")";document.getElementById("f-mc").value=it.m[0]||"อื่นๆ"}ov.classList.add("on");fi.focus()}
+
+document.getElementById("f-cancel").onclick=function(){ov.classList.remove("on")};
+ov.onclick=function(e){if(e.target===ov)ov.classList.remove("on")};
+fi.onchange=function(){var it=SP_ITEMS.filter(function(i){return i.n+" ("+i.c+")"===fi.value})[0];if(it&&it.m.length)document.getElementById("f-mc").value=it.m[0]};
+document.getElementById("f-ok").onclick=function(){var v=fi.value.trim();if(!v){alert("กรุณาระบุอะไหล่");fi.focus();return}
+ var qty=parseInt(document.getElementById("f-qty").value,10);if(!(qty>0)){alert("กรุณาระบุจำนวนให้ถูกต้อง");return}if(!document.getElementById("f-bd").value){alert("กรุณาเลือกอาคาร / เตา ที่ใช้อะไหล่");return}
+ var it=SP_ITEMS.filter(function(i){return i.n+" ("+i.c+")"===v||i.c===v||i.n===v})[0];
+ var r={id:spReqNextId(ALL),item:it?it.n:v,code:it?it.c:"",qty:qty,machine:document.getElementById("f-mc").value,bld:spBldVal(document.getElementById("f-bd").value).bld,furn:spBldVal(document.getElementById("f-bd").value).furn,urgent:document.getElementById("f-urg").value==="1",why:document.getElementById("f-why").value.trim(),by:ME,byId:SP_USER.id,status:"pending",time:new Date().toISOString(),log:[]};
+ logIt(r,"สร้างคำขอโดย "+ME);ALL.push(r);REQ.push(r);save();ov.classList.remove("on");filt="all";draw()};
+if(!ADM)document.querySelector(".note").textContent="คุณเห็นคำขอทั้งหมด · ข้อมูลคำขอเก็บในเบราว์เซอร์ของเครื่องนี้เท่านั้น";
+var P=new URLSearchParams(location.search);draw();if(P.get("new"))openNew(P.get("item")||"");
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

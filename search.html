@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ค้นหาอะไหล่ | SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sp{flex:1}.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+main{margin:66px 0 0 207px;padding:14px;max-width:1200px}
+h2{margin:0 0 4px;font-size:22px}.sub{color:#64748b;margin-bottom:14px}
+.sbar{position:relative;display:flex;gap:10px}
+.sbar input{flex:1;padding:16px 18px;font:inherit;font-size:17px;border:2px solid #cbd5e1;border-radius:10px;background:#fff}.sbar input:focus{outline:0;border-color:#1565d8}
+.sbar #cam{background:#fff;color:#1565d8;border:2px solid #1565d8;padding:0 18px;white-space:nowrap}.sbar button{padding:0 28px;border:0;border-radius:10px;background:#1b9a50;color:#fff;font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+#sg{position:absolute;top:60px;left:0;right:100px;background:#fff;border:1px solid #cbd5e1;border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.12);z-index:5;display:none;overflow:hidden}
+#sg div{padding:10px 16px;cursor:pointer;display:flex;justify-content:space-between}#sg div:hover{background:#eaf2ff}#sg small{color:#64748b}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.chips label{color:#64748b;font-size:12px}
+.chip{padding:5px 12px;border:1px solid #cbd5e1;background:#fff;border-radius:99px;cursor:pointer;font-size:13px}.chip:hover{border-color:#1565d8;color:#1565d8}.chip.on{background:#1565d8;color:#fff;border-color:#1565d8}
+.flt{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0 8px}.flt select{padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff}
+.cnt{margin:6px 0 10px;color:#475569}
+.res{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.cd{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.cd .t{display:flex;gap:12px;align-items:center}.im{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#dbe6fb,#b9cdf3);display:flex;align-items:center;justify-content:center;font-size:26px;position:relative;overflow:hidden;flex:none}
+.im img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cd h3{margin:0;font-size:16px}.cd small{color:#64748b}
+.tg{font-size:12px;padding:3px 10px;border-radius:99px;color:#fff;white-space:nowrap;margin-left:auto}
+.s-stock{background:#16a34a}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
+.ln{display:grid;grid-template-columns:90px 1fr;gap:4px 8px;font-size:13px}.ln span{color:#64748b}
+.mt{display:flex;gap:4px;flex-wrap:wrap}.mt i{font-style:normal;background:#e0ecff;color:#1565d8;font-size:11px;padding:2px 6px;border-radius:4px}
+.qb{height:6px;background:#e2e8f0;border-radius:99px;overflow:hidden}.qb i{display:block;height:100%}
+.note{background:#f3ecff;color:#6d28d9;border-radius:6px;padding:6px 10px;font-size:12px}
+.ac{display:flex;gap:8px}.ac button{flex:1;padding:9px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;border:1px solid #1565d8;background:#fff;color:#1565d8}.ac button.p{background:#1565d8;color:#fff}.ac button.o{border-color:#f59e0b;color:#c2410c}
+mark{background:#fde68a;border-radius:2px;padding:0 1px}
+.empty{grid-column:1/-1;background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:30px;text-align:center;color:#64748b}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}#sg{right:0;top:58px}.sbar button{padding:0 16px}}
+.okn{display:inline-block;background:#e7f7ec;color:#15803d;border:1px solid #b7e4c4;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+<div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a class="on">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<main>
+ <h2>🔍 ค้นหาอะไหล่</h2><div class="sub">ค้นหาด้วยชื่อ รหัส รุ่น หรือชื่อที่ช่างเรียก เช่น "ลูกปืน" "สายพาน"</div>
+ <div class="sbar"><input id="q" autocomplete="off" placeholder="พิมพ์ชื่อ รหัส หรือรุ่นอะไหล่..." autofocus><button id="cam" title="ค้นหาด้วยรูป">📷 ค้นหาด้วยรูป</button><button id="go">ค้นหา</button><div id="sg"></div></div>
+ <div class="chips"><label>ยอดนิยม:</label><span id="pop"></span></div>
+ <div class="chips" id="rcw" style="display:none"><label>ค้นหาล่าสุด:</label><span id="rc"></span><span class="chip" id="clr" style="border-style:dashed">ล้าง</span></div>
+ <div class="flt"><select id="mc"></select><select id="rk"></select><span id="st"></span><select id="so"><option value="r">เรียงตามความตรง</option><option value="n">เรียงตามชื่อ</option><option value="q">จำนวนมากสุดก่อน</option></select></div>
+ <div class="cnt" id="cnt"></div><div class="res" id="res"></div>
+</main>
+<script src="data.js"></script><script src="requests.js"></script>
+<script>
+var ICON={"BRG":"⚙️","BEL":"⭕","SEN":"🔌","SEA":"🔘","FLT":"🧪","MTR":"🔧","VLV":"🚰","FUS":"⚡","CTR":"🔲","PMP":"💧"};
+var CLR={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"};
+var qs="",mach="",rack="",sort="r",stf="";
+var POP=SP_ITEMS.slice(0,6).map(function(i){return i.n});
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toks(){return qs.toLowerCase().split(/\s+/).filter(Boolean)}
+function hay(i){return (i.n+" "+i.c+" "+i.k+" "+i.m.join(" ")).toLowerCase()}
+function score(i){var t=toks(),h=hay(i),sc=0;for(var a=0;a<t.length;a++){if(h.indexOf(t[a])<0)return -1;if(i.n.toLowerCase().indexOf(t[a])>-1)sc+=3;if(i.c.toLowerCase().indexOf(t[a])>-1)sc+=3;sc+=1}return sc}
+function hl(text){var s=esc(text);toks().forEach(function(t){var r=new RegExp("("+t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+")","ig");s=s.replace(r,"<mark>$1</mark>")});return s}
+// recent
+function getR(){try{return JSON.parse(localStorage.getItem("sp_recent")||"[]")}catch(e){return[]}}
+function addR(t){t=t.trim();if(!t)return;try{var r=getR().filter(function(x){return x!==t});r.unshift(t);localStorage.setItem("sp_recent",JSON.stringify(r.slice(0,6)))}catch(e){}drawR()}
+function drawR(){var r=getR(),w=document.getElementById("rcw");w.style.display=r.length?"flex":"none";var b=document.getElementById("rc");b.innerHTML="";
+ r.forEach(function(t){var e=document.createElement("span");e.className="chip";e.textContent=t;e.onclick=function(){setQ(t)};b.appendChild(e)})}
+document.getElementById("clr").onclick=function(){try{localStorage.removeItem("sp_recent")}catch(e){}drawR()};
+var pop=document.getElementById("pop");POP.forEach(function(t){var e=document.createElement("span");e.className="chip";e.textContent=t;e.onclick=function(){setQ(t)};pop.appendChild(e);pop.appendChild(document.createTextNode(" "))});
+// filters
+var mc=document.getElementById("mc");mc.innerHTML='<option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option>'+m+'</option>'}).join("");
+var rk=document.getElementById("rk");rk.innerHTML='<option value="">ทุกชั้นวาง</option>'+Object.keys(SP_RACKS).map(function(k){return '<option>'+k+'</option>'}).join("");
+mc.onchange=function(){mach=mc.value;draw()};rk.onchange=function(){rack=rk.value;draw()};document.getElementById("so").onchange=function(e){sort=e.target.value;draw()};
+var st=document.getElementById("st");[["","ทุกสถานะ"],["stock","มีของ"],["low","ใกล้หมด"],["out","หมด"],["repair","กำลังซ่อม"]].forEach(function(x){
+ var e=document.createElement("span");e.className="chip"+(x[0]===""?" on":"");e.textContent=x[1];e.dataset.k=x[0];e.onclick=function(){stf=x[0];Array.prototype.forEach.call(st.children,function(c){c.className="chip"+(c.dataset.k===stf?" on":"")});draw()};st.appendChild(e)});
+// input + suggestions
+var q=document.getElementById("q"),sg=document.getElementById("sg");
+function setQ(t){q.value=t;qs=t;sg.style.display="none";addR(t);draw()}
+function suggest(){var t=q.value.trim().toLowerCase();if(!t){sg.style.display="none";return}
+ var a=SP_ITEMS.filter(function(i){return hay(i).indexOf(t)>-1}).slice(0,6);
+ if(!a.length){sg.style.display="none";return}sg.innerHTML="";sg.style.display="block";
+ a.forEach(function(i){var d=document.createElement("div");d.innerHTML='<span>'+esc(i.n)+'</span><small>'+i.c+'</small>';d.onclick=function(){setQ(i.n)};sg.appendChild(d)})}
+q.oninput=function(){qs=q.value;suggest();draw()};
+q.onkeydown=function(e){if(e.key==="Enter"){sg.style.display="none";addR(q.value)}};
+document.getElementById("go").onclick=function(){sg.style.display="none";addR(q.value);draw()};
+document.addEventListener("click",function(e){if(!document.querySelector(".sbar").contains(e.target))sg.style.display="none"});
+// results
+function draw(){
+ var a=SP_ITEMS.map(function(i){return{i:i,sc:toks().length?score(i):0}}).filter(function(x){
+  return x.sc>=0&&(!stf||spStatus(x.i)===stf)&&(!mach||x.i.m.indexOf(mach)>-1)&&(!rack||x.i.r===rack)});
+ a.sort(function(x,y){return sort==="n"?x.i.n.localeCompare(y.i.n):sort==="q"?y.i.q-x.i.q:(y.sc-x.sc)||x.i.n.localeCompare(y.i.n)});
+ document.getElementById("cnt").textContent="พบ "+a.length+" รายการ"+(qs.trim()?' สำหรับ "'+qs.trim()+'"':"");
+ var box=document.getElementById("res");box.innerHTML="";
+ if(!a.length){box.innerHTML=!SP_ITEMS.length?'<div class="empty">ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มรายการในไฟล์ data.js แล้วรีเฟรชหน้านี้</div>':'<div class="empty">ไม่พบอะไหล่ที่ตรงกับเงื่อนไข<br>ลองใช้คำสั้นลง เปลี่ยนตัวกรอง หรือถามบอทที่ปุ่ม 💬 มุมขวาล่างครับ</div>';return}
+ a.forEach(function(x){var i=x.i,s=spStatus(i),p=Math.min(100,i.q/(i.min*2)*100),d=document.createElement("div");d.className="cd";
+  d.innerHTML='<div class="t"><div class="im">'+(ICON[i.c.slice(0,3)]||"📦")+'<img src="'+spImg(i)+'" alt="" onerror="this.remove()"></div><div><h3>'+hl(i.n)+'</h3><small>'+hl(i.c)+'</small></div><span class="tg s-'+s+'">'+SP_TXT[s]+'</span></div>'
+  +'<div class="ln"><span>คงเหลือ</span><div><b>'+i.q+'</b> '+i.u+' <small>(ขั้นต่ำ '+i.min+')</small><div class="qb"><i style="width:'+p+'%;background:'+CLR[s]+'"></i></div></div>'
+  +'<span>ตำแหน่ง</span><div><b>'+esc(spLoc(i))+'</b></div><span>ใช้กับ</span><div class="mt">'+i.m.map(function(m){return '<i>'+m+'</i>'}).join("")+'</div></div>'
+  +(i.rep?'<div class="note">🔧 '+esc(i.rep)+'</div>':'')
+  +'<div class="ac"><button class="p">📍 ดูตำแหน่ง 3D</button>'+(s==="stock"?'<span class="okn">✅ มีของในแผนก หยิบได้เลย</span> <span class="tkw"><button class="tk">✋ บันทึกการหยิบใช้</button></span>':'<button class="o">📝 ขอเบิกคลังใหญ่</button>')+'</div>';
+  d.querySelector(".p").onclick=function(){location.href="check-stock.html?item="+encodeURIComponent(i.c)};
+  var tk=d.querySelector(".tk");if(tk)tk.onclick=function(){spTakeUI(d.querySelector(".tkw"),i,function(ok){if(ok)draw();else d.querySelector(".tkw").innerHTML='<button class="tk">✋ บันทึกการหยิบใช้</button>',d.querySelector(".tk").onclick=tk.onclick})};
+  var ob=d.querySelector(".o");if(ob)ob.onclick=function(){location.href="request-new.html?item="+encodeURIComponent(i.c)};
+  box.appendChild(d)})}
+var p0=new URLSearchParams(location.search).get("q");if(p0){q.value=p0;qs=p0;addR(p0)}
+drawR();draw();
+</script>
+<script src="imagesearch.js"></script>
+<script>document.getElementById("cam").onclick=function(){spImageSearch.open(function(i){setQ(i.c)})}</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

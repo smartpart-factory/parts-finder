@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>รายงาน | SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sp{flex:1}.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+main{margin:66px 0 0 207px;padding:14px;max-width:1200px}
+.hh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}h2{margin:0;font-size:22px}
+.btn{padding:9px 14px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;font:inherit;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin-bottom:12px}
+.k{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px}.k small{color:#64748b;display:block}.k b{font-size:24px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.box{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;overflow-x:auto}.box h3{margin:0 0 10px;font-size:16px}
+.stk{display:flex;height:26px;border-radius:6px;overflow:hidden;background:#e2e8f0}.stk i{display:block;height:100%}
+.leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#475569}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.bar{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;margin:6px 0;font-size:13px}.bar .t{height:14px;background:#e2e8f0;border-radius:99px;overflow:hidden}.bar .t i{display:block;height:100%;background:#1565d8}.bar span:last-child{text-align:right;color:#475569}
+table{width:100%;border-collapse:collapse;min-width:480px}th{font-size:12px;color:#64748b;text-align:left;background:#f8fafc;padding:8px 10px;border-bottom:1px solid #e2e8f0}td{padding:8px 10px;border-bottom:1px solid #f1f5f9}
+.tg{font-size:12px;padding:2px 9px;border-radius:99px;color:#fff;white-space:nowrap}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
+.empty{padding:18px;text-align:center;color:#94a3b8}.note{color:#94a3b8;font-size:12px;margin-top:8px}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr}}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}.cards{grid-template-columns:repeat(2,1fr)}}
+@media print{.top,.side,.hh .btn,.chat{display:none!important}main{margin:0}body{background:#fff}}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+<div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a class="on">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<main>
+ <div class="hh"><h2>📊 รายงาน</h2><div><button class="btn" id="csv1">⬇ สต็อก (CSV)</button> <button class="btn" id="csv2">⬇ คำขอ (CSV)</button> <button class="btn" onclick="print()">🖨 พิมพ์</button></div></div>
+ <div class="cards" id="cards"></div>
+ <div class="box" style="margin-bottom:12px"><h3>สัดส่วนสถานะอะไหล่</h3><div class="stk" id="stk"></div><div class="leg" id="leg"></div></div>
+ <div class="box" style="margin-bottom:12px"><h3>⚠️ รายการที่ควรสั่งเพิ่ม (ใกล้หมด / หมด)</h3><div id="need"></div></div>
+ <div class="g2">
+  <div class="box"><h3>จำนวนรายการอะไหล่ตามเครื่องจักร</h3><div id="bym"></div></div>
+  <div class="box"><h3>คำขอตามสถานะ</h3><div id="rst"></div></div>
+ </div>
+ <div class="g2">
+  <div class="box"><h3>คำขอรายเดือน (6 เดือนล่าสุด)</h3><div id="rmo"></div></div>
+  <div class="box"><h3>✋ การหยิบใช้ล่าสุด (ของในแผนก)</h3><div id="tkrep"></div></div>
+  <div class="box"><h3>อะไหล่ที่ถูกขอมากที่สุด (รวมจำนวน)</h3><div id="top"></div></div>
+ </div>
+ <div class="g2">
+  <div class="box"><h3>🗓️ PM ที่ใกล้ถึงกำหนด / เลยกำหนด <a href="pm.html" style="font-size:12px;font-weight:400;margin-left:8px">เปิดปฏิทิน →</a></h3><div id="pmdue"></div></div>
+  <div class="box"><h3>🔄 ตาราง JOB + PM (30 วันข้างหน้า)</h3><div id="jobtb"></div></div>
+ </div>
+ <div class="box" style="margin-bottom:12px"><h3>📋 ประวัติ PM ล่าสุด <button class="btn" id="csv3" style="float:right;padding:5px 10px">⬇ CSV</button></h3><div id="pmhist"></div></div>
+ <div class="note" id="scope"></div>
+</main>
+<script src="data.js"></script><script src="requests.js"></script><script src="pm.js"></script>
+<script>
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function $(i){return document.getElementById(i)}
+var CL={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"},ADM=spCanEdit();
+var REQ=spReqLoad().filter(function(r){return ADM||r.byId===SP_USER.id});
+var cnt={stock:0,low:0,out:0,repair:0};SP_ITEMS.forEach(function(i){cnt[spStatus(i)]++});
+var pend=REQ.filter(function(r){return r.status==="pending"}).length;
+$("cards").innerHTML=[["อะไหล่ทั้งหมด",SP_ITEMS.length,"#1e293b"],["มีของ",cnt.stock,CL.stock],["ใกล้หมด",cnt.low,CL.low],["หมด",cnt.out,CL.out],["กำลังซ่อม",cnt.repair,CL.repair],["คำขอทั้งหมด",REQ.length,"#1e293b"],["รออนุมัติ",pend,"#d97706"]].map(function(x){return '<div class="k"><small>'+x[0]+'</small><b style="color:'+x[2]+'">'+x[1]+'</b></div>'}).join("");
+var tot=SP_ITEMS.length||1;
+$("stk").innerHTML=["stock","low","out","repair"].map(function(k){return '<i style="width:'+cnt[k]/tot*100+'%;background:'+CL[k]+'"></i>'}).join("");
+$("leg").innerHTML=["stock","low","out","repair"].map(function(k){return '<span><i class="dot" style="background:'+CL[k]+'"></i>'+SP_TXT[k]+' '+cnt[k]+' ('+Math.round(cnt[k]/tot*100)+'%)</span>'}).join("");
+var need=SP_ITEMS.filter(function(i){var s=spStatus(i);return s==="low"||s==="out"}).sort(function(a,b){return (b.min-b.q)-(a.min-a.q)});
+$("need").innerHTML=need.length?'<table><thead><tr><th>รหัส</th><th>ชื่อ</th><th>คงเหลือ</th><th>ขั้นต่ำ</th><th>ขาด</th><th>ตำแหน่ง</th><th>สถานะ</th></tr></thead><tbody>'+need.map(function(i){var s=spStatus(i);return '<tr><td>'+esc(i.c)+'</td><td>'+esc(i.n)+'</td><td>'+i.q+' '+esc(i.u||"")+'</td><td>'+i.min+'</td><td><b>'+Math.max(0,i.min-i.q)+'</b></td><td>'+esc(spLocShort(i))+'</td><td><span class="tg s-'+s+'">'+SP_TXT[s]+'</span></td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ไม่มีรายการที่ใกล้หมดหรือหมด 👍</div>';
+function bars(el,rows,fmt){var mx=Math.max.apply(null,rows.map(function(r){return r[1]}).concat([1]));
+ $(el).innerHTML=rows.length?rows.map(function(r){return '<div class="bar"><span>'+esc(r[0])+'</span><div class="t"><i style="width:'+r[1]/mx*100+'%"></i></div><span>'+(fmt?fmt(r[1]):r[1])+'</span></div>'}).join(""):'<div class="empty">ยังไม่มีข้อมูล</div>'}
+bars("bym",SP_MACHINES.map(function(m){return [m,SP_ITEMS.filter(function(i){return i.m.indexOf(m)>-1}).length]}));
+bars("rst",["pending","approved","rejected","cancelled","done"].map(function(k){return [SP_REQ_TXT[k],REQ.filter(function(r){return r.status===k}).length]}));
+var mo=[],now=new Date();for(var k=5;k>=0;k--){var d=new Date(now.getFullYear(),now.getMonth()-k,1);mo.push({y:d.getFullYear(),m:d.getMonth(),n:0,l:d.toLocaleDateString("th-TH",{month:"short",year:"2-digit"})})}
+REQ.forEach(function(r){var d=new Date(r.time);mo.forEach(function(x){if(x.y===d.getFullYear()&&x.m===d.getMonth())x.n++})});
+bars("rmo",mo.map(function(x){return [x.l,x.n]}));
+var tp={};REQ.forEach(function(r){if(r.status==="rejected"||r.status==="cancelled")return;var k=r.item;tp[k]=(tp[k]||0)+(+r.qty||0)});
+bars("top",Object.keys(tp).map(function(k){return [k,tp[k]]}).sort(function(a,b){return b[1]-a[1]}).slice(0,6),function(v){return v+" ชิ้น"});
+$("scope").textContent=(ADM?"":"ส่วนคำขอแสดงเฉพาะของคุณ · ")+"ข้อมูลมาจากเบราว์เซอร์ของเครื่องนี้ (ไม่นับคำขอที่ถูกปฏิเสธ/ยกเลิกในอันดับอะไหล่ที่ถูกขอ)";
+// CSV (ใส่ BOM ให้ Excel อ่านภาษาไทยได้ และกันสูตรแฝง)
+function cell(v){v=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
+function dl(name,rows){var t="﻿"+rows.map(function(r){return r.map(cell).join(",")}).join("\r\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv;charset=utf-8"}));a.download=name+"-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
+$("csv1").onclick=function(){dl("stock",[["รหัส","ชื่อ","เครื่องจักร","คงเหลือ","ขั้นต่ำ","หน่วย","ชั้นวาง","ชั้นที่","สถานะ","หมายเหตุ"]].concat(SP_ITEMS.map(function(i){return [i.c,i.n,i.m.join(" / "),i.q,i.min,i.u||"",i.r||i.at||"",i.s||"",SP_TXT[spStatus(i)],i.rep||""]})))};
+(function(){var a=spTakeLoad().slice().reverse().slice(0,15);$("tkrep").innerHTML=a.length?'<table><thead><tr><th>เวลา</th><th>อะไหล่</th><th>จำนวน</th><th>ผู้หยิบ</th></tr></thead><tbody>'+a.map(function(k){return '<tr><td>'+new Date(k.time).toLocaleString("th-TH",{dateStyle:"short",timeStyle:"short"})+'</td><td>'+esc(k.item)+'</td><td>'+k.qty+' '+esc(k.u||"")+'</td><td>'+esc(k.by||"")+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ยังไม่มีการหยิบใช้</div>'})();
+$("csv2").onclick=function(){dl("requests",[["เลขที่","วันที่","อะไหล่","รหัส","จำนวน","เครื่องจักร","อาคาร/เตา","ด่วน","ผู้ขอ","สถานะ","เหตุผล"]].concat(REQ.map(function(r){return [r.id,new Date(r.time).toLocaleString("th-TH"),r.item,r.code,r.qty,r.machine,spReqBld(r),r.urgent?"ด่วน":"",r.by,SP_REQ_TXT[r.status],r.why||""]})))};
+
+/* ---- PM / JOB ---- */
+(function(){var pl=spPlans().filter(function(p){return p.active!==false}),rc=spPmRec(),t=spToday(),NM=SP_PM_NAME,F=spFmt,rows=pl.map(function(p){var d=spNextDue(p,rc);return{p:p,d:d,n:spDiff(d,t)}}).filter(function(x){return x.n<=45}).sort(function(a,b){return a.n-b.n});
+ $("pmdue").innerHTML=rows.length?'<table><thead><tr><th>เครื่องจักร</th><th>ชนิด</th><th>กำหนด</th><th>สถานะ</th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td><b>'+esc(x.p.machine)+'</b></td><td>'+NM[x.p.type]+'</td><td>'+F(x.d)+'</td><td>'+(x.n<0?'<span class="tg" style="background:#dc2626">เลย '+(-x.n)+' วัน</span>':x.n<=14?'<span class="tg" style="background:#d97706">อีก '+x.n+' วัน</span>':'<span class="tg" style="background:#16a34a">อีก '+x.n+' วัน</span>')+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty">'+(pl.length?'ไม่มี PM ที่ใกล้ถึงกำหนดใน 45 วัน':'ยังไม่มีแผน PM')+'</div>';
+ var jb=spSchedule(t,spAddDays(t,30),"").filter(function(x){return x.kind==="pm"||(x.kind==="job"&&x.status==="plan")});
+ $("jobtb").innerHTML=jb.length?'<table><thead><tr><th>วันที่</th><th>ประเภท</th><th>เครื่องจักร</th><th>รายละเอียด</th></tr></thead><tbody>'+jb.map(function(j){return '<tr><td>'+F(j.date)+(j.time?' '+esc(j.time):'')+'</td><td>'+(j.kind==="job"?'JOB':NM[j.type])+'</td><td><b>'+esc(j.machine)+'</b></td><td>'+(j.kind==="job"?esc(j.from||"-")+' → <b>'+esc(j.to||"-")+'</b>':'ตามแผน PM')+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ไม่มี JOB / PM ใน 30 วันข้างหน้า</div>';
+ var h=rc.slice().sort(function(a,b){return a.date<b.date?1:-1}).slice(0,10);
+ $("pmhist").innerHTML=h.length?'<table><thead><tr><th>วันที่</th><th>เครื่องจักร</th><th>ชนิด</th><th>ผู้ทำ</th><th>อะไหล่ที่เปลี่ยน</th></tr></thead><tbody>'+h.map(function(r){return '<tr><td>'+F(r.date)+'</td><td><b>'+esc(r.machine)+'</b>'+((r.sides&&r.sides.length)?' <small>(ข้าง '+r.sides.join(",")+')</small>':'')+'</td><td>'+NM[r.type]+'</td><td>'+esc(r.tech||"-")+'</td><td>'+((r.parts||[]).map(function(x){return esc(x.c)+' ×'+x.q+(x.s?' ('+x.s+')':'')}).join(", ")||"-")+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ยังไม่มีประวัติ PM</div>';
+ $("csv3").onclick=function(){dl("pm-history",[["วันที่","เครื่องจักร","ชนิด PM","ผู้ทำ","อะไหล่ที่เปลี่ยน","หมายเหตุ"]].concat(rc.slice().sort(function(a,b){return a.date<b.date?1:-1}).map(function(r){return[r.date,r.machine,NM[r.type],r.tech||"",(r.parts||[]).map(function(x){return x.c+" x"+x.q}).join(" / "),r.notes||""]})))}})();
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>
