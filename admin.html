@@ -87,7 +87,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 </main>
 
 <div class="ov" id="ov-p"><div class="md"><h3 id="pm-t">เพิ่มอะไหล่</h3>
- <div class="two"><div><label>รหัสอะไหล่ *</label><input type="text" id="f-c"></div><div><label>ชื่ออะไหล่ *</label><input type="text" id="f-n"></div></div>
+ <div class="two"><div><label>รหัสอะไหล่ <small style="font-weight:400;color:#64748b">(ไม่มีเลขก็เว้นว่างได้ ระบบสร้างรหัสภายใน NC-xxxx ให้)</small></label><input type="text" id="f-c" placeholder="เว้นว่างได้"></div><div><label>ชื่ออะไหล่ *</label><input type="text" id="f-n"></div></div>
  <label>คำค้นเพิ่ม (ชื่อเรียกอื่น คั่นด้วยเว้นวรรค เช่น ลูกปืน แบริ่ง)</label><input type="text" id="f-k">
  <label>ใช้กับเครื่องจักร</label><div class="cb" id="f-m"></div>
  <div class="three"><div><label>คงเหลือ</label><input type="number" id="f-q" min="0" value="0"></div><div><label>ขั้นต่ำ</label><input type="number" id="f-min" min="0" value="0"></div><div><label>หน่วย</label><input type="text" id="f-u" value="ตัว"></div></div>
@@ -154,8 +154,9 @@ function openP(i){editing=i||null;curImg=i&&i.img||"";$("f-img").value="";showIm
  Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(c){c.checked=!!(i&&i.m.indexOf(c.value)>-1)});$("ov-p").classList.add("on");$("f-c").focus()}
 $("p-add").onclick=function(){openP()};$("pc").onclick=function(){$("ov-p").classList.remove("on")};
 $("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim(),q=parseInt($("f-q").value,10),mn=parseInt($("f-min").value,10);
- function bad(t){$("pe").textContent=t}
- if(!c||!n)return bad("กรุณากรอกรหัสและชื่ออะไหล่");
+ function spNextNC(extra){var mx=0;SP_ITEMS.concat(extra||[]).forEach(function(i){var m=/^NC-(\d+)$/i.exec(String(i.c));if(m)mx=Math.max(mx,+m[1])});return "NC-"+("000"+(mx+1)).slice(-4)}
+function bad(t){$("pe").textContent=t}
+ if(!n)return bad("กรุณากรอกชื่ออะไหล่");if(!c)c=editing?editing.c:spNextNC();
  if(SP_ITEMS.some(function(x){return x!==editing&&x.c.toLowerCase()===c.toLowerCase()}))return bad("รหัสนี้มีอยู่แล้ว");
  if(!(q>=0)||!(mn>=0))return bad("ตัวเลขต้องไม่ติดลบ");
  var m=[];Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(x){if(x.checked)m.push(x.value)});
@@ -189,7 +190,7 @@ function pmerge(list,upd){var map={};SP_ITEMS.forEach(function(i){map[String(i.c
  if(!confirm("พบ "+list.length+" รายการในไฟล์\nเพิ่มใหม่ "+add.length+" รายการ"+(upd?"\nอัปเดตจำนวน/ตำแหน่งของรายการเดิม "+ch+" รายการ":"")+"\nยืนยัน?"))return;
  spItemsSave(SP_ITEMS.concat(add));alert("เรียบร้อย");location.reload()}
 function pxlsx(buf){var wb=XLSX.read(buf,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:""});var out=[];
- rows.slice(1).forEach(function(r){var c=String(r[0]).trim(),n=String(r[1]).trim();if(!c||!n)return;var q=r[2]===""?null:Number(r[2]),mn=r[3]===""?null:Number(r[3]);
+ rows.slice(1).forEach(function(r){var c=String(r[0]).trim(),n=String(r[1]).trim();if(!n)return;if(!c){var ex=SP_ITEMS.concat(out).filter(function(i){return i.n===n})[0];c=ex?ex.c:spNextNC(out)}var q=r[2]===""?null:Number(r[2]),mn=r[3]===""?null:Number(r[3]);
   var it={c:c,n:n,q:q==null||isNaN(q)?0:q,min:mn==null||isNaN(mn)?0:mn,u:String(r[4]||"ชิ้น").trim(),tx:String(r[5]||"").trim(),m:String(r[6]||"").split(/[,;]/).map(function(x){return x.trim()}).filter(Boolean),k:String(r[7]||"").trim()};
   if(q==null||isNaN(q))delete it._q;out.push(it)});pmerge(out,true)}
 $("p-mfile").onchange=function(e){var f=e.target.files[0];e.target.value="";if(!f)return;
