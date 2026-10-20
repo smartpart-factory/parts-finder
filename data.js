@@ -53,7 +53,15 @@ function spLocShort(i){return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปั
 /* รูปอะไหล่: ย่อรูปที่เลือกเป็น JPEG ไม่เกิน 360px (เก็บเป็น data URL ในเบราว์เซอร์) */
 function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.78))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}
 function spImg(i){return i.img||("images/"+i.c+".jpg")}
-function spStatus(i){return i.rep?"repair":i.q<=0?"out":i.q<=i.min?"low":"stock"}
+function spStatus(i){return i.rep?"repair":(i.t==="re"&&i.q<=0&&i.rp>0)?"repair":i.q<=0?"out":i.q<=i.min?"low":"stock"}
+/* อะไหล่ประเภท "ซ่อมแล้วใช้ซ้ำได้" (i.t==="re"): ส่งซ่อม = ย้ายจากคงเหลือไปยอดกำลังซ่อม (i.rp), ซ่อมเสร็จ = กลับมาเพิ่มในคงเหลือ */
+function spRepair(code,n,dir){n=parseInt(n,10);if(!(n>0))return "ใส่จำนวนให้ถูกต้อง";var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===code})[0];if(!x)return "ไม่พบอะไหล่นี้";
+ x.rp=x.rp||0;if(dir==="send"){if(n>x.q)return "ในแผนกมีแค่ "+x.q+" "+(x.u||"");x.q-=n;x.rp+=n}else{if(n>x.rp)return "ยอดที่กำลังซ่อมมีแค่ "+x.rp+" "+(x.u||"");x.rp-=n;x.q+=n}
+ var u=window.SP_USER||{};x.rlog=(x.rlog||[]).concat([{t:new Date().toISOString(),by:u.name||"",d:dir,n:n}]).slice(-30);
+ try{spItemsSave(l)}catch(e){return "บันทึกไม่สำเร็จ"}return ""}
+function spRepairUI(box,it,dir,done){var mx=dir==="send"?it.q:(it.rp||0);box.innerHTML='<span>'+(dir==="send"?'ส่งซ่อมกี่':'ซ่อมเสร็จกี่')+(it.u?' ('+it.u+')':'')+'? <input type="number" min="1" max="'+mx+'" value="1" style="width:70px;padding:6px;border:1px solid #cfd8ea;border-radius:8px"> <button type="button" class="ok2">✔ ยืนยัน</button> <button type="button" class="cn2">ยกเลิก</button> <small class="er2" style="color:#dc2626"></small></span>';
+ var inp=box.querySelector("input");inp.focus();box.querySelector(".cn2").onclick=function(){done&&done(false)};
+ box.querySelector(".ok2").onclick=function(){var e=spRepair(it.c,inp.value,dir);if(e){box.querySelector(".er2").textContent=e;return}done&&done(true)}}
 /* ถ้า admin เคยแก้ข้อมูลในหน้า "จัดการระบบ" ข้อมูลจะถูกเก็บในเบราว์เซอร์และใช้แทนรายการด้านบน */
 var SP_BASE_ITEMS=SP_ITEMS.slice();
 try{var _sv=localStorage.getItem("sp_items");if(_sv)SP_ITEMS=JSON.parse(_sv)}catch(e){}

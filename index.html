@@ -146,7 +146,7 @@ function wSvg(h){var s='<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid
  return s+'</svg>'}
 var PAL=[["#1e4fa8","#9fb4d6",0],["#5b6f8f","#2b4f9e",0],["#3a4a66","#1e63c9",0],["#7c8aa0","#4a6a9e",0],["#4a86d8","#9fb4d6",1],["#1b3f8a","#6b7a92",0]];
 var MACHINES=SP_MACH.map(function(m,i){var p=PAL[i%PAL.length];return{k:m.k,d:m.d||"",f:m.img||m.f||(m.k.toLowerCase().replace(/[^a-z0-9]/g,"")+".jpg"),a:p[0],b:p[1],t:p[2]}});
-var PARTS=SP_ITEMS.map(function(i){return{n:i.n,c:i.c,m:i.m,t:i.m.length>=SP_MACHINES.length?"ทุกเครื่องจักร":i.m.slice(0,2).join(" / "),u:"คงเหลือ "+i.q,f:i.c+".jpg"}});
+var PARTS=SP_ITEMS.map(function(i){return{n:i.n,c:i.c,m:i.m,t:i.m.length>=SP_MACHINES.length?"ทุกเครื่องจักร":i.m.slice(0,2).join(" / "),u:"คงเหลือ "+i.q,f:i.img||(i.c+".jpg")}});
 var mach="",qs="";
 slot(document.getElementById("hero"),"hero.jpg",mSvg("#1e4fa8","#9fb4d6",1));
 var me=document.getElementById("mach");

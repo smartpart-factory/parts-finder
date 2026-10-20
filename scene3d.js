@@ -34,24 +34,16 @@ var gcache={},pgen=0,TXC={};function imgTex(u){if(TXC[u])return TXC[u];var t=new
 function glbOf(u){return gcache[u]||(gcache[u]=gltf().then(function(){return new Promise(function(ok,no){new THREE.GLTFLoader().load(u,ok,undefined,no)})}))}
 function clear(g){while(g.children.length){var c=g.children.pop();c.traverse(function(n){if(n.geometry)n.geometry.dispose();if(n.material&&n.material.dispose)n.material.dispose()})}}
 function paint(){pgen++;clear(items);
- SP_ITEMS.forEach(function(i){var p=slotPos(i);if(!p)return;var st=spStatus(i),isSel=sel&&sel.c===i.c;
-  if(i.glb){var gen=pgen;glbOf(i.glb).then(function(g){if(gen!==pgen)return;var m=g.scene.clone(true),bb=new THREE.Box3().setFromObject(m),sz=bb.getSize(new THREE.Vector3()),k=p.bh/Math.max(sz.y,.001);m.scale.setScalar(k);
-    var b2=new THREE.Box3().setFromObject(m);m.position.set(p.x-(b2.min.x+b2.max.x)/2,p.y-p.bh/2-b2.min.y,p.z-(b2.min.z+b2.max.z)/2);items.add(m)}).catch(function(){})}
-  var col=isSel?0x2563eb:HEX[st],cm=function(){return new THREE.MeshStandardMaterial({color:col,roughness:.65,transparent:!!i.glb,opacity:i.glb?.15:1})},mt=cm();
-  if(i.img){var pm=new THREE.MeshStandardMaterial({color:0xffffff,roughness:.7,map:imgTex(i.img)});mt=[pm,pm,cm(),cm(),pm,pm]}
-  var b=new THREE.Mesh(new THREE.BoxGeometry(p.bw,p.bh,p.bd),mt);
-  b.position.set(p.x,p.y,p.z);b.castShadow=true;b.userData.code=i.c;if(isSel)b.scale.set(1.15,1.15,1.15);
-  b.add(new THREE.LineSegments(new THREE.EdgesGeometry(b.geometry),new THREE.LineBasicMaterial({color:0x0f172a,transparent:true,opacity:.55})));
-  var tp=new THREE.Mesh(new THREE.BoxGeometry(p.bw*1.02,.025,p.bd*1.02),new THREE.MeshStandardMaterial({color:0xf8fafc,roughness:.7}));tp.position.y=p.bh/2;b.add(tp);
-  items.add(b);
-  if(p.spot){var st2=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.34,6),new THREE.MeshBasicMaterial({color:0x334155}));st2.position.set(p.x,p.y+p.bh/2+.2,p.z);items.add(st2);
-   var dot=new THREE.Mesh(new THREE.SphereGeometry(.065,14,10),new THREE.MeshBasicMaterial({color:col}));dot.position.set(p.x,p.y+p.bh/2+.4,p.z);dot.userData.code=i.c;items.add(dot)}})}
+ // แสดงเฉพาะหมุดตำแหน่ง (ไม่มีโมเดลจำลองกล่อง/ชิ้นอะไหล่)
+ SP_ITEMS.forEach(function(i){if(!(i.pos&&i.pos.length===3))return;var p=slotPos(i),isSel=sel&&sel.c===i.c,col=isSel?0x2563eb:0xdc2626;
+  var st2=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.34,6),new THREE.MeshBasicMaterial({color:0x334155}));st2.position.set(p.x,p.y+p.bh/2+.2,p.z);items.add(st2);
+  var dot=new THREE.Mesh(new THREE.SphereGeometry(isSel?.09:.065,14,10),new THREE.MeshBasicMaterial({color:col}));dot.position.set(p.x,p.y+p.bh/2+.4,p.z);dot.userData.code=i.c;items.add(dot)})}
 // โมเดลคลังจริง (.glb) ถ้าตั้งค่าไว้
 if(SP_MODEL&&SP_MODEL.url){gltf().then(function(){new THREE.GLTFLoader().load(SP_MODEL.url,function(g){var m=g.scene;m.scale.setScalar(SP_MODEL.scale||1);m.position.set(SP_MODEL.x||0,SP_MODEL.y||0,SP_MODEL.z||0);modelG.add(m);
   fl.visible=false;DEPT.visible=false;PICKS=[fl].concat(modelG.children)},undefined,function(){infoEl.insertAdjacentHTML("beforeend",'<div style="color:#dc2626;font-size:12px">โหลดโมเดล 3D ไม่สำเร็จ ('+esc(SP_MODEL.url)+')</div>')})}).catch(function(){})}
 // ---- ข้อมูล + เส้นทาง ----
 function canEdit(){return !!(window.spCanEdit&&spCanEdit())}
-function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" style="float:right;width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;margin:0 0 6px 10px">':'')+'<b>'+esc(i.n)+'</b> ('+esc(i.c)+') <span class="tg s-'+s+'" style="margin-left:4px">'+SP_TXT[s]+'</span><br>คงเหลือ '+i.q+' '+esc(i.u||"")+' (ขั้นต่ำ '+i.min+')<br>ตำแหน่ง: '+esc(spLoc(i))+'<br>ใช้กับ: '+(i.m||[]).map(esc).join(", ")+(i.rep?'<br>หมายเหตุ: '+esc(i.rep):'')}
+function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" style="float:right;width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;margin:0 0 6px 10px">':'')+'<b>'+esc(i.n)+'</b> ('+esc(i.c)+') <span class="tg s-'+s+'" style="margin-left:4px">'+SP_TXT[s]+'</span><br>คงเหลือ '+i.q+' '+esc(i.u||"")+' (ขั้นต่ำ '+i.min+')<br>ตำแหน่ง: '+esc(spLoc(i))+'<br>ใช้กับ: '+(i.m||[]).map(esc).join(", ")+(i.rep?'<br>หมายเหตุ: '+esc(i.rep):'')}
 function drawRoute(pts){clear(routeG);if(!pts)return;
  for(var k=0;k<pts.length-1;k++){var a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[2]-a[2]);if(L<.01)continue;
   var m=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,L+.12),new THREE.MeshBasicMaterial({color:0xef1c1c}));m.position.set((a[0]+b[0])/2,.17,(a[2]+b[2])/2);m.rotation.y=Math.atan2(b[0]-a[0],b[2]-a[2]);routeG.add(m)}}

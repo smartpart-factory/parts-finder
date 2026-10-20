@@ -269,14 +269,35 @@ D.pathTo=function(tgt,racks){
  var g=new Uint8Array(W*H);for(var j=0;j<H;j++)for(var i=0;i<W;i++)g[j*W+i]=blk(x0+(i+.5)*S,z0+(j+.5)*S)?1:0;
  function cell(p){return[Math.max(0,Math.min(W-1,Math.floor((p[0]-x0)/S))),Math.max(0,Math.min(H-1,Math.floor((p[1]-z0)/S)))]}
  function near(c){if(!g[c[1]*W+c[0]])return c;for(var r=1;r<80;r++){var b=null,bd=1e9;for(var dj=-r;dj<=r;dj++)for(var di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;var a=c[0]+di,e=c[1]+dj;if(a<0||e<0||a>=W||e>=H||g[e*W+a])continue;var d=di*di+dj*dj;if(d<bd){bd=d;b=[a,e]}}if(b)return b}return c}
- var st=D.entry,s=near(cell([st[0],st[1]-.8])),t=near(cell(tgt)),N=W*H,gs=new Float32Array(N).fill(1e9),pv=new Int32Array(N).fill(-1),cl=new Uint8Array(N),open=[[0,s[1]*W+s[0]]];gs[s[1]*W+s[0]]=0;var ti=t[1]*W+t[0],found=false;
- while(open.length){var bi=0;for(var q=1;q<open.length;q++)if(open[q][0]<open[bi][0])bi=q;var cur=open.splice(bi,1)[0][1];if(cl[cur])continue;cl[cur]=1;if(cur===ti){found=true;break}
-  var cx=cur%W,cz=(cur-cx)/W;for(var dj=-1;dj<=1;dj++)for(var di=-1;di<=1;di++){if(!di&&!dj)continue;var a=cx+di,e=cz+dj;if(a<0||e<0||a>=W||e>=H||g[e*W+a])continue;if(di&&dj&&(g[cz*W+a]||g[e*W+cx]))continue;var n=e*W+a,ng=gs[cur]+(di&&dj?1.414:1);if(ng<gs[n]){gs[n]=ng;pv[n]=cur;open.push([ng+Math.hypot(a-t[0],e-t[1]),n])}}}
- if(!found)return null;
- var pts=[];for(var n=ti;n>=0;n=pv[n]){var nx=n%W;pts.unshift([x0+(nx+.5)*S,z0+((n-nx)/W+.5)*S])}
- function los(a,b){var L=Math.hypot(b[0]-a[0],b[1]-a[1]),k=Math.max(1,Math.ceil(L/.05));for(var u=0;u<=k;u++){var c=cell([a[0]+(b[0]-a[0])*u/k,a[1]+(b[1]-a[1])*u/k]);if(g[c[1]*W+c[0]])return false}return true}
- var out=[pts[0]],i0=0;while(i0<pts.length-1){var j2=pts.length-1;while(j2>i0+1&&!los(pts[i0],pts[j2]))j2--;out.push(pts[j2]);i0=j2}
- return out.map(function(q){return[q[0],.15,q[1]]})};
+ var st=D.entry,s=near(cell([st[0],st[1]-.8])),t=near(cell(tgt)),N=W*H,TURN=12;
+ // A* แบบเดินตรงตามแกน (ซ้าย/ขวา/หน้า/หลัง) มีค่าปรับเมื่อเลี้ยว => เส้นตรง เลี้ยวฉาก ไม่เอียง
+ var gs=new Float32Array(N*4).fill(1e9),pv=new Int32Array(N*4).fill(-1),hp=[],DX=[1,-1,0,0],DZ=[0,0,1,-1];
+ function push(f,n){hp.push([f,n]);var k=hp.length-1;while(k>0){var p=(k-1)>>1;if(hp[p][0]<=hp[k][0])break;var q=hp[p];hp[p]=hp[k];hp[k]=q;k=p}}
+ function pop(){var top=hp[0],last=hp.pop();if(hp.length){hp[0]=last;var k=0;for(;;){var l=2*k+1,r=l+1,m=k;if(l<hp.length&&hp[l][0]<hp[m][0])m=l;if(r<hp.length&&hp[r][0]<hp[m][0])m=r;if(m===k)break;var q=hp[m];hp[m]=hp[k];hp[k]=q;k=m}}return top}
+ var si=s[1]*W+s[0];for(var d0=0;d0<4;d0++){gs[si*4+d0]=0;push(Math.abs(s[0]-t[0])+Math.abs(s[1]-t[1]),si*4+d0)}
+ var end=-1,ti=t[1]*W+t[0];
+ while(hp.length){var cur=pop()[1],cc=cur>>2,cd=cur&3;if(cc===ti){end=cur;break}
+  var cx=cc%W,cz=(cc-cx)/W,base=gs[cur];
+  for(var d=0;d<4;d++){var a=cx+DX[d],e=cz+DZ[d];if(a<0||e<0||a>=W||e>=H||g[e*W+a])continue;var ns=(e*W+a)*4+d,ng=base+1+(d!==cd&&cc!==si?TURN:0);
+   if(ng<gs[ns]){gs[ns]=ng;pv[ns]=cur;push(ng+Math.abs(a-t[0])+Math.abs(e-t[1]),ns)}}}
+ if(end<0)return null;
+ var cells=[];for(var n=end;n>=0;n=pv[n]){var c2=n>>2,nx=c2%W;cells.unshift([nx,(c2-nx)/W])}
+ // รวมจุดที่เรียงเป็นเส้นเดียวกัน เหลือเฉพาะมุมเลี้ยว
+ var cor=[cells[0]];for(var k=1;k<cells.length-1;k++){var p0=cells[k-1],p1=cells[k],p2=cells[k+1];if((p1[0]-p0[0])*(p2[1]-p1[1])-(p1[1]-p0[1])*(p2[0]-p1[0])!==0)cor.push(p1)}
+ cor.push(cells[cells.length-1]);
+ function seg(a,b){var dx=Math.sign(b[0]-a[0]),dz=Math.sign(b[1]-a[1]),x=a[0],z=a[1];while(true){if(g[z*W+x])return false;if(x===b[0]&&z===b[1])return true;x+=dx;z+=dz}}
+ // ลดจำนวนมุมเลี้ยว: ลองต่อด้วยรูปตัว L (ฉากเสมอ) ข้ามหลายมุม
+ var out=[cor[0]],ia=0;
+ while(ia<cor.length-1){var jb=cor.length-1,done=false;
+  for(;jb>ia;jb--){var A=cor[ia],Bq=cor[jb];
+   if(A[0]===Bq[0]||A[1]===Bq[1]){if(seg(A,Bq)){out.push(Bq);done=true;break}continue}
+   var m1=[Bq[0],A[1]],m2=[A[0],Bq[1]];
+   if(seg(A,m1)&&seg(m1,Bq)){out.push(m1,Bq);done=true;break}
+   if(seg(A,m2)&&seg(m2,Bq)){out.push(m2,Bq);done=true;break}}
+  if(!done){out.push(cor[ia+1]);jb=ia+1}ia=jb}
+ // ลบจุดซ้ำ/จุดตรงกลางที่อยู่แนวเดียวกัน
+ var fin=[];out.forEach(function(p){var l=fin.length;if(l&&fin[l-1][0]===p[0]&&fin[l-1][1]===p[1])return;if(l>1){var a=fin[l-2],b=fin[l-1];if((b[0]-a[0])*(p[1]-b[1])-(b[1]-a[1])*(p[0]-b[0])===0)fin.pop()}fin.push(p)});
+ return fin.map(function(q){return[x0+(q[0]+.5)*S,.15,z0+(q[1]+.5)*S]})};
 D.route=function(key,racks){var r=racks[key];return r?D.pathTo([r.x,r.z],racks):null};
 D.colliders=function(racks){var c=[];
  D.walls.forEach(function(w){var horiz=Math.abs(w[1]-w[3])<1e-6,a=horiz?w[0]:w[1],b=horiz?w[2]:w[3],fix=horiz?w[1]:w[0],cur=Math.min(a,b),end=Math.max(a,b),segs=[];
