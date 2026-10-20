@@ -21,8 +21,8 @@ dl.castShadow=true;dl.shadow.mapSize.set(2048,2048);var sh=dl.shadow.camera,sp=s
 var fl=new THREE.Mesh(new THREE.PlaneGeometry(span*3,span*3),new THREE.MeshStandardMaterial({color:0x8f8f8b,roughness:.97}));fl.rotation.x=-Math.PI/2;fl.position.set(cx,-.01,cz);fl.receiveShadow=true;fl.userData.surf="บนพื้น";sc.add(fl);
 var door=new THREE.Mesh(new THREE.BoxGeometry(2,.1,.6),new THREE.MeshBasicMaterial({color:0x16a34a}));door.position.set(DOOR[0],.06,DOOR[1]);sc.add(door);
 var DEPT=spDept.build(THREE,sc,SP_RACKS),PICKS=[fl].concat(DEPT.userData.pick);
-var items=new THREE.Group(),modelG=new THREE.Group(),routeG=new THREE.Group(),ring=new THREE.Mesh(new THREE.RingGeometry(.13,.19,32),new THREE.MeshBasicMaterial({color:0xf59e0b,side:THREE.DoubleSide,depthTest:false,transparent:true}));
-ring.rotation.x=-Math.PI/2;ring.visible=false;ring.renderOrder=9;sc.add(items,modelG,routeG,ring);var mark=null,sel=null;
+var items=new THREE.Group(),modelG=new THREE.Group(),routeG=new THREE.Group(),hlG=new THREE.Group(),ring=new THREE.Mesh(new THREE.RingGeometry(.13,.19,32),new THREE.MeshBasicMaterial({color:0xf59e0b,side:THREE.DoubleSide,depthTest:false,transparent:true}));
+ring.rotation.x=-Math.PI/2;ring.visible=false;ring.renderOrder=9;sc.add(items,modelG,routeG,hlG,ring);var mark=null,sel=null;
 // ---- ตำแหน่งกล่องอะไหล่ ----
 function slotPos(i){var r=SP_RACKS[i.r];
  if(i.pos&&i.pos.length===3)return{x:i.pos[0],y:i.pos[1]+.12,z:i.pos[2],bw:.26,bh:.24,bd:.2,top:i.pos[1],spot:true};
@@ -47,11 +47,20 @@ function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" st
 function drawRoute(pts){clear(routeG);if(!pts)return;
  for(var k=0;k<pts.length-1;k++){var a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[2]-a[2]);if(L<.01)continue;
   var m=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,L+.12),new THREE.MeshBasicMaterial({color:0xef1c1c}));m.position.set((a[0]+b[0])/2,.17,(a[2]+b[2])/2);m.rotation.y=Math.atan2(b[0]-a[0],b[2]-a[2]);routeG.add(m)}}
-function show(i){sel=i;paint();drawRoute(null);if(mark){sc.remove(mark);mark=null}
+// ไฮไลต์ตู้/ชั้น/โต๊ะที่อะไหล่อยู่ ให้กระพริบ
+function hlTarget(i,p){var best=null,ba=1e9;function tryR(o,pad){if(!o||!o.w||!o.d||!o.h)return;if(Math.abs(p.x-o.x)<=o.w/2+pad&&Math.abs(p.z-o.z)<=o.d/2+pad&&p.y<=o.h+.35){var a=o.w*o.d;if(a<ba){ba=a;best=o}}}
+ var r=SP_RACKS[i.r];if(!(i.pos&&i.pos.length===3)&&r)return r;
+ Object.keys(SP_RACKS).forEach(function(k){tryR(SP_RACKS[k],.12)});
+ (spDept.furn||[]).forEach(function(f){if(f.t==="belt"||f.t==="stool"||f.t==="column")return;tryR(f,.12)});return best}
+function highlight(i,p){clear(hlG);hlG.userData.fill=null;var o=hlTarget(i,p);if(!o)return;var w=o.w+.06,d=o.d+.06,h=o.h+.06,g=new THREE.BoxGeometry(w,h,d);
+ var m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffc400,transparent:true,opacity:.3,depthWrite:false}));m.position.set(o.x,h/2,o.z);m.renderOrder=5;
+ var e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xff9500}));e.position.copy(m.position);e.renderOrder=6;hlG.add(m,e);hlG.userData.fill=m;hlG.userData.edge=e}
+function show(i){sel=i;paint();drawRoute(null);clear(hlG);hlG.userData.fill=null;if(mark){sc.remove(mark);mark=null}
  var p=slotPos(i),r=SP_RACKS[i.r],h=head(i),btn="";
  if(canEdit())btn='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
  infoEl.innerHTML=h+btn;wire(i);
  if(!p){infoEl.insertAdjacentHTML("afterbegin",'<div style="color:#dc2626;margin-bottom:4px">ยังไม่มีตำแหน่งในโมเดล 3D'+(i.r?' (ชั้นวาง '+esc(i.r)+' ไม่มีในผัง)':'')+'</div>');return}
+ highlight(i,p);
  var pts=spDept.pathTo([p.x,p.z],SP_RACKS);drawRoute(pts);
  mark=new THREE.Mesh(new THREE.ConeGeometry(.17,.38,16),new THREE.MeshBasicMaterial({color:0xf59e0b}));mark.rotation.x=Math.PI;mark.userData.y0=p.y+p.bh/2+.55;mark.position.set(p.x,mark.userData.y0,p.z);sc.add(mark);
  if(innerWidth<1100)host.scrollIntoView({behavior:"smooth",block:"center"})}
@@ -145,6 +154,6 @@ window.addEventListener("pointermove",function(e){if(placing&&!pd[e.pointerId]&&
  else if(drag){ang-=(e.clientX-lx)*.01;el=Math.max(.12,Math.min(1.52,el+(e.clientY-ly)*.008))}pd[e.pointerId]=e;lx=e.clientX;ly=e.clientY});
 host.addEventListener("wheel",function(e){e.preventDefault();if(walk){step(-Math.sin(wyaw)*e.deltaY*.004,Math.cos(wyaw)*e.deltaY*.004);return}dist=Math.max(4,Math.min(90,dist+e.deltaY*.03))},{passive:false});
 function rs(){W=host.clientWidth;H=host.clientHeight;if(!W||!H)return;ren.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}window.addEventListener("resize",rs);if(window.ResizeObserver)new ResizeObserver(rs).observe(host);document.addEventListener("fullscreenchange",function(){setTimeout(function(){rs();fitView(horiz)},100)});
-(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;ren.render(sc,cam)})();
+(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;var hf=hlG.userData.fill;if(hf){var ph=Math.sin(Date.now()/170);hf.material.opacity=.12+.38*(.5+.5*ph);hlG.userData.edge.visible=ph>-.3}ren.render(sc,cam)})();
 paint();
 var API={show:show,paint:paint,place:place,canEdit:canEdit,walk:setWalk,setCam:function(a){FREE=a},shot:function(){cp();ren.render(sc,cam);return ren.domElement.toDataURL('image/jpeg',.93)},ren:ren,B:B,fit:fitView,view:function(a,e,d,x,z){if(a!=null)ang=a;if(e!=null)el=e;if(d!=null)dist=d;if(x!=null){tx=x;tz=z}},scene:sc,THREE:THREE};window.spSceneApi=API;return API};
