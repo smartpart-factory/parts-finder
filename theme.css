@@ -98,7 +98,7 @@ label{color:var(--ink-2)!important;font-weight:600;font-size:12.5px!important}
 /* ---------- Badges / status ---------- */
 .bd{border-radius:99px!important;font-weight:600;font-size:11.5px!important;padding:3px 11px!important;letter-spacing:.1px}
 .w{background:var(--warn-bg)!important;color:var(--warn)!important}.o{background:var(--ok-bg)!important;color:#047857!important}.x{background:var(--bad-bg)!important;color:var(--bad)!important}.c{background:#eef1f6!important;color:#475569!important}
-.tg,.qb{border-radius:99px!important;font-weight:600;font-size:11.5px!important;padding:3px 11px!important}
+.qb{border-radius:99px!important;padding:0!important}.tg{border-radius:99px!important;font-weight:600;font-size:11.5px!important;padding:3px 11px!important}
 .s-stock{background:#059669!important}.s-low{background:#d97706!important}.s-out{background:#dc2626!important}.s-repair{background:#7c3aed!important}
 .urg{border-radius:99px!important}
 
