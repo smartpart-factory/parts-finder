@@ -47,12 +47,19 @@ function field(id,label,type,ph){return '<label for="'+id+'">'+label+'</label><i
 function v(id){return document.getElementById(id).value}
 function err(t){document.getElementById("err").textContent=t}
 function busy(on){var b=document.getElementById("go");b.disabled=on}
-if(spCurrent()){go()}
-else if(!spUsers().length){
+function showLogin(){
+ app.innerHTML='<h2>เข้าสู่ระบบ</h2><div class="sub">กรอกชื่อผู้ใช้และรหัสผ่าน</div>'+field("un","ชื่อผู้ใช้")+field("pw","รหัสผ่าน","password")
+  +'<div class="err" id="err"></div><button id="go">เข้าสู่ระบบ</button><div class="hint">ลืมรหัสผ่าน: ให้ผู้ดูแลระบบรีเซ็ตให้ในหน้า "จัดการระบบ"</div>';
+ var doLogin=function(){var u=v("un"),p=v("pw");if(!u||!p)return err("กรุณากรอกให้ครบ");busy(true);
+  spLogin(u,p).then(function(x){if(x)go();else{busy(false);err(window.SP_LOGIN_MSG||"ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง (หรือบัญชีถูกปิดใช้งาน)")}})};
+ document.getElementById("go").onclick=doLogin;
+ document.getElementById("pw").onkeydown=function(e){if(e.key==="Enter")doLogin()};
+ document.getElementById("un").focus()}
+function showSetup(){
  app.innerHTML='<h2>ตั้งค่าครั้งแรก</h2><div class="sub">สร้างบัญชีผู้ดูแลระบบ คนแรก</div>'
   +field("name","ชื่อที่แสดง","text","เช่น ปฐวี จันทร์ร่าม")+field("un","ชื่อผู้ใช้ (ภาษาอังกฤษ/ตัวเลข 3-20 ตัว)","text","admin")+field("pw","รหัสผ่าน (อย่างน้อย 6 ตัว)","password")+field("pw2","ยืนยันรหัสผ่าน","password")
   +'<div class="err" id="err"></div><button id="go">สร้างบัญชีและเข้าสู่ระบบ</button>'
-  +'<div class="warn">ระบบผู้ใช้นี้เก็บในเบราว์เซอร์ของเครื่องนี้ ยังไม่ใช่ระบบกลางสำหรับหลายเครื่อง</div>';
+  +(window.SPC?'<div class="warn">บัญชีนี้จะเป็นผู้ดูแลระบบของระบบกลาง (ใช้ได้ทุกเครื่อง) — ผู้ใช้คนอื่นให้สร้างในหน้า "จัดการระบบ"</div>':'<div class="warn">ระบบผู้ใช้นี้เก็บในเบราว์เซอร์ของเครื่องนี้ ยังไม่ใช่ระบบกลางสำหรับหลายเครื่อง</div>');
  document.getElementById("go").onclick=function(){
   var n=v("name").trim(),u=v("un").trim(),p=v("pw");
   if(!n)return err("กรุณากรอกชื่อที่แสดง");
@@ -60,15 +67,15 @@ else if(!spUsers().length){
   if(p.length<6)return err("รหัสผ่านต้องมีอย่างน้อย 6 ตัว");
   if(p!==v("pw2"))return err("รหัสผ่านไม่ตรงกัน");
   busy(true);
-  spMakeUser(u,n,"admin",p).then(function(x){spUsersSave([x]);return spLogin(u,p)}).then(go)}
-}else{
- app.innerHTML='<h2>เข้าสู่ระบบ</h2><div class="sub">กรอกชื่อผู้ใช้และรหัสผ่าน</div>'+field("un","ชื่อผู้ใช้")+field("pw","รหัสผ่าน","password")
-  +'<div class="err" id="err"></div><button id="go">เข้าสู่ระบบ</button><div class="hint">ลืมรหัสผ่าน: ให้ผู้ดูแลระบบรีเซ็ตให้ในหน้า "จัดการระบบ"</div>';
- var doLogin=function(){var u=v("un"),p=v("pw");if(!u||!p)return err("กรุณากรอกให้ครบ");busy(true);
-  spLogin(u,p).then(function(x){if(x)go();else{busy(false);err("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง (หรือบัญชีถูกปิดใช้งาน)")}})};
- document.getElementById("go").onclick=doLogin;
- document.getElementById("pw").onkeydown=function(e){if(e.key==="Enter")doLogin()};
- document.getElementById("un").focus()}
+  if(window.SPC){SPC.signupFirst(u,n,p).then(function(r){if(r.ok)go();else{busy(false);err(r.msg)}});return}
+  spMakeUser(u,n,"admin",p).then(function(x){spUsersSave([x]);return spLogin(u,p)}).then(go)}}
+if(spCurrent()){go()}
+else if(window.SPC){
+ app.innerHTML='<div class="sub">กำลังเชื่อมต่อระบบกลาง…</div>';
+ SPC.hasAdmin().then(function(r){if(!r.ok){app.innerHTML='<h2>เชื่อมต่อไม่ได้</h2><div class="err" style="display:block">'+r.msg+'</div><button onclick="location.reload()">ลองใหม่</button><div class="hint">ถ้าเพิ่งตั้งระบบ ตรวจว่ารัน SQL ใน Supabase แล้ว</div>';return}
+  if(r.v)showLogin();else showSetup()})}
+else if(!spUsers().length)showSetup();
+else showLogin();
 </script>
 </body>
 </html>

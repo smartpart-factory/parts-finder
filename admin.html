@@ -58,7 +58,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div id="pg-p">
   <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
   <div class="card"><table><thead><tr><th>รหัส / ชื่อ</th><th>เครื่องจักร</th><th>คงเหลือ</th><th>ขั้นต่ำ</th><th>ตำแหน่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
-  <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (เช็คของ ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในเบราว์เซอร์ของเครื่องนี้ (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
+  <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (เช็คของ ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในระบบกลาง ทุกเครื่องเห็นชุดเดียวกัน (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
  </div>
 
  <div id="pg-3" style="display:none">
@@ -180,7 +180,7 @@ $("p-mfile").onchange=function(e){var f=e.target.files[0];e.target.value="";if(!
  if(/\.xlsx?$/i.test(f.name)){var go=function(){var r=new FileReader();r.onload=function(){try{pxlsx(new Uint8Array(r.result))}catch(x){alert("อ่านไฟล์ Excel ไม่ได้")}};r.readAsArrayBuffer(f)};
   if(window.XLSX)return go();var sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";sc.onload=go;sc.onerror=function(){alert("โหลดตัวอ่าน Excel ไม่ได้ (ต้องต่ออินเทอร์เน็ต) ลองใช้ไฟล์ .json แทน")};document.head.appendChild(sc);return}
  var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(!d||!Array.isArray(d.items))throw 1;pmerge(d.items,false)}catch(x){alert("ไฟล์ไม่ถูกต้อง")}};r.readAsText(f)};
-$("p-exp").onclick=function(){var d={app:"spareparts3d",version:1,exported:new Date().toISOString(),items:SP_ITEMS,requests:spReqSafe(),takes:(function(){try{return JSON.parse(localStorage.getItem("sp_takes")||"[]")}catch(e){return[]}})(),machines:SP_MACH,pm:{plans:spPlans(),rec:spPmRec(),jobs:spJobs()}};if(spIsAdmin())d.users=spUsers();
+$("p-exp").onclick=function(){var d={app:"spareparts3d",version:1,exported:new Date().toISOString(),items:SP_ITEMS,requests:spReqSafe(),takes:(function(){try{return JSON.parse(localStorage.getItem("sp_takes")||"[]")}catch(e){return[]}})(),machines:SP_MACH,pm:{plans:spPlans(),rec:spPmRec(),jobs:spJobs()}};if(spIsAdmin()&&!window.SPC)d.users=spUsers();
  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,1)],{type:"application/json"}));a.download="spareparts-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()};
 function spReqSafe(){try{return JSON.parse(localStorage.getItem("sp_requests")||"[]")}catch(e){return[]}}
 $("p-imp").onclick=function(){$("p-file").click()};
@@ -188,25 +188,27 @@ $("p-file").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new 
  try{var d=JSON.parse(r.result);if(d.app!=="spareparts3d"||!Array.isArray(d.items))throw 0;
   if(!confirm("นำเข้าจะแทนที่ข้อมูลอะไหล่"+(d.requests?" คำขอ":"")+(d.users?" และผู้ใช้":"")+"ปัจจุบันทั้งหมด ยืนยันหรือไม่?"))return;
   spItemsSave(d.items);if(Array.isArray(d.requests))localStorage.setItem("sp_requests",JSON.stringify(d.requests));if(Array.isArray(d.takes))localStorage.setItem("sp_takes",JSON.stringify(d.takes));if(Array.isArray(d.machines))spMachSave(d.machines);if(d.pm){if(Array.isArray(d.pm.plans))spPlansSave(d.pm.plans);if(Array.isArray(d.pm.rec))spPmRecSave(d.pm.rec);if(Array.isArray(d.pm.jobs))spJobsSave(d.pm.jobs)}
-  if(spIsAdmin()&&Array.isArray(d.users)&&d.users.some(function(u){return u.role==="admin"&&u.active}))spUsersSave(d.users);
+  if(!window.SPC&&spIsAdmin()&&Array.isArray(d.users)&&d.users.some(function(u){return u.role==="admin"&&u.active}))spUsersSave(d.users);
   alert("นำเข้าสำเร็จ");location.reload()}catch(x){alert("ไฟล์ไม่ถูกต้อง ต้องเป็นไฟล์สำรองที่ได้จากระบบนี้")}};r.readAsText(f);e.target.value=""};
 $("p-rst").onclick=function(){if(confirm("รีเซ็ตรายการอะไหล่กลับไปใช้ข้อมูลใน data.js ? (รายการที่แก้ผ่านหน้านี้จะหายไป)")){localStorage.removeItem("sp_items");location.reload()}};
 // ---- ผู้ใช้ ----
-var U=spUsers(),ISA=spIsAdmin();
+var CL=!!window.SPC,U=CL?SPC.listUsers():spUsers(),ISA=spIsAdmin();
+function cl(r,ok){if(r&&r.ok){U=SPC.listUsers();udraw();if(ok)ok()}else{alert((r&&r.msg)||"ทำรายการไม่สำเร็จ");U=SPC.listUsers();udraw()}}
 function admins(ex){return U.filter(function(x){return x.role==="admin"&&x.active&&x.id!==ex}).length}
-function usave(){spUsersSave(U);udraw()}
+function usave(){if(CL){U=SPC.listUsers();udraw();return}spUsersSave(U);udraw()}
 function udraw(){var b=$("ub");b.innerHTML="";
  U.forEach(function(u){var me=u.id===SP_USER.id,tr=document.createElement("tr");
   tr.innerHTML='<td><b>'+esc(u.name)+(me?' <small style="display:inline">(คุณ)</small>':'')+'</b><small>'+esc(u.username)+'</small></td>'
-  +'<td><select '+(me||!ISA?"disabled":"")+'><option value="user"'+(u.role==="user"?" selected":"")+'>ช่างกะ</option><option value="manager"'+(u.role==="manager"?" selected":"")+'>ช่าง Day time</option><option value="admin"'+(u.role==="admin"?" selected":"")+'>ผู้ดูแลระบบ</option></select></td>'
-  +'<td><span class="tg s-'+(u.active?"stock":"off")+'">'+(u.active?"ใช้งาน":"ปิดใช้งาน")+'</span></td><td>'+new Date(u.created).toLocaleDateString("th-TH")+'</td>'
+  +'<td><select '+(me||!ISA?"disabled":"")+'><option value="user"'+(u.role==="user"?" selected":"")+'>ช่างกะ</option>'+(u.role==="pending"?'<option value="pending" selected>⏳ รออนุมัติ</option>':"")+'<option value="manager"'+(u.role==="manager"?" selected":"")+'>ช่าง Day time</option><option value="admin"'+(u.role==="admin"?" selected":"")+'>ผู้ดูแลระบบ</option></select></td>'
+  +'<td><span class="tg s-'+(u.active?"stock":"off")+'">'+(u.active?"ใช้งาน":"ปิดใช้งาน")+'</span></td><td>'+(u.created?new Date(u.created).toLocaleDateString("th-TH"):"-")+'</td>'
   +'<td style="white-space:nowrap"><button class="btn s" data-a="pw" '+(ISA?"":'style="display:none"')+'>รีเซ็ตรหัสผ่าน</button> <button class="btn s" data-a="tg" '+(me||!(ISA||u.role==="user")?"disabled":"")+'>'+(u.active?"ปิดใช้งาน":"เปิดใช้งาน")+'</button> <button class="btn s d" data-a="x" '+(ISA?(me?"disabled":""):'style="display:none"')+'>ลบ</button></td>';
-  tr.querySelector("select").onchange=function(e){var v=e.target.value;if(u.role==="admin"&&v!=="admin"&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ อย่างน้อย 1 คน");udraw();return}u.role=v;usave()};
+  tr.querySelector("select").onchange=function(e){var v=e.target.value;if(u.role==="admin"&&v!=="admin"&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ อย่างน้อย 1 คน");udraw();return}if(CL){cl(SPC.updateUser(u.id,{role:v}));return}u.role=v;usave()};
   tr.querySelector('[data-a="pw"]').onclick=function(){var p=prompt("ตั้งรหัสผ่านใหม่ให้ "+u.username+" (อย่างน้อย 6 ตัว)");if(p===null)return;if(p.length<6){alert("รหัสผ่านสั้นเกินไป");return}
+   if(CL){cl(SPC.setPassword(u.id,p),function(){alert("รีเซ็ตรหัสผ่านแล้ว")});return}
    spHash(p,u.salt).then(function(h){u.hash=h;usave();alert("รีเซ็ตรหัสผ่านแล้ว")})};
-  tr.querySelector('[data-a="tg"]').onclick=function(){if(u.active&&u.role==="admin"&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ ที่ใช้งานอยู่อย่างน้อย 1 คน");return}u.active=!u.active;usave()};
+  tr.querySelector('[data-a="tg"]').onclick=function(){if(u.active&&u.role==="admin"&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ ที่ใช้งานอยู่อย่างน้อย 1 คน");return}if(CL){cl(SPC.updateUser(u.id,{active:!u.active}));return}u.active=!u.active;usave()};
   tr.querySelector('[data-a="x"]').onclick=function(){if(u.role==="admin"&&u.active&&admins(u.id)<1){alert("ต้องเหลือ ผู้ดูแลระบบ อย่างน้อย 1 คน");return}
-   if(confirm('ลบผู้ใช้ "'+u.username+'" ?')){U=U.filter(function(x){return x!==u});usave()}};
+   if(confirm('ลบผู้ใช้ "'+u.username+'" ?')){if(CL){cl(SPC.deleteUser(u.id));return}U=U.filter(function(x){return x!==u});usave()}};
   b.appendChild(tr)})}
 $("u-add").onclick=function(){["u-un","u-nm","u-pw"].forEach(function(i){$(i).value=""});$("u-rl").value="user";$("ue").textContent="";$("ov-u").classList.add("on");$("u-un").focus()};
 $("uc").onclick=function(){$("ov-u").classList.remove("on")};
@@ -214,6 +216,7 @@ $("us").onclick=function(){var un=$("u-un").value.trim(),nm=$("u-nm").value.trim
  if(!/^[A-Za-z0-9_.\-]{3,20}$/.test(un))return bad("ชื่อผู้ใช้ต้องเป็นอังกฤษ/ตัวเลข 3-20 ตัว");
  if(U.some(function(x){return x.username.toLowerCase()===un.toLowerCase()}))return bad("ชื่อผู้ใช้นี้มีอยู่แล้ว");
  if(!nm)return bad("กรุณากรอกชื่อที่แสดง");if(pw.length<6)return bad("รหัสผ่านต้องมีอย่างน้อย 6 ตัว");
+ if(CL){$("us").disabled=true;SPC.createUser(un,nm,pw,$("u-rl").value).then(function(r){$("us").disabled=false;if(r.ok){U=SPC.listUsers();udraw();$("ov-u").classList.remove("on")}else bad(r.msg)});return}
  spMakeUser(un,nm,$("u-rl").value,pw).then(function(x){U.push(x);usave();$("ov-u").classList.remove("on")})};
 // ---- ผังคลัง 3D ----
 var RK=JSON.parse(JSON.stringify(SP_RACKS)),RNEW={};
