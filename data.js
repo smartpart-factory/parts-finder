@@ -12,23 +12,23 @@ function spMachSave(a){SP_MACH=a;SP_MACHINES=a.map(function(m){return m.k});loca
  แก้ได้ที่หน้า "จัดการระบบ" > "ผังคลัง 3D" (จะเก็บในเบราว์เซอร์ และใช้แทนค่าด้านล่าง) */
 /* ผังจริงชั้น 1 (หน้า 3 เหนือสุด → หน้า 1 ใต้สุด/ทางเข้า) — S/C/G/L = ห้องเก็บอะไหล่, W/K = ห้องช่าง ดูชื่อเต็มในไฟล์ dept.js */
 var SP_RACKS={
- S1:{x:2.57,z:3.12,w:1.11,d:4.02,h:1.8,n:3},
- S2:{x:4.22,z:3.23,w:0.97,d:4.1,h:1.8,n:3},
- C1:{x:4.13,z:0.43,w:0.77,d:0.47,h:1.8,n:3},
- C2:{x:5.12,z:0.44,w:0.85,d:0.5,h:1.8,n:3},
- C3:{x:5.48,z:1.63,w:0.46,d:0.88,h:1.8,n:3},
- C4:{x:5.36,z:2.74,w:0.47,d:1.12,h:1.8,n:3},
- C5:{x:5.38,z:3.91,w:0.51,d:0.95,h:1.8,n:3},
- G1:{x:5.39,z:5.2,w:0.64,d:1.2,h:1.8,n:4},
- L1:{x:1.81,z:5.91,w:0.74,d:0.39,h:1.0,n:2},
- L2:{x:2.58,z:5.91,w:0.8,d:0.39,h:1.0,n:2},
- L3:{x:3.44,z:5.91,w:0.91,d:0.39,h:1.0,n:2},
- L4:{x:4.37,z:5.89,w:0.95,d:0.35,h:1.0,n:2},
- W1:{x:4.85,z:8.33,w:1.39,d:1.25,h:2.0,n:4},
- W2:{x:4.85,z:9.61,w:1.39,d:1.32,h:2.0,n:4},
- K1:{x:1.44,z:12.5,w:0.75,d:1.2,h:1.8,n:3}};
+ S1:{x:3.18,z:4.875,w:1.25,d:4.875,h:2.625,n:3},
+ S2:{x:6.075,z:4.875,w:1.212,d:4.875,h:2.625,n:3},
+ C1:{x:6.195,z:0.645,w:0.963,d:0.587,h:2.25,n:3},
+ C2:{x:7.68,z:0.66,w:1.062,d:0.625,h:2.25,n:3},
+ C3:{x:8.22,z:2.445,w:0.575,d:1.1,h:2.25,n:3},
+ C4:{x:8.04,z:4.11,w:0.587,d:1.4,h:2.25,n:3},
+ C5:{x:8.07,z:5.865,w:0.637,d:1.188,h:2.25,n:3},
+ G1:{x:8.085,z:7.8,w:0.8,d:1.5,h:2.25,n:4},
+ L1:{x:2.715,z:8.865,w:0.925,d:0.488,h:1.25,n:2},
+ L2:{x:3.87,z:8.865,w:1.0,d:0.488,h:1.25,n:2},
+ L3:{x:5.16,z:8.865,w:1.137,d:0.488,h:1.25,n:2},
+ L4:{x:6.555,z:8.835,w:1.188,d:0.438,h:1.25,n:2},
+ W1:{x:7.275,z:12.495,w:1.737,d:1.562,h:2.5,n:4},
+ W2:{x:7.275,z:14.415,w:1.737,d:1.65,h:2.5,n:4},
+ K1:{x:2.16,z:18.75,w:0.938,d:1.5,h:2.25,n:3}};
 /* เวอร์ชันผังชั้นวาง: เมื่อเปลี่ยนผังเริ่มต้นใหม่ (เปลี่ยนเลขนี้) ผังที่เคยแก้ไว้ในเบราว์เซอร์จะถูกล้างหนึ่งครั้ง เพื่อใช้ผังใหม่ */
-var SP_RACKS_VER="floor1-v3";
+var SP_RACKS_VER="floor1-v5";
 try{if(localStorage.getItem("sp_racks_ver")!==SP_RACKS_VER){localStorage.removeItem("sp_racks");localStorage.setItem("sp_racks_ver",SP_RACKS_VER)}}catch(e){}
 try{var _rk=localStorage.getItem("sp_racks");if(_rk)SP_RACKS=JSON.parse(_rk)}catch(e){}
 function spRacksSave(o){SP_RACKS=o;localStorage.setItem("sp_racks",JSON.stringify(o));try{localStorage.setItem("sp_racks_ver",SP_RACKS_VER)}catch(e){}}
@@ -49,6 +49,13 @@ var SP_ITEMS=[
 ];
 /* ข้อความตำแหน่งของอะไหล่: อยู่บนชั้นวาง หรือปักหมุดในโมเดล 3D (เช่น บนโต๊ะ) */
 function spLoc(i){if(i.dw)return "ตู้ลิ้นชัก (หน้าโต๊ะ) แถว "+i.dw[1]+" ชั้น "+i.dw[2]+(i.tx?" · "+i.tx:"");var pin=!!(i.pos||i.at),b=i.r?("ชั้นวาง "+i.r+(i.s?" ชั้นที่ "+i.s:"")):(pin?(i.at||"จุดที่ปักหมุดใน 3D"):(i.tx||"ยังไม่ได้กำหนดตำแหน่ง"));return i.tx&&(i.r||pin)?b+" · "+i.tx:b}
+/* โมเดล 3D ของอะไหล่ที่เลือกเองได้ (เก็บในฟิลด์ mt) — ไม่เลือก = ไม่แสดงโมเดล */
+var SP_MODELS=[["","— ไม่แสดงโมเดล 3D —"],["motor","⚙️ มอเตอร์"],["gear","🔩 เกียร์มอเตอร์"],["cable","🔌 สายไฟ (ม้วน)"],["cablebox","🧰 สายไฟในกล่อง"],["belt","🟤 สายพานมอเตอร์"],["bearing","⚪ ตลับลูกปืน"],["board","🟩 การ์ด / แผงวงจร (PLC)"],["valve","🔵 กระบอกลม / วาล์ว"],["sensor","📡 เซ็นเซอร์"],["pump","💧 ปั๊ม"],["bin","📥 กล่องพลาสติกอะไหล่ชิ้นเล็ก"],["box","📦 กล่องพัสดุ"]];
+function spModelOpts(sel){return SP_MODELS.map(function(m){return '<option value="'+m[0]+'"'+(m[0]===sel?' selected':'')+'>'+m[1]+'</option>'}).join("")}
+function spModelGuess(n){var s=String(n||"").toLowerCase();
+ if(/สายพาน|belt/.test(s))return "belt";if(/เกียร์|gear/.test(s))return "gear";if(/มอเตอร์|motor/.test(s))return "motor";if(/สายไฟ|cable|wire|สาย/.test(s))return "cable";
+ if(/bearing|ลูกปืน|แบริ่ง/.test(s))return "bearing";if(/card|board|plc|การ์ด|แผง|pcb|module|โมดูล|drive|ไดรฟ์/.test(s))return "board";
+ if(/valve|วาล์ว|cylinder|กระบอก|solenoid|โซลินอยด์/.test(s))return "valve";if(/sensor|เซนเซอร์|เซ็นเซอร์|switch|สวิตช์|สวิทช์/.test(s))return "sensor";if(/pump|ปั๊ม/.test(s))return "pump";return ""}
 function spLocShort(i){if(i.dw)return "ลิ้นชัก "+i.dw[1]+"-"+i.dw[2];return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปักหมุด":"ยังไม่กำหนด"))}
 /* รูปอะไหล่: ย่อรูปที่เลือกเป็น JPEG ไม่เกิน 360px (เก็บเป็น data URL ในเบราว์เซอร์) */
 function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.78))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}

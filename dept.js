@@ -2,9 +2,10 @@
  หน่วยเป็นเมตร: x = ซ้าย→ขวา, z = เหนือ→ใต้ (z มาก = ใต้) ประมาณจากสัดส่วนในภาพ (โต๊ะยาว ~1.6 ม.) แก้ตัวเลขได้โดยตรง
  walls=[x1,z1,x2,z2,ช่องประตู[[z1,z2]],ความสูง]  floors=[x1,z1,x2,z2,สี]  doors=[x,z1,z2,ชื่อ]  labels=[ข้อความ,x,y,z,สี,ขนาด]
  furn: t=ชนิด table stool column machine lathe bin bench dispenser belt fridge   ชั้นวาง/ตู้เก็บอะไหล่อยู่ใน SP_RACKS (data.js) */
-var SP_DEPT={"bounds":[-1.6,0,5.9,33.75],"entry":[-0.8,33.0],"walls":[[-1.6,0,5.8,0],[-1.6,33.75333333333333,5.8,33.75333333333333],[-1.6,0,-1.6,33.75333333333333],[5.8,0,5.8,33.75333333333333],[0,0,0,33.75333333333333,[],1.0],[1.17,23.34,5.8,23.34],[1.17,27.35,5.8,27.35],[1.17,32.61,5.8,32.61],[1.17,23.34,1.17,32.61,[[27.99,29.12]]],[4.17,32.61,4.17,33.75],[1.27,0.05,5.8,0.05],[1.27,6.21,5.8,6.21],[1.27,0.05,1.27,6.21,[[5.03,6.2]]],[1.93,6.21,1.93,7.6]],"floors":[[-1.6,0,0,33.75333333333333,"#c9d1de"],[0,0,5.8,33.75333333333333,"#e3e8f0"],[1.17,23.34,5.8,27.35,"#b4bccb"],[1.27,0.05,5.8,6.21,"#eaeff7"],[1.93,6.21,5.8,7.6,"#b8c2d3"],[4.17,32.61,5.8,33.75,"#b8c2d3"]],"stairs":[{"x1":1.93,"z1":6.21,"x2":5.8,"z2":7.6,"n":"บันไดไปชั้น 2"},{"x1":4.17,"z1":32.61,"x2":5.8,"z2":33.75,"n":"บันไดไปชั้น 1"}],"doors":[[1.27,5.03,6.2,"ประตูเลื่อน"],[1.17,27.99,29.12,"ประตูคู่"]],"labels":[["ห้องเก็บอะไหล่",3.17,4.6,3.05,"#1d4ed8",4],["ห้องช่าง",2.9,4.6,11.899999999999999,"#1d4ed8",3],["แผนกอื่น",3.5,3.2,25.345,"#7c2d12",3],["พื้นที่โต๊ะนั่ง",3.2,2.6,21.986666666666668,"#1d4ed8",3],["ห้องโต๊ะทำงาน",3.5,3.4,29.98,"#1d4ed8",3.4],["ทางเดิน",-0.8,1.2,4,"#475569",2.2],["ทางเดิน",-0.8,1.2,15,"#475569",2.2],["ทางเดิน",-0.8,1.2,26,"#475569",2.2],["ทางเข้า",-0.8,1.3,32.2,"#15803d",2]],"shell":{"C1":"cab","C2":"cab","C3":"cab","C4":"cab","C5":"cab","K1":"cab","G1":"glass"},"furn":[{"t":"table","n":"โต๊ะ","h":0.75,"x":1.52,"z":21.24,"w":0.55,"d":1.04},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.27,"z":21.46,"w":0.56,"d":1.05},{"t":"table","n":"โต๊ะ","h":0.75,"x":1.91,"z":22.92,"w":1.05,"d":0.56},{"t":"table","n":"โต๊ะ","h":0.75,"x":3.15,"z":22.91,"w":1.05,"d":0.55},{"t":"table","n":"โต๊ะ","h":0.75,"x":4.38,"z":22.93,"w":1.05,"d":0.56},{"t":"table","n":"โต๊ะ","h":0.75,"x":1.69,"z":29.81,"w":0.95,"d":0.55},{"t":"table","n":"โต๊ะ","h":0.75,"x":1.67,"z":30.82,"w":0.91,"d":0.56},{"t":"table","n":"โต๊ะ","h":0.75,"x":1.66,"z":31.75,"w":0.89,"d":0.43},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.28,"z":29.51,"w":1.02,"d":0.62},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.31,"z":30.58,"w":0.96,"d":0.65},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.34,"z":31.5,"w":0.93,"d":0.52},{"t":"bench","n":"โต๊ะใหญ่","h":0.75,"x":3.29,"z":28.07,"w":2.25,"d":0.75},{"t":"cabinet","n":"ตู้","h":1.8,"x":5.53,"z":28.26,"w":0.58,"d":1.17},{"t":"cabinet","n":"ตู้","h":1.8,"x":3.28,"z":32.32,"w":1.69,"d":0.57},{"t":"fridge","n":"ตู้เย็น","h":1.7,"x":5.42,"z":22.75,"w":0.49,"d":0.48},{"t":"stool","n":"เก้าอี้","h":0.45,"x":2.13,"z":21.17,"r":0.22},{"t":"stool","n":"เก้าอี้","h":0.45,"x":4.65,"z":21.42,"r":0.23},{"t":"stool","n":"เก้าอี้","h":0.45,"x":1.85,"z":22.3,"r":0.23},{"t":"stool","n":"เก้าอี้","h":0.45,"x":3.19,"z":22.28,"r":0.23},{"t":"stool","n":"เก้าอี้","h":0.45,"x":4.32,"z":22.31,"r":0.23},{"t":"stool","n":"เก้าอี้","h":0.45,"x":1.61,"z":30.29,"r":0.15},{"t":"stool","n":"เก้าอี้","h":0.45,"x":1.57,"z":31.27,"r":0.15},{"t":"stool","n":"เก้าอี้","h":0.45,"x":1.59,"z":32.19,"r":0.15},{"t":"stool","n":"เก้าอี้","h":0.45,"x":5.41,"z":30.01,"r":0.15},{"t":"stool","n":"เก้าอี้","h":0.45,"x":5.41,"z":31.05,"r":0.15},{"t":"stool","n":"เก้าอี้","h":0.45,"x":5.42,"z":31.91,"r":0.15},{"t":"machine","n":"เครื่องจักรขนาดเล็ก","h":1.0,"x":4.81,"z":10.77,"w":1.47,"d":0.68,"col":"#2f6fb3"},{"t":"lathe","n":"เครื่องกลึง","h":1.2,"x":1.5,"z":10.49,"w":0.77,"d":1.4},{"t":"bin","n":"ถังขยะ","h":0.8,"x":1.37,"z":13.34,"w":0.59,"d":0.45},{"t":"bin","n":"ถังขยะ","h":0.8,"x":1.37,"z":13.79,"w":0.59,"d":0.45},{"t":"wbench","n":"โต๊ะทำงานช่าง (มีปากกาจับชิ้นงาน)","h":0.85,"x":3.2,"z":13.83,"w":0.9,"d":1.8},{"t":"drawers","n":"ตู้ลิ้นชัก 5×10","id":"DRW1","cols":5,"rows":10,"h":0.86,"x":3.36,"z":18.15,"w":0.95,"d":0.4,"face":1},{"t":"bench","n":"โต๊ะ/เครื่อง","h":0.9,"x":3.36,"z":17.32,"w":1.39,"d":0.93},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.22,"z":16.37,"w":0.66,"d":1.81},{"t":"table","n":"โต๊ะ","h":0.75,"x":1.54,"z":18.85,"w":0.79,"d":1.23},{"t":"table","n":"โต๊ะ","h":0.75,"x":1.53,"z":20.08,"w":0.8,"d":1.22},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.23,"z":18.83,"w":0.79,"d":1.23},{"t":"table","n":"โต๊ะ","h":0.75,"x":5.23,"z":20.07,"w":0.79,"d":1.2},{"t":"stool","n":"เก้าอี้","h":0.45,"x":3.39,"z":16.31,"r":0.32},{"t":"stool","n":"เก้าอี้","h":0.45,"x":4.57,"z":16.29,"r":0.29},{"t":"stool","n":"เก้าอี้","h":0.45,"x":2.38,"z":18.79,"r":0.27},{"t":"stool","n":"เก้าอี้","h":0.45,"x":2.37,"z":20.0,"r":0.27},{"t":"stool","n":"เก้าอี้","h":0.45,"x":4.39,"z":18.9,"r":0.27},{"t":"stool","n":"เก้าอี้","h":0.45,"x":4.39,"z":20.11,"r":0.27},{"t":"column","n":"เสา","h":3.2,"x":1.31,"z":17.91,"w":0.35,"d":0.61},{"t":"column","n":"เสา","h":3.2,"x":5.31,"z":17.81,"w":0.53,"d":0.53},{"t":"dispenser","n":"ตู้กดน้ำ","h":1.1,"x":1.82,"z":17.86,"w":0.55,"d":0.55},{"t":"belt","n":"สายพาน","h":0.3,"x":1.77,"z":0.4,"r":0.22},{"t":"belt","n":"สายพาน","h":0.3,"x":2.5,"z":0.37,"r":0.22},{"t":"belt","n":"สายพาน","h":0.3,"x":3.23,"z":0.4,"r":0.22}],"rackNames":{"S1":"เซลเหล็กวางของ 3 ชั้น","S2":"เซลเหล็กวางของ 3 ชั้น","C1":"ตู้เหล็ก 2 ประตู","C2":"ตู้เหล็ก 2 ประตู","C3":"ตู้เหล็ก 2 ประตู","C4":"ตู้เหล็ก 2 ประตู","C5":"ตู้เหล็ก 2 ประตู","G1":"ตู้กระจก","L1":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","L2":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","L3":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","L4":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","W1":"เซลเหล็ก 4 ชั้น","W2":"เซลเหล็ก 4 ชั้น","K1":"ตู้เหล็ก 2 ประตู"},"nodes":{"E":[-0.8,33.0],"Se":[0.55,33.0],"r0":[0.5,16.1],"D":[1.27,5.62],"Sd":[0.55,5.62],"Di":[1.64,5.62],"a":[1.64,5.48],"b":[3.43,5.48],"c":[3.43,0.85],"d":[4.92,0.85],"e":[4.92,5.48],"f":[1.64,0.85],"r1":[0.5,8.1],"r2":[2.3,8.1],"r3":[3.9,8.1],"r4":[3.9,9.6],"r5":[3.9,10.7]},"edges":[["E","Se"],["Se","r0"],["r0","r1"],["r1","Sd"],["Sd","D"],["D","Di"],["Di","a"],["a","b"],["b","c"],["c","d"],["d","e"],["b","e"],["a","f"],["f","c"],["r1","r2"],["r2","r3"],["r3","r4"],["r4","r5"]],"seams":[7.6,20.69],"zbottom":33.75};
+var KP=1.5,KD=1.25;
+var SP_DEPT={"bounds":[-2.4,0.0,8.85,50.625],"entry":[-1.2,49.5],"walls":[[-2.4,0.0,8.7,0.0],[-2.4,50.63,8.7,50.63],[-2.4,0.0,-2.4,50.63],[8.7,0.0,8.7,50.63],[0.0,0.0,0.0,50.63,[],1.25],[1.755,35.01,8.7,35.01],[1.755,41.025,8.7,41.025],[1.755,48.915,8.7,48.915],[1.755,35.01,1.755,48.915,[[41.985,43.68]]],[6.255,48.915,6.255,50.625],[1.905,0.075,8.7,0.075],[1.905,9.315,8.7,9.315],[1.905,0.075,1.905,9.315,[[7.545,9.3]]],[2.895,9.315,2.895,11.4]],"floors":[[-2.4,0.0,0.0,50.63,"#c9d1de"],[0.0,0.0,8.7,50.63,"#e3e8f0"],[1.755,35.01,8.7,41.025,"#b4bccb"],[1.905,0.075,8.7,9.315,"#eaeff7"],[2.895,9.315,8.7,11.4,"#b8c2d3"],[6.255,48.915,8.7,50.625,"#b8c2d3"]],"stairs":[{"x1":2.895,"z1":9.315,"x2":8.7,"z2":11.4,"n":"บันไดไปชั้น 2"},{"x1":6.255,"z1":48.915,"x2":8.7,"z2":50.625,"n":"บันไดไปชั้น 1"}],"doors":[[1.905,7.545,9.3,"ประตูเลื่อน"],[1.755,41.985,43.68,"ประตูคู่"]],"labels":[["ห้องเก็บอะไหล่",4.755,5.75,4.575,"#1d4ed8",5.0],["ห้องช่าง",4.35,5.75,17.85,"#1d4ed8",3.75],["แผนกอื่น",5.25,4.0,38.0175,"#7c2d12",3.75],["พื้นที่โต๊ะนั่ง",4.8,3.25,32.98,"#1d4ed8",3.75],["ห้องโต๊ะทำงาน",5.25,4.25,44.97,"#1d4ed8",4.25],["ทางเดิน",-1.2,1.5,6.0,"#475569",2.75],["ทางเดิน",-1.2,1.5,22.5,"#475569",2.75],["ทางเดิน",-1.2,1.5,39.0,"#475569",2.75],["ทางเข้า",-1.2,1.625,48.3,"#15803d",2.5]],"shell":{"C1":"cab","C2":"cab","C3":"cab","C4":"cab","C5":"cab","K1":"cab","G1":"glass"},"furn":[{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.28,"z":31.86,"w":0.6875,"d":1.3},{"t":"table","n":"โต๊ะ","h":0.9375,"x":7.905,"z":32.19,"w":0.7,"d":1.3125},{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.865,"z":34.38,"w":1.3125,"d":0.7},{"t":"table","n":"โต๊ะ","h":0.9375,"x":4.725,"z":34.365,"w":1.3125,"d":0.6875},{"t":"table","n":"โต๊ะ","h":0.9375,"x":6.57,"z":34.395,"w":1.3125,"d":0.7},{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.535,"z":44.715,"w":1.1875,"d":0.6875},{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.505,"z":46.23,"w":1.1375,"d":0.7},{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.49,"z":47.625,"w":1.1125,"d":0.5375},{"t":"table","n":"โต๊ะ","h":0.9375,"x":7.92,"z":44.265,"w":1.275,"d":0.775},{"t":"table","n":"โต๊ะ","h":0.9375,"x":7.965,"z":45.87,"w":1.2,"d":0.8125},{"t":"table","n":"โต๊ะ","h":0.9375,"x":8.01,"z":47.25,"w":1.1625,"d":0.65},{"t":"bench","n":"โต๊ะใหญ่","h":0.9375,"x":4.935,"z":42.105,"w":2.8125,"d":0.9375},{"t":"cabinet","n":"ตู้","h":2.25,"x":8.295,"z":42.39,"w":0.725,"d":1.4625},{"t":"cabinet","n":"ตู้","h":2.25,"x":4.92,"z":48.48,"w":2.1125,"d":0.7125},{"t":"fridge","n":"ตู้เย็น","h":2.125,"x":8.13,"z":34.125,"w":0.6125,"d":0.6},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":3.195,"z":31.755,"r":0.275},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":6.975,"z":32.13,"r":0.2875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":2.775,"z":33.45,"r":0.2875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":4.785,"z":33.42,"r":0.2875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":6.48,"z":33.465,"r":0.2875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":2.415,"z":45.435,"r":0.1875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":2.355,"z":46.905,"r":0.1875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":2.385,"z":48.285,"r":0.1875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":8.115,"z":45.015,"r":0.1875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":8.115,"z":46.575,"r":0.1875},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":8.13,"z":47.865,"r":0.1875},{"t":"machine","n":"เครื่องจักรขนาดเล็ก","h":1.25,"x":7.215,"z":16.155,"w":1.8375,"d":0.85,"col":"#2f6fb3"},{"t":"lathe","n":"เครื่องกลึง","h":1.5,"x":2.25,"z":15.735,"w":0.9625,"d":1.75},{"t":"bin","n":"ถังขยะ","h":1.0,"x":2.055,"z":20.01,"w":0.7375,"d":0.5625},{"t":"bin","n":"ถังขยะ","h":1.0,"x":2.055,"z":20.685,"w":0.7375,"d":0.5625},{"t":"wbench","n":"โต๊ะทำงานช่าง (มีปากกาจับชิ้นงาน)","h":1.0625,"x":4.8,"z":20.745,"w":1.125,"d":2.25},{"t":"inkjet","n":"เครื่องพ่นวันที่ (Videojet)","h":1.0625,"x":2.4,"z":1.35,"w":0.625,"d":0.625},{"t":"drawers","n":"ตู้ลิ้นชัก 5×10","id":"DRW1","cols":5,"rows":10,"h":1.075,"x":5.04,"z":27.225,"w":1.1875,"d":0.5,"face":1},{"t":"bench","n":"โต๊ะ/เครื่อง","h":1.125,"x":5.04,"z":25.98,"w":1.7375,"d":1.1625},{"t":"table","n":"โต๊ะ","h":0.9375,"x":7.83,"z":24.555,"w":0.825,"d":2.2625},{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.31,"z":28.275,"w":0.9875,"d":1.5375},{"t":"table","n":"โต๊ะ","h":0.9375,"x":2.295,"z":30.12,"w":1.0,"d":1.525},{"t":"table","n":"โต๊ะ","h":0.9375,"x":7.845,"z":28.245,"w":0.9875,"d":1.5375},{"t":"table","n":"โต๊ะ","h":0.9375,"x":7.845,"z":30.105,"w":0.9875,"d":1.5},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":5.085,"z":24.465,"r":0.4},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":6.855,"z":24.435,"r":0.3625},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":3.57,"z":28.185,"r":0.3375},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":3.555,"z":30.0,"r":0.3375},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":6.585,"z":28.35,"r":0.3375},{"t":"stool","n":"เก้าอี้","h":0.5625,"x":6.585,"z":30.165,"r":0.3375},{"t":"column","n":"เสา","h":4.0,"x":1.965,"z":26.865,"w":0.4375,"d":0.7625},{"t":"column","n":"เสา","h":4.0,"x":7.965,"z":26.715,"w":0.6625,"d":0.6625},{"t":"dispenser","n":"ตู้กดน้ำ","h":1.375,"x":2.73,"z":26.79,"w":0.6875,"d":0.6875},{"t":"belt","n":"สายพาน","h":0.375,"x":2.655,"z":0.6,"r":0.275},{"t":"belt","n":"สายพาน","h":0.375,"x":3.75,"z":0.555,"r":0.275},{"t":"belt","n":"สายพาน","h":0.375,"x":4.845,"z":0.6,"r":0.275}],"rackNames":{"S1":"เซลเหล็กวางของ 3 ชั้น","S2":"เซลเหล็กวางของ 3 ชั้น","C1":"ตู้เหล็ก 2 ประตู","C2":"ตู้เหล็ก 2 ประตู","C3":"ตู้เหล็ก 2 ประตู","C4":"ตู้เหล็ก 2 ประตู","C5":"ตู้เหล็ก 2 ประตู","G1":"ตู้กระจก","L1":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","L2":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","L3":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","L4":"ตู้เหล็ก 2 ชั้น ไม่มีประตู","W1":"เซลเหล็ก 4 ชั้น","W2":"เซลเหล็ก 4 ชั้น","K1":"ตู้เหล็ก 2 ประตู"},"nodes":{"E":[-1.2,49.5],"Se":[0.825,49.5],"r0":[0.75,24.15],"D":[1.905,8.43],"Sd":[0.825,8.43],"Di":[2.46,8.43],"a":[2.46,8.22],"b":[5.145,8.22],"c":[5.145,1.275],"d":[7.38,1.275],"e":[7.38,8.22],"f":[2.46,1.275],"r1":[0.75,12.15],"r2":[3.45,12.15],"r3":[5.85,12.15],"r4":[5.85,14.4],"r5":[5.85,16.05]},"edges":[["E","Se"],["Se","r0"],["r0","r1"],["r1","Sd"],["Sd","D"],["D","Di"],["Di","a"],["a","b"],["b","c"],["c","d"],["d","e"],["b","e"],["a","f"],["f","c"],["r1","r2"],["r2","r3"],["r3","r4"],["r4","r5"]],"seams":[11.4,31.035],"zbottom":50.625};
 (function(){
-var D=SP_DEPT;
+var D=SP_DEPT;D.KP=KP;D.KD=KD;
 /* ปรับข้อมูลเฟอร์นิเจอร์ให้ตรงรูปจริง */
 (function(){var F=D.furn;
  F[11].t="mtable";F[11].n="โต๊ะประชุมสีขาว";F[11].h=.75;
@@ -13,8 +14,8 @@ var D=SP_DEPT;
  F.forEach(function(f){if(f.t==="fridge"){f.old=1}if(f.t==="bin"){f.col="#c0392b"}});
 })();
 /* เหลือกำแพงเฉพาะ ห้องเก็บอะไหล่ และ ห้องออฟฟิศ (ห้องโต๊ะทำงาน) */
-D.walls=[[1.27,.05,5.8,.05],[1.27,6.21,5.8,6.21],[1.27,.05,1.27,6.21,[[5.03,6.2]]],[5.8,.05,5.8,6.21],
- [1.17,27.35,5.8,27.35],[1.17,32.61,5.8,32.61],[1.17,27.35,1.17,32.61,[[27.99,29.12]]],[5.8,27.35,5.8,32.61]];
+D.walls=[[1.905,0.075,8.7,0.075],[1.905,9.315,8.7,9.315],[1.905,0.075,1.905,9.315,[[7.545,9.3]]],[8.7,0.075,8.7,9.315],
+ [1.755,41.025,8.7,41.025],[1.755,48.915,8.7,48.915],[1.755,41.025,1.755,48.915,[[41.985,43.68]]],[8.7,41.025,8.7,48.915]];
 function mat(c,o){return new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.82,metalness:.04},o||{}))}
 function hex(c){return typeof c==="string"?parseInt(c.slice(1),16):c}
 function label(txt,col,sz){var c=document.createElement("canvas");c.width=512;c.height=96;var x=c.getContext("2d");x.font="700 46px 'Noto Sans Thai','Segoe UI',sans-serif";x.textAlign="center";x.textBaseline="middle";
@@ -34,7 +35,7 @@ var POSTT={};
 function postTex(h){var k=Math.round(h*10);if(POSTT[k])return POSTT[k];var t=tex(cv(32,32,function(x,w,h){x.fillStyle="#1f6fd1";x.fillRect(0,0,w,h);x.fillStyle="#0e3f82";x.fillRect(10,10,12,12);x.fillStyle="rgba(255,255,255,.22)";x.fillRect(0,0,3,h)}),1,h/.07);return POSTT[k]=t}
 D.shelfY=function(r,s){return Math.max(0,(Math.min(s,r.n)-1))*(r.h/r.n)+.08};
 function strutZY(g,x,y1,z1,y2,z2,t,c){var L=Math.hypot(y2-y1,z2-z1),m=bx(g,t,L,t*.6,x,(y1+y2)/2,(z1+z2)/2,c);m.rotation.x=Math.atan2(z2-z1,y2-y1);return m}
-function wall(g,x1,z1,x2,z2,gaps,H){H=H||3.2;
+function wall(g,x1,z1,x2,z2,gaps,H){H=H||3.2*KD;
  var horiz=Math.abs(z1-z2)<1e-6,a=horiz?x1:z1,b=horiz?x2:z2,fix=horiz?z1:x1,segs=[],cur=Math.min(a,b),end=Math.max(a,b);
  (gaps||[]).slice().sort(function(p,q){return p[0]-q[0]}).forEach(function(q){if(q[0]>cur)segs.push([cur,q[0]]);cur=q[1]});if(end>cur)segs.push([cur,end]);
  segs.forEach(function(s){var L=s[1]-s[0],cx=horiz?(s[0]+s[1])/2:fix,cz=horiz?fix:(s[0]+s[1])/2;
@@ -62,20 +63,20 @@ D.rackBuild=function(g,k,r,pick){
    strutZY(grp,x,.12,-S/2+.04,h-.12,S/2-.04,.035,0x1f6fd1);
    bx(grp,.03,.03,S-.07,x,h*.42,0,0x1f6fd1);bx(grp,.03,.03,S-.07,x,h-.06,0,0x1f6fd1)});
  }else if(kind==="cab"){
-  var bc=0x9fb0c3;
+  var bc=k==="C3"?0xd8d1b8:0x8d97a3,dc=k==="C3"?0xe2dcc6:0x9aa4af;
   bx(grp,L,h,.016,0,h/2,-S/2+.008,bc);bx(grp,.016,h,S,-L/2+.008,h/2,0,bc);bx(grp,.016,h,S,L/2-.008,h/2,0,bc);
   bx(grp,L,.025,S,0,h-.0125,0,0x8696a9);bx(grp,L,.05,S,0,.025,0,0x6b7a8d);
   for(n=1;n<=r.n;n++)if(D.shelfY(r,n)>.1)board(n,L-.034,.016,S-.02,0xb7c3d1);else board(n,L-.034,.016,S-.02,0xb7c3d1);
   var dn=L>.6?2:1,dw=L/dn;
   for(var q=0;q<dn;q++){var cx=-L/2+dw*(q+.5);
-   bx(grp,dw-.012,h-.07,.016,cx,h/2+.01,S/2-.008,0xc6d4e2,{transparent:true,opacity:.34,depthWrite:false});
+   bx(grp,dw-.012,h-.07,.016,cx,h/2+.01,S/2-.008,dc,{roughness:.6,metalness:.1,transparent:true,opacity:.32,depthWrite:false});
    bx(grp,dw-.012,.025,.02,cx,h-.04,S/2-.008,0x7d8da0);bx(grp,dw-.012,.025,.02,cx,.06,S/2-.008,0x7d8da0);
    var hx=dn===2?(q===0?L/2*0+dw/2-.07:-dw/2+.07):0.12;bx(grp,.025,.2,.03,cx+(dn===2?(q===0?dw/2-.07:-dw/2+.07):.12),h*.52,S/2+.015,0x1e293b)}
  }else if(kind==="glass"){
   var gl={transparent:true,opacity:.16,depthWrite:false};
-  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){bx(grp,.035,h,.035,q[0]*(L/2-.018),h/2,q[1]*(S/2-.018),0x5b6472)});
+  [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){bx(grp,.035,h,.035,q[0]*(L/2-.018),h/2,q[1]*(S/2-.018),0xa5a894)});
   bx(grp,L,h,.01,0,h/2,-S/2+.005,0xbfe0ff,gl);bx(grp,L,h,.01,0,h/2,S/2-.005,0xbfe0ff,gl);bx(grp,.01,h,S,-L/2+.005,h/2,0,0xbfe0ff,gl);bx(grp,.01,h,S,L/2-.005,h/2,0,0xbfe0ff,gl);
-  bx(grp,L,.04,S,0,h-.02,0,0x5b6472);bx(grp,L,.06,S,0,.03,0,0x5b6472);
+  bx(grp,L,.04,S,0,h-.02,0,0xa5a894);bx(grp,L,.06,S,0,.03,0,0xa5a894);
   for(n=1;n<=r.n;n++)board(n,L-.04,.014,S-.04,0xcfe6fa,{transparent:true,opacity:.6,depthWrite:false});
   bx(grp,.025,.25,.03,0,h*.5,S/2+.015,0x1e293b);
  }else{
@@ -84,8 +85,69 @@ D.rackBuild=function(g,k,r,pick){
   for(n=1;n<=r.n;n++)board(n,L-.04,.02,S-.01,0xb4bccb);
   bx(grp,L,.1,.02,0,.05,S/2-.01,0x7e8899);
  }
+ D.rackExtra(grp,k,r,kind,L,S,h);grp.userData.k=k;D._sg.push(grp);
  var c=cv(256,96,function(x,w,h){x.fillStyle="rgba(11,33,80,.92)";x.beginPath();x.roundRect?x.roundRect(8,8,240,80,22):x.rect(8,8,240,80);x.fill();x.fillStyle="#fff";x.font="700 54px 'Segoe UI',sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(k,128,50)});
  var s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));s.scale.set(.62,.23,1);s.position.set(r.x,r.h+.4,r.z);s.renderOrder=6;g.add(s)};
+// ===== ของตกแต่งในห้องเก็บอะไหล่ (กล่องพลาสติก ลังกระดาษ ขวดตัวอย่าง) ให้ใกล้ของจริง — ไม่ใช่จุดคลิก =====
+D.xray=function(on,except){(D._sg||[]).forEach(function(grp){if(on&&except&&grp.userData.k===except)return;grp.traverse(function(m){var mt=m.material;if(!mt||!mt.userData)return;
+ if(on){if(!mt.userData.xo)mt.userData.xo=[mt.opacity,mt.transparent,mt.depthWrite];mt.transparent=true;mt.opacity=Math.min(mt.userData.xo[0],.16);mt.depthWrite=false}
+ else if(mt.userData.xo){mt.opacity=mt.userData.xo[0];mt.transparent=mt.userData.xo[1];mt.depthWrite=mt.userData.xo[2];mt.userData.xo=null}mt.needsUpdate=true})})};
+D.rackTheta=function(r){return r.w>=r.d?(frontSign(r)>0?0:Math.PI):(frontSign(r)>0?Math.PI/2:-Math.PI/2)};
+D.rackExtra=function(){};
+// ===== โมเดล 3D ของอะไหล่ (สร้างด้วยโค้ด วางฐานที่ y=0, ยาวตามแกน x) =====
+D.model=function(t){
+ var g=new THREE.Group();function M(c,o){return mat(c,Object.assign({roughness:.55,metalness:.15},o||{}))}
+ function cyl(r1,r2,h,c,o,ax){var m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,20),M(c,o));if(ax==="x")m.rotation.z=Math.PI/2;if(ax==="z")m.rotation.x=Math.PI/2;g.add(m);return m}
+ function box(w,h,d,x,y,z,c,o){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c,o));m.position.set(x,y,z);g.add(m);return m}
+ function tor(R,r,x,y,z,c,o,rot){var m=new THREE.Mesh(new THREE.TorusGeometry(R,r,8,28),M(c,o));m.position.set(x,y,z);if(rot)m.rotation.x=rot;g.add(m);return m}
+ if(t==="motor"||t==="gear"){
+  if(t==="motor"){var b=cyl(.17,.17,.36,0x2f6fb3,{metalness:.35},"x");b.position.set(0,.2,0);
+   for(var i=-2;i<=2;i++){var f=cyl(.185,.185,.018,0x25598f,{metalness:.35},"x");f.position.set(i*.07,.2,0)}
+   var c1=cyl(.14,.14,.08,0x6b7280,{metalness:.6},"x");c1.position.set(.22,.2,0);var sh=cyl(.025,.025,.14,0xcbd5e1,{metalness:.8},"x");sh.position.set(.33,.2,0);
+   var c2=cyl(.15,.15,.06,0x1f2937,{},"x");c2.position.set(-.21,.2,0);box(.14,.07,.12,0,.4,0,0x1f2937);box(.3,.03,.28,0,.015,0,0x374151);}
+  else{var gb=box(.24,.3,.26,-.22,.17,0,0x4b5563,{metalness:.4});var mo=cyl(.12,.12,.28,0x1d4ed8,{metalness:.35},"x");mo.position.set(.05,.17,0);
+   var oc=cyl(.07,.07,.05,0x9ca3af,{metalness:.6},"z");oc.position.set(-.22,.17,.15);var os=cyl(.025,.025,.1,0xcbd5e1,{metalness:.8},"z");os.position.set(-.22,.17,.2);box(.5,.025,.28,-.05,.0125,0,0x374151);box(.1,.07,.1,.05,.33,0,0x1f2937);}
+ }else if(t==="cable"){
+  for(var i2=0;i2<4;i2++)tor(.17,.034,0,.05+i2*.065,0,0xd2691e,{roughness:.6},Math.PI/2);
+  box(.06,.2,.03,.17,.15,0,0x111827);cyl(.012,.012,.2,0xd2691e,{},"x").position.set(.27,.1,.05)
+ }else if(t==="cablebox"){
+  var bn=box(.42,.16,.3,0,.08,0,0x1f55c9,{roughness:.55});box(.38,.012,.26,0,.16,0,0x0b1d45);
+  tor(.09,.022,-.08,.18,0,0xd2691e,{},Math.PI/2);tor(.09,.022,-.08,.21,0,0xd2691e,{},Math.PI/2);tor(.075,.02,.11,.19,.02,0x9bc53d,{},Math.PI/2);tor(.06,.018,.11,.22,.02,0x111827,{},Math.PI/2)
+ }else if(t==="belt"){
+  var r1=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,.09,40,1,true),M(0x1f2937,{roughness:.8,side:THREE.DoubleSide}));r1.position.y=.06;g.add(r1);
+  var r2=new THREE.Mesh(new THREE.CylinderGeometry(.19,.19,.09,40,1,true),M(0x111827,{roughness:.8,side:THREE.DoubleSide}));r2.position.y=.06;g.add(r2);
+  var r3=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.09,40,1,true),M(0xf2c500,{roughness:.8,side:THREE.DoubleSide}));r3.scale.set(1,.12,1);r3.position.y=.1;g.add(r3);
+  var rt=new THREE.Mesh(new THREE.TorusGeometry(.215,.012,6,40),M(0x2b2f36));rt.rotation.x=Math.PI/2;rt.position.y=.108;g.add(rt)
+ }else if(t==="bearing"){
+  [[.1,.045,.0],[.075,.03,.052]].forEach(function(q,i){var pts=[new THREE.Vector2(q[1],0),new THREE.Vector2(q[0],0),new THREE.Vector2(q[0],.048),new THREE.Vector2(q[1],.048),new THREE.Vector2(q[1],0)],m=new THREE.Mesh(new THREE.LatheGeometry(pts,28),M(0xd1d5db,{metalness:.85,roughness:.25,side:THREE.DoubleSide}));m.position.set(i?.0:0,q[2],0);g.add(m)});
+  box(.16,.012,.2,.19,.006,0,0xe5e7eb);
+ }else if(t==="board"){
+  box(.3,.014,.2,0,.03,0,0x1f7a3a,{roughness:.5});box(.025,.04,.2,-.14,.045,0,0x111827);
+  [[.05,.05],[-.05,.04],[.09,-.05],[-.08,-.05]].forEach(function(p,i){box(.05+i%2*.02,.014,.04,p[0],.044,p[1],0x111827)});
+  box(.3,.006,.012,0,.037,.095,0xe3b341,{metalness:.8});cyl(.012,.012,.03,0x9ca3af,{metalness:.6}).position.set(.1,.052,.05);box(.34,.02,.04,0,.01,.1,0x374151);box(.34,.02,.04,0,.01,-.1,0x374151)
+ }else if(t==="valve"){
+  var cb=cyl(.04,.04,.34,0xcbd5e1,{metalness:.8,roughness:.25},"x");cb.position.set(0,.06,0);var e1=cyl(.048,.048,.04,0x2563eb,{},"x");e1.position.set(.17,.06,0);var e2=cyl(.048,.048,.04,0x2563eb,{},"x");e2.position.set(-.17,.06,0);
+  var rd=cyl(.012,.012,.14,0xe5e7eb,{metalness:.9},"x");rd.position.set(.26,.06,0);box(.1,.06,.08,-.02,.13,0,0x111827);box(.04,.025,.04,-.1,.1,.03,0x9ca3af,{metalness:.7});box(.3,.02,.06,0,.01,0,0x374151)
+ }else if(t==="sensor"){
+  var sc=cyl(.022,.022,.13,0xc9a227,{metalness:.7},"x");sc.position.set(0,.06,0);var tip=cyl(.02,.02,.012,0x2563eb,{},"x");tip.position.set(.07,.06,0);var nt=cyl(.026,.026,.012,0x9ca3af,{metalness:.7},"x");nt.position.set(-.02,.06,0);
+  var cc=new THREE.Mesh(new THREE.TorusGeometry(.07,.006,6,20,Math.PI*1.4),M(0x111827));cc.position.set(-.1,.06,0);cc.rotation.set(0,0,Math.PI*.3);g.add(cc);box(.06,.03,.03,-.18,.045,.0,0x111827)
+ }else if(t==="pump"){
+  var vb=cyl(.12,.12,.12,0x2563eb,{metalness:.3});vb.position.set(.03,.14,0);var vc=cyl(.14,.14,.05,0x6b7280,{metalness:.5},"z");vc.position.set(.03,.14,.1);
+  var pi=cyl(.03,.03,.2,0x9ca3af,{metalness:.6},"x");pi.position.set(.14,.14,.0);var mt=cyl(.09,.09,.22,0x1d4ed8,{metalness:.3},"x");mt.position.set(-.16,.14,0);box(.46,.025,.26,0,.0125,0,0x374151);box(.08,.06,.08,-.13,.26,0,0x1f2937)
+ }else if(t==="bin"){
+  box(.38,.14,.26,0,.07,0,0x1f55c9);box(.34,.012,.22,0,.14,0,0x0b1d45);
+  for(var i3=0;i3<5;i3++){var pc=cyl(.022,.022,.05+i3%2*.02,0xb8bcc2,{metalness:.7});pc.position.set(-.12+i3*.06,.17,(i3%2?.04:-.04))}box(.07,.04,.05,.1,.16,.05,0x111827)
+ }else{
+  box(.32,.2,.26,0,.1,0,0xc8a26a,{roughness:.9});box(.07,.002,.26,0,.2,0,0xe7d6b0);box(.07,.1,.002,0,.15,.131,0xe7d6b0);
+ }
+ g.traverse(function(m){if(m.isMesh){m.castShadow=true;m.receiveShadow=true}});return g};
+D.inkjet=function(g,f,surf){
+ var t=bx(g,f.w,.05,f.d,f.x,f.h-.025,f.z,0x1f55c9,{roughness:.5});surf(t,"บนโต๊ะเครื่องพ่นวันที่");
+ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){bx(g,.045,f.h-.05,.045,f.x+q[0]*(f.w/2-.04),(f.h-.05)/2,f.z+q[1]*(f.d/2-.04),0x1f55c9)});
+ bx(g,.38,.55,.3,f.x,f.h+.275,f.z,0x9ea3a8,{metalness:.4,roughness:.45});bx(g,.2,.15,.012,f.x,f.h+.42,f.z+.153,0x8fb2d9);bx(g,.3,.1,.012,f.x,f.h+.3,f.z+.153,0x5b6f8a);
+ bx(g,.3,.1,.012,f.x,f.h+.12,f.z+.153,0xf2c500);
+ for(var i=0;i<7;i++)bx(g,.3,.012,.3,f.x-.2,.18+i*.04,f.z-.45,0xc8a26a,{roughness:.9});
+ bx(g,.3,.2,.3,f.x-.2,.09,f.z-.45,0xf2c500,{roughness:.8})};
 // ===== โต๊ะเหล็กทำงาน (ตู้ลิ้นชัก 2 ข้าง ลิ้นชักกลาง ขาเรียว) =====
 D.desk=function(g,f,surf){
  var L=Math.max(f.w,f.d),S=Math.min(f.w,f.d),h=f.h,grp=new THREE.Group(),best=1e9,tg=null,cx=(BND[0]+BND[2])/2,cz=(BND[1]+BND[3])/2;
@@ -199,32 +261,33 @@ D.chair=function(g,x,z,ry){var c=new THREE.Group();c.position.set(x,0,z);c.rotat
  var l=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.38,8),mat(0x555a62,{metalness:.6}));l.position.y=.24;c.add(l);
  for(var i=0;i<5;i++){var s=bx(c,.28,.02,.035,0,.05,0,0x2b2d31);s.position.set(Math.cos(i*1.2566)*.13,.05,Math.sin(i*1.2566)*.13);s.rotation.y=-i*1.2566}};
 // ===== ของตกแต่ง/อุปกรณ์เสริมตามรูปจริง =====
+function bxs(g,w,h,d,x,y,z,c,o){return bx(g,w*KD,h*KD,d*KD,x*KP,y*KD,z*KP,c,o)}
 D.extra=function(g,surf){
  /* เส้นเหลืองกันพื้น: ขอบทางเดิน + ขอบห้องช่าง */
- [-1.5,-.08].forEach(function(x){bx(g,.08,.004,33.4,x,.016,16.9,0xf0c419)});
+ [-1.5,-.08].forEach(function(x){bx(g,.08,.004,33.4*KP,x*KP,.016,16.9*KP,0xf0c419)});
  /* ล็อกเกอร์ครีม 1-24 ใกล้บันได (ผนังตะวันออก) */
  var lk=cv(64,64,function(x,w,h){x.fillStyle="#efe3bb";x.fillRect(0,0,w,h);x.strokeStyle="#9c9066";x.lineWidth=3;x.strokeRect(2,2,60,60);x.fillStyle="#6b6240";x.fillRect(8,30,4,10)});
  for(var r=0;r<4;r++)for(var c=0;c<6;c++){var n=r*6+c+1,t=new THREE.CanvasTexture(cv(64,64,function(x,w,h){x.drawImage(lk,0,0);x.fillStyle="#3b3a30";x.font="700 18px sans-serif";x.textAlign="center";x.fillText(String(n),32,22)}));t.wrapS=THREE.RepeatWrapping;t.repeat.x=-1;t.offset.x=1;
-  var cr=mat(0xe9dcae),b=new THREE.Mesh(new THREE.BoxGeometry(.04,.44,.29),[mat(0xffffff,{map:t,roughness:.6}),cr,cr,cr,cr,cr]);b.position.set(.45,.1+.45*r+.22,8.0+.3*c+.15);b.castShadow=true;g.add(b)}
- bx(g,.44,1.84,1.82,.22,.92,8.0+.9,0xe3d7ab);
+  var cr=mat(0xe9dcae),b=new THREE.Mesh(new THREE.BoxGeometry(.04*KD,.44*KD,.29*KD),[mat(0xffffff,{map:t,roughness:.6}),cr,cr,cr,cr,cr]);b.position.set(.45*KD,(.1+.45*r+.22)*KD,8.0*KP+(.3*c+.15)*KD);b.castShadow=true;g.add(b)}
+ bx(g,.44*KD,1.84*KD,1.82*KD,.22*KD,.92*KD,8.0*KP+.9*KD,0xe3d7ab);
  /* ไมโครเวฟบนโต๊ะข้างตู้เย็น */
- bx(g,.45,.27,.34,5.27,.75+.135,21.46,0xdadde2,{metalness:.3});bx(g,.3,.2,.01,5.27-.05,.75+.135,21.46-.17,0x15171b);
+ bxs(g,.45,.27,.34,5.27,.75+.135,21.46,0xdadde2,{metalness:.3});bxs(g,.3,.2,.01,5.27-.05,.75+.135,21.46-.17,0x15171b);
  /* พัดลมตั้งพื้น 2 ตัว */
- [[4.7,14.6],[2.35,21.9]].forEach(function(p){var l=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,1.0,8),mat(0x6b7280,{metalness:.5}));l.position.set(p[0],.55,p[1]);g.add(l);
-  var b=new THREE.Mesh(new THREE.CylinderGeometry(.17,.19,.03,16),mat(0x374151));b.position.set(p[0],.02,p[1]);g.add(b);
-  var h=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.06,20),mat(0x2f6fb3,{transparent:true,opacity:.7}));h.rotation.x=Math.PI/2;h.position.set(p[0],1.1,p[1]);g.add(h)});
+ [[4.7,14.6],[2.35,21.9]].forEach(function(p0){var p=[p0[0]*KP,p0[1]*KP],fg=new THREE.Group();fg.position.set(p[0],0,p[1]);fg.scale.setScalar(KD);g.add(fg);p=[0,0];var l=new THREE.Mesh(new THREE.CylinderGeometry(.02,.02,1.0,8),mat(0x6b7280,{metalness:.5}));l.position.set(p[0],.55,p[1]);fg.add(l);
+  var b=new THREE.Mesh(new THREE.CylinderGeometry(.17,.19,.03,16),mat(0x374151));b.position.set(p[0],.02,p[1]);fg.add(b);
+  var h=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.06,20),mat(0x2f6fb3,{transparent:true,opacity:.7}));h.rotation.x=Math.PI/2;h.position.set(p[0],1.1,p[1]);fg.add(h)});
  /* ออฟฟิศ: ไวท์บอร์ด + บอร์ดบริหารรายวัน + ทีวี + แอร์ติดผนัง */
- bx(g,1.6,1.0,.03,3.3,1.7,27.35+.08,0xffffff,{roughness:.3});bx(g,1.66,.04,.04,3.3,2.2,27.35+.08,0x9aa1ab);
+ bxs(g,1.6,1.0,.03,3.3,1.7,27.35+.08,0xffffff,{roughness:.3});bxs(g,1.66,.04,.04,3.3,2.2,27.35+.08,0x9aa1ab);
  var dm=cv(256,128,function(x,w,h){x.fillStyle="#f4f7fb";x.fillRect(0,0,w,h);x.fillStyle="#1d4ed8";x.fillRect(0,0,w,22);x.fillStyle="#fff";x.font="700 15px sans-serif";x.fillText("DAILY MANAGEMENT",8,16);x.strokeStyle="#64748b";for(var i=1;i<4;i++){x.strokeRect(6+i*60,30,52,88)}x.strokeRect(6,30,52,88)});
- var db=new THREE.Mesh(new THREE.BoxGeometry(.03,.9,1.8),[mat(0xdddddd),mat(0xffffff,{map:new THREE.CanvasTexture(dm)}),mat(0xdddddd),mat(0xdddddd),mat(0xdddddd),mat(0xdddddd)]);db.position.set(1.17+.08,1.6,30.6);g.add(db);
- bx(g,.05,.55,.95,5.8-.06,1.9,30.0,0x111318,{roughness:.2});bx(g,.01,.5,.9,5.8-.09,1.9,30.0,0x1f2a44,{roughness:.1});
- bx(g,.2,.28,1.0,2.2,2.55,27.35+.12,0xf5f6f8);bx(g,.19,.02,.9,2.2,2.43,27.35+.12,0xcfd3d8);
+ var db=new THREE.Mesh(new THREE.BoxGeometry(.03*KD,.9*KD,1.8*KD),[mat(0xdddddd),mat(0xffffff,{map:new THREE.CanvasTexture(dm)}),mat(0xdddddd),mat(0xdddddd),mat(0xdddddd),mat(0xdddddd)]);db.position.set(1.17*KP+.08,1.6*KD,30.6*KP);g.add(db);
+ bxs(g,.05,.55,.95,5.8-.06,1.9,30.0,0x111318,{roughness:.2});bxs(g,.01,.5,.9,5.8-.09,1.9,30.0,0x1f2a44,{roughness:.1});
+ bxs(g,.2,.28,1.0,2.2,2.55,27.35+.12,0xf5f6f8);bxs(g,.19,.02,.9,2.2,2.43,27.35+.12,0xcfd3d8);
  /* ห้องช่างช่วงทางเดิน: จักรยาน 2 คัน + สามล้อสินค้าสีแดงใกล้ประตูออฟฟิศ */
- function bike(x,z,col){var gp=new THREE.Group();gp.position.set(x,0,z);gp.rotation.y=Math.PI/2;g.add(gp);
+ function bike(x,z,col){var gp=new THREE.Group();gp.position.set(x*KP,0,z*KP);gp.scale.setScalar(KD);gp.rotation.y=Math.PI/2;g.add(gp);
   [-.5,.5].forEach(function(dx){var w=new THREE.Mesh(new THREE.TorusGeometry(.33,.025,8,24),mat(0x111111));w.position.set(dx,.34,0);gp.add(w)});
   bx(gp,1.0,.03,.03,0,.6,0,col);bx(gp,.6,.03,.03,-.15,.45,0,col);bx(gp,.03,.5,.03,.15,.4,0,col);bx(gp,.2,.05,.1,-.25,.7,0,0x111111);bx(gp,.03,.03,.45,.5,.78,0,0x333333)}
  bike(-1.25,26.3,0x2563eb);bike(-1.25,27.0,0x16a34a);
- var tr=new THREE.Group();tr.position.set(-1.0,0,30.5);tr.rotation.y=Math.PI/2;g.add(tr);
+ var tr=new THREE.Group();tr.position.set(-1.0*KP,0,30.5*KP);tr.scale.setScalar(KD);tr.rotation.y=Math.PI/2;g.add(tr);
  bx(tr,.9,.05,.9,.2,.3,0,0xc62828);bx(tr,.9,.3,.04,.2,.45,.43,0xc62828);bx(tr,.9,.3,.04,.2,.45,-.43,0xc62828);bx(tr,.04,.3,.9,.65,.45,0,0xc62828);bx(tr,.04,.3,.9,-.25,.45,0,0xc62828);
  [-.4,.4].forEach(function(z){var w=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.05,16),mat(0x111111));w.rotation.x=Math.PI/2;w.position.set(.25,.2,z);tr.add(w)});
  var fw=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.05,16),mat(0x111111));fw.rotation.x=Math.PI/2;fw.position.set(-.8,.2,0);tr.add(fw);bx(tr,.04,.6,.04,-.75,.6,0,0x444444);bx(tr,.03,.03,.5,-.75,.9,0,0x444444)};
@@ -233,10 +296,10 @@ D.build=function(THREE_,sc,racks){
  var g=new THREE.Group(),pick=[];sc.add(g);g.userData.pick=pick;
  function surf(m,n,ex){m.userData.surf=n;if(ex)Object.assign(m.userData,ex);pick.push(m);return m}
  D.floors.forEach(function(f,idx){var w=f[2]-f[0],d=f[3]-f[1],t=tex(TILE,w/2.5,d/2.5),m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat(0xffffff,{map:t,roughness:.95,metalness:0}));m.rotation.x=-Math.PI/2;m.position.set((f[0]+f[2])/2,.01+.002*idx,(f[1]+f[3])/2);m.receiveShadow=true;g.add(m);surf(m,"บนพื้น")});
- D.stairs.forEach(function(st){var steps=10,sl=st.x2-st.x1,dx=sl/steps,sd=st.z2-st.z1,zc=(st.z1+st.z2)/2;for(var i=0;i<steps;i++){var h=(i+1)*.28;bx(g,dx,h,sd-.1,st.x1+dx*(i+.5),h/2,zc,i%2?0x8e8e8a:0x9c9c97);bx(g,.03,.012,sd-.1,st.x1+dx*(i+1)-.015,h+.003,zc,0xd9b800)}
-  [st.z1+.04,st.z2-.04].forEach(function(zz){for(var i=0;i<=steps;i+=2){var h=i*.28;bx(g,.04,.9+Math.max(h,.28),.04,st.x1+dx*Math.min(i+.5,steps-.3),(.9+Math.max(h,.28))/2,zz,0x6b7280,{metalness:.5})}
-   var len=Math.hypot(sl,steps*.28),r=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,len,8),mat(0x8b95a3,{metalness:.7,roughness:.3}));r.position.set(st.x1+sl/2,.28*steps/2+.95,zz);r.rotation.z=Math.PI/2-Math.atan2(steps*.28,sl);g.add(r)});
-  var t=label(st.n,"#475569",3);t.position.set((st.x1+st.x2)/2,3.9,zc);g.add(t)});
+ D.stairs.forEach(function(st){var steps=10,sl=st.x2-st.x1,dx=sl/steps,sd=st.z2-st.z1,zc=(st.z1+st.z2)/2;for(var i=0;i<steps;i++){var h=(i+1)*(.28*KD);bx(g,dx,h,sd-.1,st.x1+dx*(i+.5),h/2,zc,i%2?0x8e8e8a:0x9c9c97);bx(g,.03,.012,sd-.1,st.x1+dx*(i+1)-.015,h+.003,zc,0xd9b800)}
+  [st.z1+.04,st.z2-.04].forEach(function(zz){for(var i=0;i<=steps;i+=2){var h=i*(.28*KD);bx(g,.04,.9+Math.max(h,(.28*KD)),.04,st.x1+dx*Math.min(i+.5,steps-.3),(.9+Math.max(h,(.28*KD)))/2,zz,0x6b7280,{metalness:.5})}
+   var len=Math.hypot(sl,steps*(.28*KD)),r=new THREE.Mesh(new THREE.CylinderGeometry(.022,.022,len,8),mat(0x8b95a3,{metalness:.7,roughness:.3}));r.position.set(st.x1+sl/2,(.28*KD)*steps/2+.95,zz);r.rotation.z=Math.PI/2-Math.atan2(steps*(.28*KD),sl);g.add(r)});
+  var t=label(st.n,"#475569",3);t.position.set((st.x1+st.x2)/2,3.9*KD,zc);g.add(t)});
  D.walls.forEach(function(w){wall(g,w[0],w[1],w[2],w[3],w[4],w[5])});
  D.doors.forEach(function(d){bx(g,.3,.03,d[2]-d[1],d[0],.04,(d[1]+d[2])/2,0x16a34a)});
  var woodM=mat(0xffffff,{map:tex(WOOD,1,1),roughness:.6}),steelM=mat(0xffffff,{map:tex(STEELT,2,2),roughness:.4,metalness:.5});
@@ -249,6 +312,7 @@ D.build=function(THREE_,sc,racks){
   else if(t==="wbench"){D.wbench(g,f,surf,woodM)}
   else if(t==="cab2"){D.cab2(g,f,surf)}
   else if(t==="drawers"){D.drawers(g,f,surf,pick)}
+  else if(t==="inkjet"){D.inkjet(g,f,surf)}
   else if(t==="stool"){var grp=new THREE.Group();grp.position.set(f.x,0,f.z);g.add(grp);
    var seat=new THREE.Mesh(new THREE.CylinderGeometry(f.r*.62,f.r*.58,.07,24),mat(0x1f2937,{roughness:.9}));seat.position.y=f.h;seat.castShadow=true;grp.add(seat);
    var bk=bx(grp,f.r*1.1,.32,.05,0,f.h+.28,-f.r*.55,0x1f2937);
@@ -268,7 +332,7 @@ D.build=function(THREE_,sc,racks){
   else if(t==="lathe"){D.lathe(g,f,surf)}
   else {bx(g,f.w,f.h*.8,f.d,f.x,f.h*.4,f.z,f.col?hex(f.col):0x5b6b82,{metalness:.35,roughness:.5});var m=bx(g,f.w*.92,f.h*.2,f.d*.92,f.x,f.h*.9,f.z,0xcbd5e1,{metalness:.3});surf(m,"บน"+(f.n||"เครื่องจักร"));bx(g,.1,.3,.1,f.x+f.w*.3,f.h+.15,f.z,0xef4444)}});
  D.extra(g,surf);
- Object.keys(racks).forEach(function(k){D.rackBuild(g,k,racks[k],pick)});
+ D._sg=[];Object.keys(racks).forEach(function(k){D.rackBuild(g,k,racks[k],pick)});
  D.labels.forEach(function(l){var t=label(l[0],l[4],l[5]);t.position.set(l[1],l[2],l[3]);g.add(t)});
  return g};
 // ===== หาเส้นทาง: เดินตามทางเดิน/ช่องทางเดินในห้อง (Dijkstra) =====
@@ -286,7 +350,7 @@ D.routeTo=function(c,rect){var N=D.nodes,best=null;
  return path.map(function(q){return[q[0],.15,q[1]]})};
 // ===== เส้นนำทางแบบ A* บนกริด: เลี่ยงกำแพง/ตู้/ชั้นวาง ไม่ทะลุโมเดล =====
 D.pathTo=function(tgt,racks){
- var col=D.colliders(racks),B=D.bounds,R=.22,S=.1,x0=B[0]-.5,z0=B[1]-.5,W=Math.ceil((B[2]-B[0]+1.5)/S),H=Math.ceil((B[3]-B[1]+2.2)/S);
+ var col=D.colliders(racks),B=D.bounds,R=.3,S=.1,x0=B[0]-.5,z0=B[1]-.5,W=Math.ceil((B[2]-B[0]+1.5)/S),H=Math.ceil((B[3]-B[1]+2.2)/S);
  function blk(x,z){for(var k=0;k<col.length;k++){var c=col[k],qx=Math.max(c[0],Math.min(c[2],x)),qz=Math.max(c[1],Math.min(c[3],z));if(Math.hypot(x-qx,z-qz)<R)return true}return false}
  var g=new Uint8Array(W*H);for(var j=0;j<H;j++)for(var i=0;i<W;i++)g[j*W+i]=blk(x0+(i+.5)*S,z0+(j+.5)*S)?1:0;
  function cell(p){return[Math.max(0,Math.min(W-1,Math.floor((p[0]-x0)/S))),Math.max(0,Math.min(H-1,Math.floor((p[1]-z0)/S)))]}

@@ -8,7 +8,7 @@ function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return
 function loadScript(u){return new Promise(function(ok,no){var t=document.createElement("script");t.src=u;t.onload=ok;t.onerror=no;document.head.appendChild(t)})}
 var GLTF_URL="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js",gltfP=null;
 function gltf(){if(THREE.GLTFLoader)return Promise.resolve();return gltfP||(gltfP=loadScript(GLTF_URL))}
-var W=host.clientWidth||600,H=host.clientHeight||400,sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,W/H,.1,300);
+var W=host.clientWidth||600,H=host.clientHeight||400,sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(45,W/H,.1,600);
 var ren=new THREE.WebGLRenderer({antialias:true,alpha:true});ren.setSize(W,H);ren.setPixelRatio(Math.min(devicePixelRatio,2));
 ren.shadowMap.enabled=true;ren.shadowMap.type=THREE.PCFSoftShadowMap;host.appendChild(ren.domElement);
 var DOOR=spDept.entry,B=spDept.bounds.slice();
@@ -24,9 +24,10 @@ var DEPT=spDept.build(THREE,sc,SP_RACKS),PICKS=[fl].concat(DEPT.userData.pick);
 var items=new THREE.Group(),modelG=new THREE.Group(),routeG=new THREE.Group(),hlG=new THREE.Group(),ring=new THREE.Mesh(new THREE.RingGeometry(.13,.19,32),new THREE.MeshBasicMaterial({color:0xf59e0b,side:THREE.DoubleSide,depthTest:false,transparent:true}));
 ring.rotation.x=-Math.PI/2;ring.visible=false;ring.renderOrder=9;sc.add(items,modelG,routeG,hlG,ring);var mark=null,sel=null;
 // ---- ตำแหน่งกล่องอะไหล่ ----
-function slotPos(i){var r=SP_RACKS[i.r];
- if(i.dw&&i.pos&&i.pos.length===3)return{x:i.pos[0],y:i.pos[1],z:i.pos[2],bw:.1,bh:.1,bd:.1,top:i.pos[1],spot:true,dw:i.dw};
- if(i.pos&&i.pos.length===3)return{x:i.pos[0],y:i.pos[1]+.12,z:i.pos[2],bw:.26,bh:.24,bd:.2,top:i.pos[1],spot:true};
+function lpos(i){var q=i.pos;if(!(q&&q.length===3))return null;return i.gv>=2?q:[q[0]*spDept.KP,q[1]*spDept.KD,q[2]*spDept.KP]}
+function slotPos(i){var r=SP_RACKS[i.r],q=lpos(i);
+ if(i.dw){var DB0=drawerBox(i);if(DB0)return{x:DB0.P.x,y:DB0.P.y,z:DB0.P.z,bw:.1,bh:.1,bd:.1,top:DB0.P.y,spot:true,dw:i.dw}}
+ if(q)return{x:q[0],y:q[1]+.12,z:q[2],bw:.26,bh:.24,bd:.2,top:q[1],spot:true};
  if(!r)return null;
  var same=SP_ITEMS.filter(function(q){return q.r===i.r&&q.s===i.s&&!(q.pos&&q.pos.length===3)}),idx=same.indexOf(i),cnt=same.length,alongX=r.w>=r.d,Lg=alongX?r.w:r.d,Sh=alongX?r.d:r.w,cw=Lg/cnt,bh=Math.min(.55,(r.h/r.n)*.6),y0=spDept.shelfY(r,i.s),
   c=-Lg/2+(idx+.5)*cw,lw=Math.min(.7,cw*.8),sw=Math.min(.9,Sh*.7);
@@ -34,7 +35,17 @@ function slotPos(i){var r=SP_RACKS[i.r];
 var gcache={},pgen=0,TXC={};function imgTex(u){if(TXC[u])return TXC[u];var t=new THREE.TextureLoader().load(u,function(){});t.anisotropy=4;return TXC[u]=t}
 function glbOf(u){return gcache[u]||(gcache[u]=gltf().then(function(){return new Promise(function(ok,no){new THREE.GLTFLoader().load(u,ok,undefined,no)})}))}
 function clear(g){while(g.children.length){var c=g.children.pop();c.traverse(function(n){if(n.geometry)n.geometry.dispose();if(n.material&&n.material.dispose)n.material.dispose()})}}
-function paint(){pgen++;clear(items);
+function modelFor(i){var p=slotPos(i);if(!p||!i.mt)return null;var m=spDept.model(i.mt);if(!m)return null;var W=new THREE.Group(),r=SP_RACKS[i.r],fit;
+ if(i.dw){var DB=drawerBox(i);if(!DB)return null;fit=[DB.P.cw*.86,DB.P.ch*.8,DB.f.d*.55];W.rotation.y=DB.P.nz<0?Math.PI:0}
+ else if(p.spot&&!(r&&!lpos(i))){fit=[.5,.42,.4]}
+ else{fit=[p.bw,p.bh,p.bd];if(r&&r.w<r.d)m.rotation.y=Math.PI/2}
+ W.add(m);if(i.ry)W.rotation.y+=i.ry*Math.PI/180;var b=new THREE.Box3().setFromObject(W),sz=b.getSize(new THREE.Vector3()),s=Math.min(fit[0]*.94/sz.x,fit[1]*.94/sz.y,fit[2]*.94/sz.z,1.8);W.scale.setScalar(s);b.setFromObject(W);
+ var y=i.dw?p.y-(b.min.y+b.max.y)/2:p.top-b.min.y;W.position.set(p.x,y,p.z);W.userData={code:i.c,s:s,y0:y,w:fit[0]};return W}
+function paint(){pgen++;clear(items);items.userData.blink=null;
+ SP_ITEMS.forEach(function(i){if(!i.mt)return;var W=modelFor(i);if(!W)return;items.add(W);
+  if(sel&&sel.c===i.c){var mats=[];W.traverse(function(n){if(n.isMesh&&n.material&&n.material.emissive)mats.push(n.material)});
+   var halo=i.dw?null:new THREE.Mesh(new THREE.CircleGeometry(Math.max(.2,W.userData.w*.65),32),new THREE.MeshBasicMaterial({color:0xffd400,transparent:true,opacity:.5,depthWrite:false,depthTest:false}));if(halo){halo.rotation.x=-Math.PI/2;halo.position.set(W.position.x,W.userData.y0+.015,W.position.z);halo.renderOrder=7;items.add(halo)}
+   items.userData.blink={g:W,s:W.userData.s,mats:mats,halo:halo}}});
  // แสดงเฉพาะหมุดตำแหน่ง (ไม่มีโมเดลจำลองกล่อง/ชิ้นอะไหล่)
  SP_ITEMS.forEach(function(i){if(!(sel&&sel.c===i.c&&i.pos&&i.pos.length===3)||i.dw)return;var p=slotPos(i),isSel=true,col=0x2563eb;
   var st2=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.34,6),new THREE.MeshBasicMaterial({color:0x334155}));st2.position.set(p.x,p.y+p.bh/2+.2,p.z);items.add(st2);
@@ -59,24 +70,29 @@ function highlight(i,p){clear(hlG);hlG.userData.fill=null;
   m0.position.set(P.x,P.y,P.z+P.nz*.03);m0.renderOrder=8;var e0=new THREE.LineSegments(new THREE.EdgesGeometry(g0),new THREE.LineBasicMaterial({color:0xff0000,depthTest:false}));e0.position.copy(m0.position);e0.renderOrder=9;
   var fg=new THREE.BoxGeometry(D_.f.w+.06,D_.f.h+.06,D_.f.d+.06),eo=new THREE.LineSegments(new THREE.EdgesGeometry(fg),new THREE.LineBasicMaterial({color:0xff9500}));eo.position.set(D_.f.x,(D_.f.h+.06)/2,D_.f.z);eo.renderOrder=6;
   if(P.nz<0){m0.position.z=P.z-.03;e0.position.z=P.z-.03}hlG.add(m0,e0,eo);hlG.userData.fill=m0;hlG.userData.edge=e0;return}
+ var rk=SP_RACKS[i.r];if(rk&&i.s>0){var th=spDept.rackTheta(rk),L=Math.max(rk.w,rk.d),S=Math.min(rk.w,rk.d),sp=rk.h/rk.n,y0=spDept.shelfY(rk,i.s),hg=new THREE.Group();hg.position.set(rk.x,0,rk.z);hg.rotation.y=th;
+  var bg=new THREE.BoxGeometry(L-.01,sp*.8,.03),bm=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:0xff2d2d,transparent:true,opacity:.42,depthWrite:false,depthTest:false}));bm.position.set(0,y0+sp*.4,S/2+.03);bm.renderOrder=8;
+  var be=new THREE.LineSegments(new THREE.EdgesGeometry(bg),new THREE.LineBasicMaterial({color:0xff0000,depthTest:false}));be.position.copy(bm.position);be.renderOrder=9;hg.add(bm,be);hlG.add(hg)}
  var o=hlTarget(i,p);if(!o)return;var w=o.w+.06,d=o.d+.06,h=o.h+.06,g=new THREE.BoxGeometry(w,h,d);
  var m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffc400,transparent:true,opacity:.3,depthWrite:false}));m.position.set(o.x,h/2,o.z);m.renderOrder=5;
  var e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xff9500}));e.position.copy(m.position);e.renderOrder=6;hlG.add(m,e);hlG.userData.fill=m;hlG.userData.edge=e}
-function show(i){sel=i;paint();drawRoute(null);clear(hlG);hlG.userData.fill=null;if(mark){sc.remove(mark);mark=null}
+function show(i){spDept.xray(false);sel=i;paint();drawRoute(null);clear(hlG);hlG.userData.fill=null;if(mark){sc.remove(mark);mark=null}
  var p=slotPos(i),r=SP_RACKS[i.r],h=head(i),btn="";
- if(canEdit())btn='<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
+ if(canEdit())btn='<div style="margin-top:8px"><label style="font-size:12px;color:#475569">🧩 โมเดล 3D ของอะไหล่นี้</label><select id="mt-q" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;margin-top:3px">'+spModelOpts(i.mt||"")+'</select></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
  infoEl.innerHTML=h+btn;wire(i);
  if(!p){infoEl.insertAdjacentHTML("afterbegin",'<div style="color:#dc2626;margin-bottom:4px">ยังไม่มีตำแหน่งในโมเดล 3D'+(i.r?' (ชั้นวาง '+esc(i.r)+' ไม่มีในผัง)':'')+'</div>');return}
  highlight(i,p);
- var tgz=p.z,tgx=p.x,DB=i.dw?drawerBox(i):null;if(DB){tgz=DB.f.z+DB.P.nz*(DB.f.d/2+.6);tgx=DB.P.x}
+ var tgz=p.z,tgx=p.x,DB=i.dw?drawerBox(i):null;if(DB){tgz=DB.f.z+DB.P.nz*(DB.f.d/2+.6*spDept.KD);tgx=DB.P.x}
  var pts=spDept.pathTo([tgx,tgz],SP_RACKS);drawRoute(pts);
- if(DB){infoEl.insertAdjacentHTML("beforeend",diagram(DB.f,i.dw));focus(DB.f.x,DB.P.y,DB.f.z,1.9,DB.P.nz<0?Math.PI:0,.28)}
- else focus(p.x,p.y*.6,p.z,r?4.2:3.4,null,.7);
+ if(DB){infoEl.insertAdjacentHTML("beforeend",diagram(DB.f,i.dw));focus(DB.f.x,DB.P.y,DB.f.z,1.9*spDept.KD,DB.P.nz<0?Math.PI:0,.28)}
+ else if(r)focusRack(i.r,i.s);else focus(p.x,p.y*.6,p.z,3.4*spDept.KD,null,.7);
  if(!i.dw)mark=new THREE.Mesh(new THREE.ConeGeometry(.17,.38,16),new THREE.MeshBasicMaterial({color:0xf59e0b}));if(mark){mark.rotation.x=Math.PI;mark.userData.y0=p.y+p.bh/2+.55;mark.position.set(p.x,mark.userData.y0,p.z);sc.add(mark)}
  if(innerWidth<1100)host.scrollIntoView({behavior:"smooth",block:"center"})}
+function focusRack(k,lv){var r=SP_RACKS[k];if(!r)return;spDept.xray(false);var L=Math.max(r.w,r.d);var nm=(spDept.rackNames&&spDept.rackNames[k])||"",cb=/ตู้/.test(nm);spDept.xray(true,k);focus(r.x,spDept.shelfY(r,lv||1)+.2,r.z,(cb?3.4:Math.max(3,Math.min(L,5)*.85))*spDept.KD,spDept.rackTheta(r),cb?1.25:.4)}
 function diagram(f,dw){var cells="";for(var r=1;r<=f.rows;r++)for(var c=1;c<=f.cols;c++){var on=c===dw[1]&&r===dw[2];cells+='<i style="display:block;height:11px;border:1px solid '+(on?'#dc2626':'#b6c3cf')+';background:'+(on?'#ef4444':'#eef3f7')+';border-radius:2px;'+(on?'animation:spb .6s infinite alternate':'')+'"></i>'}
  return '<style>@keyframes spb{to{opacity:.35}}</style><div style="margin-top:8px;font-size:12px;color:#475569"><b>🗄 '+esc(f.n)+'</b> — แถว '+dw[1]+' (นับจากซ้าย มองจากด้านหน้า) · ชั้น '+dw[2]+' (นับจากบน)<div style="display:grid;grid-template-columns:repeat('+f.cols+',1fr);gap:2px;width:170px;margin-top:4px;padding:4px;background:#dfe7ee;border-radius:6px">'+cells+'</div></div>'}
-function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelector('[data-a=rm]');
+function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelector('[data-a=rm]'),mq=infoEl.querySelector('#mt-q');
+ if(mq)mq.onchange=function(){var l=SP_ITEMS.slice();if(mq.value)i.mt=mq.value;else delete i.mt;spItemsSave(l);paint();o.onChange&&o.onChange()};
  if(m)m.onclick=function(){place(true,i)};
  if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;delete i.dw;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
 // ---- โหมดวางอะไหล่ ----
@@ -91,7 +107,7 @@ function surfHit(e){var hs=ray(e).intersectObjects(PICKS,true);
   if(u.dw){var f_=spDept.furnById(u.dw[0]),P_=spDept.drawerPos(f_,u.dw[1],u.dw[2]);return{x:P_.x,y:P_.y,z:P_.z,surf:u.surf,dw:u.dw}}if(h.face){var n=h.face.normal.clone().transformDirection(ob.matrixWorld);if(n.y<.5)continue}
   return{x:h.point.x,y:h.point.y,z:h.point.z,surf:u.surf,rack:u.rack,level:u.level,dwf:u.dwf}}return null}
 function form(h){
- var DF=spDept.furnById(h.dw?h.dw[0]:h.dwf),CH=h.dw||null;if(DF)focus(DF.x,DF.h*.5,DF.z,1.9,DF.face===-1?Math.PI:0,.28);
+ var DF=spDept.furnById(h.dw?h.dw[0]:h.dwf),CH=h.dw||null;if(DF)focus(DF.x,DF.h*.5,DF.z,1.9*spDept.KD,DF.face===-1?Math.PI:0,.28);
  var IS="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;box-sizing:border-box",LB="font-size:12px;color:#475569;margin:2px 0 -2px;display:block";
  var opts='<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return{q:q,k:k}}).reverse().map(function(z){var q=z.q;return '<option value="'+z.k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("");
  infoEl.innerHTML='<b>📌 วางอะไหล่ที่จุดนี้</b> <small style="color:#64748b">('+esc(h.surf)+' · x '+h.x.toFixed(2)+', z '+h.z.toFixed(2)+')</small>'
@@ -100,13 +116,18 @@ function form(h){
   +'<div><label style="'+LB+'">คงเหลือ</label><input id="pl-q" type="number" min="0" value="1" style="'+IS+'"></div><div><label style="'+LB+'">ขั้นต่ำ</label><input id="pl-m" type="number" min="0" value="0" style="'+IS+'"></div><div style="grid-column:1/3"><label style="'+LB+'">หน่วย</label><input id="pl-u" value="ชิ้น" style="'+IS+'"></div></div>'
   +'<label style="'+LB+'">📷 รูปอะไหล่ (ใช้รูปเดียวกับหน้า "จัดการระบบ" — ไม่บังคับ)</label><div style="display:flex;gap:10px;align-items:center"><img id="pl-ip" alt="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1"><input id="pl-img" type="file" accept="image/*" style="flex:1;min-width:0"></div>'
   +(DF?'<div><label style="'+LB+'">🗄 เลือกลิ้นชักที่เก็บ (แถวนับจากซ้าย · ชั้นนับจากบน) <small>— ไม่เลือก = วางบนตู้</small></label><div id="pl-dw" style="display:grid;grid-template-columns:repeat('+DF.cols+',1fr);gap:3px;max-width:240px;margin-top:4px;padding:5px;background:#dfe7ee;border-radius:8px"></div><div id="pl-dwt" style="font-size:12px;margin-top:3px;color:#dc2626"></div></div>':'')
+  +'<div><label style="'+LB+'">🧩 โมเดล 3D ของอะไหล่ <small>(แสดงตรงตำแหน่ง และกะพริบเมื่อค้นหา)</small></label><select id="pl-mt" style="'+IS+'">'+spModelOpts("")+'</select></div>'
+  +'<div><label style="'+LB+'">🔄 หมุนโมเดล</label><select id="pl-ry" style="'+IS+'"><option value="0">0° (ตามแนวชั้น/โต๊ะ)</option><option value="90">หมุน 90°</option><option value="180">หมุน 180°</option><option value="270">หมุน 270°</option></select></div>'
   +'<div id="pl-e" style="color:#dc2626;font-size:12px"></div><div style="display:flex;gap:6px"><button class="btn p" id="pl-ok" style="padding:7px 14px">บันทึกตำแหน่ง</button><button class="btn" id="pl-no" style="padding:7px 12px">ยกเลิก</button></div></div>';
  if(DF){var G=document.getElementById("pl-dw"),T=document.getElementById("pl-dwt");(function dr(){var x="";for(var r=1;r<=DF.rows;r++)for(var c=1;c<=DF.cols;c++){var on=CH&&CH[1]===c&&CH[2]===r;x+='<button type="button" data-c="'+c+'" data-r="'+r+'" title="แถว '+c+' ชั้น '+r+'" style="height:18px;padding:0;border:1px solid '+(on?'#dc2626':'#9fb0bf')+';background:'+(on?'#ef4444':'#f4f7fa')+';border-radius:3px;cursor:pointer"></button>'}
   G.innerHTML=x;T.textContent=CH?"เลือกแล้ว: แถว "+CH[1]+" ชั้น "+CH[2]:"";Array.prototype.forEach.call(G.children,function(b){b.onclick=function(){var v=[DF.id,+b.dataset.c,+b.dataset.r];CH=CH&&CH[1]===v[1]&&CH[2]===v[2]?null:v;dr()}})})()}
+ if(h.rack)focusRack(h.rack,h.level);
  var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new");
- function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
+ var mts=document.getElementById("pl-mt"),mtTouched=false;mts.onchange=function(){mtTouched=true};
+ function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];mts.value=q?(q.mt||spModelGuess(q.n)):spModelGuess((document.getElementById("pl-n")||{}).value);mtTouched=false;if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
  sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none";pim()};sel_.onchange();
  document.getElementById("pl-img").onchange=function(){var f=this.files[0],ip=document.getElementById("pl-ip");if(f){ip.src=URL.createObjectURL(f);ip.style.display="block"}else pim()};
+ document.getElementById("pl-n").oninput=function(){if(!mtTouched&&sel_.value==="")mts.value=spModelGuess(this.value)};
  document.getElementById("pl-no").onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
  document.getElementById("pl-ok").onclick=function(){var l=SP_ITEMS.slice(),it,err=document.getElementById("pl-e");
   if(sel_.value===""){var c=document.getElementById("pl-c").value.trim(),n=document.getElementById("pl-n").value.trim(),q=parseInt(document.getElementById("pl-q").value,10),m=parseInt(document.getElementById("pl-m").value,10);
@@ -114,7 +135,7 @@ function form(h){
    it={c:c,n:n,k:"",m:[],q:q>=0?q:0,min:m>=0?m:0,u:document.getElementById("pl-u").value.trim()||"ชิ้น",r:"",s:0};l.push(it)}
   else it=l[+sel_.value];
   var fi=document.getElementById("pl-img").files[0],fin=function(){spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
-  it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.spot=true;it.at=h.surf;
+  var ry_=+document.getElementById("pl-ry").value;if(ry_)it.ry=ry_;else delete it.ry;var mv_=mts.value;if(mv_)it.mt=mv_;else delete it.mt;it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.gv=2;it.spot=true;it.at=h.surf;
   if(CH){var P_=spDept.drawerPos(DF,CH[1],CH[2]);it.pos=[+P_.x.toFixed(3),+P_.y.toFixed(3),+P_.z.toFixed(3)];it.at="ตู้ลิ้นชัก แถว "+CH[1]+" ชั้น "+CH[2];it.dw=CH;it.r="";it.s=0}else{delete it.dw;if(h.rack){it.r=h.rack;it.s=h.level}else{it.r="";it.s=0}}
   if(fi)spResize(fi,function(d){if(d)it.img=d;fin()});else fin()}}
 // ---- กล้อง ----
@@ -157,9 +178,9 @@ window.addEventListener("keydown",function(e){if(/INPUT|SELECT|TEXTAREA/.test((e
 window.addEventListener("keyup",function(e){var m={ArrowLeft:"l",ArrowRight:"r",ArrowUp:"u",ArrowDown:"d"}[e.key];if(m)PK[m]=false});
 function panBy(dx,dy){var k=dist*.0017;tx+=Math.cos(ang)*(-dx)*k+(-Math.sin(ang))*(-dy)*k*-1;tz+=(-Math.sin(ang))*(-dx)*k+(-Math.cos(ang))*(-dy)*k*-1;tx=Math.max(B[0]-8,Math.min(B[2]+8,tx));tz=Math.max(B[1]-8,Math.min(B[3]+8,tz))}
 function cp(){if(FREE){cam.position.set(FREE[0],FREE[1],FREE[2]);cam.lookAt(FREE[3],FREE[4],FREE[5]);return}if(walk){cam.position.set(wx,1.6,wz);cam.lookAt(wx+Math.sin(wyaw)*Math.cos(wpit),1.6+Math.sin(wpit),wz-Math.cos(wyaw)*Math.cos(wpit));return}
-if(FOC){var k=.12;tx+=(FOC.x-tx)*k;tz+=(FOC.z-tz)*k;ty+=(FOC.y-ty)*k;dist+=(FOC.d-dist)*k;el+=(FOC.el-el)*k;if(FOC.a!=null){var da=FOC.a-ang;da=Math.atan2(Math.sin(da),Math.cos(da));ang+=da*k}
+if(FOC){var nw=Date.now(),dt=Math.min(.25,(nw-(cp.t||nw))/1000);cp.t=nw;var k=1-Math.exp(-Math.max(dt,.016)*6);tx+=(FOC.x-tx)*k;tz+=(FOC.z-tz)*k;ty+=(FOC.y-ty)*k;dist+=(FOC.d-dist)*k;el+=(FOC.el-el)*k;if(FOC.a!=null){var da=FOC.a-ang;da=Math.atan2(Math.sin(da),Math.cos(da));ang+=da*k}
  if(Math.abs(FOC.x-tx)+Math.abs(FOC.z-tz)+Math.abs(FOC.d-dist)<.01)FOC=null}
- cam.position.set(tx+dist*Math.sin(ang)*Math.cos(el),ty+dist*Math.sin(el),tz+dist*Math.cos(ang)*Math.cos(el));cam.lookAt(tx,ty,tz)}
+ if(!FOC)cp.t=Date.now();cam.position.set(tx+dist*Math.sin(ang)*Math.cos(el),ty+dist*Math.sin(el),tz+dist*Math.cos(ang)*Math.cos(el));cam.lookAt(tx,ty,tz)}
 function focus(x,y,z,d,a,e){FOC={x:x,y:y,z:z,d:d,a:a,el:e}}
 function fitView(h){FOC=null;ty=0;horiz=h;var asp=host.clientWidth/Math.max(1,host.clientHeight),L=B[3]-B[1],Wd=B[2]-B[0],T=Math.tan(22.5*Math.PI/180);tx=cx;tz=cz;
  if(h){ang=1.3;el=1.0;var pr=L*Math.abs(Math.sin(ang))+Wd*Math.abs(Math.cos(ang));dist=Math.max(pr*.5/(T*asp)*1.04,Wd*2.5)}else{ang=.08;el=1.1;dist=Math.max(L*.5/T*.9*Math.min(1,.55/asp+.45),Wd*2.2)}}
@@ -172,12 +193,12 @@ window.addEventListener("pointerup",function(e){var was=pd[e.pointerId];delete p
  if(hs.length){var it=SP_ITEMS.filter(function(q){return q.c===hs[0].object.userData.code})[0];if(it){show(it);if(o.onSelect)o.onSelect(it)}}});
 window.addEventListener("pointermove",function(e){if(placing&&!pd[e.pointerId]&&e.target===ren.domElement){var h=surfHit(e);hit=h;if(h){ring.visible=true;ring.position.set(h.x,h.y+.02,h.z)}else ring.visible=false}
  if(!pd[e.pointerId])return;var ids=Object.keys(pd);moved+=Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly);
- if(ids.length===2){var q=pd[ids[0]]===pd[e.pointerId]?pd[ids[1]]:pd[ids[0]],d0=Math.hypot(pd[e.pointerId].clientX-q.clientX,pd[e.pointerId].clientY-q.clientY),d1=Math.hypot(e.clientX-q.clientX,e.clientY-q.clientY);FOC=null;dist=Math.max(1,Math.min(90,dist*d0/d1));panBy((e.clientX-lx)*.5,(e.clientY-ly)*.5)}
+ if(ids.length===2){var q=pd[ids[0]]===pd[e.pointerId]?pd[ids[1]]:pd[ids[0]],d0=Math.hypot(pd[e.pointerId].clientX-q.clientX,pd[e.pointerId].clientY-q.clientY),d1=Math.hypot(e.clientX-q.clientX,e.clientY-q.clientY);FOC=null;dist=Math.max(1,Math.min(170,dist*d0/d1));panBy((e.clientX-lx)*.5,(e.clientY-ly)*.5)}
  else if(drag&&!walk&&(panMode||e.shiftKey||(e.buttons&2)||(e.buttons&4))){panBy(e.clientX-lx,e.clientY-ly)}
  else if(drag&&walk){wyaw+=(e.clientX-lx)*.005;wpit=Math.max(-1.2,Math.min(1.0,wpit-(e.clientY-ly)*.004))}
  else if(drag){ang-=(e.clientX-lx)*.01;el=Math.max(.12,Math.min(1.52,el+(e.clientY-ly)*.008))}pd[e.pointerId]=e;lx=e.clientX;ly=e.clientY});
-host.addEventListener("wheel",function(e){e.preventDefault();if(walk){step(-Math.sin(wyaw)*e.deltaY*.004,Math.cos(wyaw)*e.deltaY*.004);return}FOC=null;dist=Math.max(1,Math.min(90,dist+e.deltaY*.03))},{passive:false});
+host.addEventListener("wheel",function(e){e.preventDefault();if(walk){step(-Math.sin(wyaw)*e.deltaY*.004,Math.cos(wyaw)*e.deltaY*.004);return}FOC=null;dist=Math.max(1,Math.min(170,dist+e.deltaY*.03))},{passive:false});
 function rs(){W=host.clientWidth;H=host.clientHeight;if(!W||!H)return;ren.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}window.addEventListener("resize",rs);if(window.ResizeObserver)new ResizeObserver(rs).observe(host);document.addEventListener("fullscreenchange",function(){setTimeout(function(){rs();fitView(horiz)},100)});
-(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;var hf=hlG.userData.fill;if(hf){var ph=Math.sin(Date.now()/170);hf.material.opacity=.12+.38*(.5+.5*ph);hlG.userData.edge.visible=ph>-.3}ren.render(sc,cam)})();
+(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;var bl=items.userData.blink;if(bl){var q=.5+.5*Math.sin(Date.now()/170);bl.mats.forEach(function(m){m.emissive.setHex(0xffa800);m.emissiveIntensity=.1+.9*q});bl.g.scale.setScalar(bl.s*(1+.07*q));if(bl.halo)bl.halo.material.opacity=.2+.6*q}var hf=hlG.userData.fill;if(hf){var ph=Math.sin(Date.now()/170);hf.material.opacity=.12+.38*(.5+.5*ph);hlG.userData.edge.visible=ph>-.3}ren.render(sc,cam)})();
 paint();
 var API={show:show,paint:paint,place:place,canEdit:canEdit,walk:setWalk,setCam:function(a){FREE=a},shot:function(){cp();ren.render(sc,cam);return ren.domElement.toDataURL('image/jpeg',.93)},ren:ren,B:B,fit:fitView,view:function(a,e,d,x,z){if(a!=null)ang=a;if(e!=null)el=e;if(d!=null)dist=d;if(x!=null){tx=x;tz=z}},scene:sc,THREE:THREE};window.spSceneApi=API;return API};

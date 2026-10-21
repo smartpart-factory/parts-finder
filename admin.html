@@ -90,7 +90,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="two"><div><label>รหัสอะไหล่ <small style="font-weight:400;color:#64748b">(ไม่มีเลขก็เว้นว่างได้ ระบบสร้างรหัสภายใน NC-xxxx ให้)</small></label><input type="text" id="f-c" placeholder="เว้นว่างได้"></div><div><label>ชื่ออะไหล่ *</label><input type="text" id="f-n"></div></div>
  <label>คำค้นเพิ่ม (ชื่อเรียกอื่น คั่นด้วยเว้นวรรค เช่น ลูกปืน แบริ่ง)</label><input type="text" id="f-k">
  <label>ใช้กับเครื่องจักร</label><div class="cb" id="f-m"></div>
- <label>ประเภทอะไหล่</label><select id="f-t"><option value="">ใช้ครั้งเดียว (หมดแล้วต้องเบิกมาเพิ่ม)</option><option value="re">ซ่อมแล้วนำกลับมาใช้ใหม่ได้ (ส่งซ่อม → ซ่อมเสร็จเพิ่มเข้าคลัง)</option></select><div id="f-rpw" style="display:none"><label>กำลังซ่อมอยู่ (ชิ้น)</label><input type="number" id="f-rp" min="0" value="0"></div>
+ <label>ประเภทอะไหล่</label><select id="f-t"><option value="">ใช้ครั้งเดียว (หมดแล้วต้องเบิกมาเพิ่ม)</option><option value="re">ซ่อมแล้วนำกลับมาใช้ใหม่ได้ (ส่งซ่อม → ซ่อมเสร็จเพิ่มเข้าคลัง)</option></select><label>🧩 โมเดล 3D (แสดงในแผนที่ 3D ตรงตำแหน่งที่เก็บ)</label><select id="f-mt"></select><div id="f-rpw" style="display:none"><label>กำลังซ่อมอยู่ (ชิ้น)</label><input type="number" id="f-rp" min="0" value="0"></div>
  <div class="three"><div><label>คงเหลือ</label><input type="number" id="f-q" min="0" value="0"></div><div><label>ขั้นต่ำ</label><input type="number" id="f-min" min="0" value="0"></div><div><label>หน่วย</label><input type="text" id="f-u" value="ตัว"></div></div>
  <label>ตำแหน่งจัดเก็บ (พิมพ์บอกคร่าวๆ)</label><input type="text" id="f-at" placeholder="เช่น ตู้เหล็กข้างประตู ชั้น 2 / บนชั้นเหล็กสีฟ้า">
  <div id="f-3d" class="note" style="margin:6px 0 10px">📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>"ตำแหน่งจัดเก็บ (3D)"</b> (ปุ่ม "วางตำแหน่ง") หลังบันทึกอะไหล่</div>
@@ -151,8 +151,9 @@ var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block
 $("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){curImg=d;showImg()})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
 function openP(i){editing=i||null;curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
  $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-q").value=i?i.q:0;$("f-min").value=i?i.min:0;$("f-u").value=i?(i.u||""):"ตัว";
- $("f-at").value=i&&i.tx?i.tx:"";$("f-t").value=i&&i.t||"";$("f-rp").value=i&&i.rp||0;$("f-rpw").style.display=$("f-t").value?"block":"none";$("f-3d").innerHTML=i&&(i.r||i.pos||i.at)?"📍 ตำแหน่งในโมเดล 3D ตอนนี้: <b>"+esc(spLoc(i))+"</b> — ย้าย/แก้ที่หน้า <b>\"ตำแหน่งจัดเก็บ (3D)\"</b> (ปุ่ม \"ย้ายตำแหน่ง\")":"📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>\"ตำแหน่งจัดเก็บ (3D)\"</b> (ปุ่ม \"วางตำแหน่ง\") หลังบันทึกอะไหล่";$("f-glb").value=i&&i.glb?i.glb:"";$("f-rp").checked=!!(i&&i.rep);$("f-rn").value=i&&i.rep?i.rep:"";
+ $("f-at").value=i&&i.tx?i.tx:"";$("f-t").value=i&&i.t||"";$("f-mt").value=i&&i.mt||"";$("f-rp").value=i&&i.rp||0;$("f-rpw").style.display=$("f-t").value?"block":"none";$("f-3d").innerHTML=i&&(i.r||i.pos||i.at)?"📍 ตำแหน่งในโมเดล 3D ตอนนี้: <b>"+esc(spLoc(i))+"</b> — ย้าย/แก้ที่หน้า <b>\"ตำแหน่งจัดเก็บ (3D)\"</b> (ปุ่ม \"ย้ายตำแหน่ง\")":"📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>\"ตำแหน่งจัดเก็บ (3D)\"</b> (ปุ่ม \"วางตำแหน่ง\") หลังบันทึกอะไหล่";$("f-glb").value=i&&i.glb?i.glb:"";$("f-rp").checked=!!(i&&i.rep);$("f-rn").value=i&&i.rep?i.rep:"";
  Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(c){c.checked=!!(i&&i.m.indexOf(c.value)>-1)});$("ov-p").classList.add("on");$("f-c").focus()}
+$("f-mt").innerHTML=spModelOpts("");
 $("f-t").onchange=function(){$("f-rpw").style.display=$("f-t").value?"block":"none"};
 $("p-add").onclick=function(){openP()};$("pc").onclick=function(){$("ov-p").classList.remove("on")};
 $("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim(),q=parseInt($("f-q").value,10),mn=parseInt($("f-min").value,10);
@@ -163,7 +164,7 @@ function bad(t){$("pe").textContent=t}
  if(!(q>=0)||!(mn>=0))return bad("ตัวเลขต้องไม่ติดลบ");
  var m=[];Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(x){if(x.checked)m.push(x.value)});
  var glb=$("f-glb").value.trim();if(glb&&!/^(https?:\/\/|[\w\-./]+)[^\s"'<>]*\.(glb|gltf)$/i.test(glb))return bad("ไฟล์โมเดลต้องลงท้ายด้วย .glb หรือ .gltf และไม่มีช่องว่าง");
- var o=Object.assign({},editing||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:q,min:mn,u:$("f-u").value.trim()||"ตัว"});delete o.rep;delete o.glb;delete o.img;if($("f-t").value){o.t="re";o.rp=Math.max(0,parseInt($("f-rp").value,10)||0)}else{delete o.t;delete o.rp;delete o.rlog}if(curImg)o.img=curImg;
+ var o=Object.assign({},editing||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:q,min:mn,u:$("f-u").value.trim()||"ตัว"});delete o.rep;delete o.glb;delete o.img;if($("f-t").value){o.t="re";o.rp=Math.max(0,parseInt($("f-rp").value,10)||0)}else{delete o.t;delete o.rp;delete o.rlog}if($("f-mt").value)o.mt=$("f-mt").value;else delete o.mt;if(curImg)o.img=curImg;
  if(glb)o.glb=glb;
  if($("f-rp").checked)o.rep=$("f-rn").value.trim()||"กำลังซ่อม";
  var tx=$("f-at").value.trim();if(tx)o.tx=tx;else delete o.tx;
