@@ -4,6 +4,9 @@ var SP_PM_CHECK={"3M":[],"6M":[],"1Y":[]}; /* หัวข้อตรวจส�
 function _pmLoad(k){try{var a=JSON.parse(localStorage.getItem(k)||"[]");return Array.isArray(a)?a:[]}catch(e){return[]}}
 function spPlans(){return _pmLoad("sp_pm_plans")}function spPlansSave(a){localStorage.setItem("sp_pm_plans",JSON.stringify(a))}
 function spPmRec(){return _pmLoad("sp_pm_rec")}function spPmRecSave(a){localStorage.setItem("sp_pm_rec",JSON.stringify(a))}
+/* บันทึกงานประจำวัน (ซ่อมเครื่องจักร / เปลี่ยนอะไหล่ / ตรวจเช็ค / บันทึกทั่วไป) */
+var SP_LOG_TYPES={repair:["🔧 ซ่อมเครื่องจักร","#dc2626"],change:["🔩 เปลี่ยนอะไหล่","#7c3aed"],check:["🔍 ตรวจเช็ค / ปรับตั้ง","#0891b2"],note:["📝 บันทึกทั่วไป","#64748b"]},SP_LOG_ST={done:["เสร็จแล้ว","#16a34a"],wait:["ค้างอยู่ / ติดตามต่อ","#d97706"],parts:["รออะไหล่","#dc2626"]};
+function spDayLog(){return _pmLoad("sp_daylog")}function spDayLogSave(a){localStorage.setItem("sp_daylog",JSON.stringify(a))}
 function spJobs(){return _pmLoad("sp_jobs")}function spJobsSave(a){localStorage.setItem("sp_jobs",JSON.stringify(a))}
 function spPmId(){return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function spYmd(d){var m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(x<10?"0":"")+x}

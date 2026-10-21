@@ -5,7 +5,7 @@ var SPC=(function(){
  if(!window.SP_CLOUD||!window.Storage||!window.XMLHttpRequest)return null;
  var C=SP_CLOUD,LS=window.localStorage,P=Storage.prototype,rawSet=P.setItem,rawRem=P.removeItem;
  var SK="sp_cloud_sess",PK="sp_cloud_prof",BK="sp_cloud_base",DK="sp_cloud_dirty",FK="sp_cloud_fail";
- var KEYS=["sp_items","sp_requests","sp_takes","sp_pm_plans","sp_pm_rec","sp_jobs","sp_machines","sp_racks","sp_racks_ver","sp_model","sp_lines","sp_company"],KS={};
+ var KEYS=["sp_items","sp_requests","sp_takes","sp_pm_plans","sp_pm_rec","sp_jobs","sp_machines","sp_racks","sp_racks_ver","sp_model","sp_lines","sp_company","sp_daylog"],KS={};
  KEYS.forEach(function(k){KS[k]=1});
  function lget(k){try{return LS.getItem(k)}catch(e){return null}}
  function lset(k,v){try{rawSet.call(LS,k,v)}catch(e){}}
