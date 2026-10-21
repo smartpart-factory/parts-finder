@@ -63,7 +63,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <main>
  <h2>📍 กำหนดตำแหน่งอะไหล่ (3D)</h2>
  <div class="sum" id="sum"></div>
- <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="n">เรียงตามชื่อ</option><option value="q">จำนวนน้อยสุดก่อน</option><option value="r">เรียงตามชั้นวาง</option></select></div>
+ <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="new">เพิ่มล่าสุดก่อน</option><option value="n">เรียงตามชื่อ</option><option value="q">จำนวนน้อยสุดก่อน</option><option value="r">เรียงตามชั้นวาง</option></select></div>
  <div class="grid">
   <div class="card"><div class="hd"><span></span><span>อะไหล่</span><span>ที่เก็บ (ที่พิมพ์ไว้)</span><span>หมุดใน 3D</span><span></span></div><div id="list"></div></div>
   <div class="card map"><h3>🗺️ แผนที่ห้องอะไหล่ (3D)</h3><div class="hint" style="margin:0">เลือกอะไหล่จากรายการ → กด “📌 วางตำแหน่ง” → คลิกจุดที่วางในโมเดล · ลากเพื่อหมุน · ล้อเมาส์/บีบนิ้วเพื่อซูม</div><div id="cv"></div>
@@ -76,7 +76,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <script>
 var ICON={"BRG":"⚙️","BEL":"⭕","SEN":"🔌","SEA":"🔘","FLT":"🧪","MTR":"🔧","VLV":"🚰","FUS":"⚡","CTR":"🔲","PMP":"💧"};
 var CLR={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"};
-var filt="all",qs="",mach="",sort="n",sel=null;
+var filt="all",qs="",mach="",sort="new",sel=null;
 // ---- สรุป + ตัวกรอง ----
 function placed(i){return !!(i.pos||(i.r&&SP_RACKS[i.r]))}
 function counts(){var c={all:SP_ITEMS.length,on:0,off:0};SP_ITEMS.forEach(function(i){placed(i)?c.on++:c.off++});return c}
@@ -89,7 +89,7 @@ document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase()
 // ---- รายการ ----
 function draw(){drawSum();
  var a=SP_ITEMS.filter(function(i){return (filt==="all"||(filt==="on")===placed(i))&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
- a.sort(function(x,y){return sort==="q"?x.q-y.q:sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
+ a.sort(function(x,y){return sort==="new"?SP_ITEMS.indexOf(y)-SP_ITEMS.indexOf(x):sort==="q"?x.q-y.q:sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
  var l=document.getElementById("list");l.innerHTML="";
  if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มอะไหล่ที่หน้า “จัดการระบบ” ก่อน แล้วกลับมากำหนดตำแหน่งที่นี่')+'</div>';
  a.forEach(function(i){var s=spStatus(i),p=Math.min(100,i.q/(i.min*2)*100),d=document.createElement("div");d.className="rw"+(sel&&sel.c===i.c?" sel":"");

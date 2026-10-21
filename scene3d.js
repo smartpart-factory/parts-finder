@@ -35,7 +35,7 @@ function glbOf(u){return gcache[u]||(gcache[u]=gltf().then(function(){return new
 function clear(g){while(g.children.length){var c=g.children.pop();c.traverse(function(n){if(n.geometry)n.geometry.dispose();if(n.material&&n.material.dispose)n.material.dispose()})}}
 function paint(){pgen++;clear(items);
  // แสดงเฉพาะหมุดตำแหน่ง (ไม่มีโมเดลจำลองกล่อง/ชิ้นอะไหล่)
- SP_ITEMS.forEach(function(i){if(!(i.pos&&i.pos.length===3))return;var p=slotPos(i),isSel=sel&&sel.c===i.c,col=isSel?0x2563eb:0xdc2626;
+ SP_ITEMS.forEach(function(i){if(!(sel&&sel.c===i.c&&i.pos&&i.pos.length===3))return;var p=slotPos(i),isSel=true,col=0x2563eb;
   var st2=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.34,6),new THREE.MeshBasicMaterial({color:0x334155}));st2.position.set(p.x,p.y+p.bh/2+.2,p.z);items.add(st2);
   var dot=new THREE.Mesh(new THREE.SphereGeometry(isSel?.09:.065,14,10),new THREE.MeshBasicMaterial({color:col}));dot.position.set(p.x,p.y+p.bh/2+.4,p.z);dot.userData.code=i.c;items.add(dot)})}
 // โมเดลคลังจริง (.glb) ถ้าตั้งค่าไว้
@@ -78,18 +78,22 @@ function surfHit(e){var hs=ray(e).intersectObjects(PICKS,true);
  for(var k=0;k<hs.length;k++){var h=hs[k],ob=h.object,u=ob.userData;if(!u.surf)continue;if(h.face){var n=h.face.normal.clone().transformDirection(ob.matrixWorld);if(n.y<.5)continue}
   return{x:h.point.x,y:h.point.y,z:h.point.z,surf:u.surf,rack:u.rack,level:u.level}}return null}
 function form(h){
- var opts='<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return '<option value="'+k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("");
+ var IS="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;box-sizing:border-box",LB="font-size:12px;color:#475569;margin:2px 0 -2px;display:block";
+ var opts='<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return{q:q,k:k}}).reverse().map(function(z){var q=z.q;return '<option value="'+z.k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("");
  infoEl.innerHTML='<b>📌 วางอะไหล่ที่จุดนี้</b> <small style="color:#64748b">('+esc(h.surf)+' · x '+h.x.toFixed(2)+', z '+h.z.toFixed(2)+')</small>'
-  +'<div style="display:grid;gap:6px;margin-top:6px"><select id="pl-it" style="padding:7px;border:1px solid #cbd5e1;border-radius:8px">'+opts+'</select>'
-  +'<div id="pl-new" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><input id="pl-c" placeholder="รหัสอะไหล่ *"><input id="pl-n" placeholder="ชื่ออะไหล่ *"><input id="pl-q" type="number" min="0" value="1" placeholder="คงเหลือ"><input id="pl-m" type="number" min="0" value="0" placeholder="ขั้นต่ำ"><input id="pl-u" value="ชิ้น" placeholder="หน่วย" style="grid-column:1/3"></div>'
-  +'<label style="font-size:12px;color:#475569">📷 รูปอะไหล่ (ไม่บังคับ)</label><input id="pl-img" type="file" accept="image/*">'
+  +'<div style="display:grid;gap:8px;margin-top:8px"><label style="'+LB+'">เลือกอะไหล่ (ที่เพิ่มล่าสุดอยู่บนสุด)</label><select id="pl-it" style="'+IS+'">'+opts+'</select>'
+  +'<div id="pl-new" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label style="'+LB+'">รหัสอะไหล่ <small>(ไม่มีเว้นว่างได้)</small></label><input id="pl-c" style="'+IS+'" placeholder="เว้นว่าง = NC-xxxx"></div><div><label style="'+LB+'">ชื่ออะไหล่ *</label><input id="pl-n" style="'+IS+'" placeholder="ชื่ออะไหล่"></div>'
+  +'<div><label style="'+LB+'">คงเหลือ</label><input id="pl-q" type="number" min="0" value="1" style="'+IS+'"></div><div><label style="'+LB+'">ขั้นต่ำ</label><input id="pl-m" type="number" min="0" value="0" style="'+IS+'"></div><div style="grid-column:1/3"><label style="'+LB+'">หน่วย</label><input id="pl-u" value="ชิ้น" style="'+IS+'"></div></div>'
+  +'<label style="'+LB+'">📷 รูปอะไหล่ (ใช้รูปเดียวกับหน้า "จัดการระบบ" — ไม่บังคับ)</label><div style="display:flex;gap:10px;align-items:center"><img id="pl-ip" alt="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1"><input id="pl-img" type="file" accept="image/*" style="flex:1;min-width:0"></div>'
   +'<div id="pl-e" style="color:#dc2626;font-size:12px"></div><div style="display:flex;gap:6px"><button class="btn p" id="pl-ok" style="padding:7px 14px">บันทึกตำแหน่ง</button><button class="btn" id="pl-no" style="padding:7px 12px">ยกเลิก</button></div></div>';
  var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new");
- sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none"};sel_.onchange();
+ function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
+ sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none";pim()};sel_.onchange();
+ document.getElementById("pl-img").onchange=function(){var f=this.files[0],ip=document.getElementById("pl-ip");if(f){ip.src=URL.createObjectURL(f);ip.style.display="block"}else pim()};
  document.getElementById("pl-no").onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
  document.getElementById("pl-ok").onclick=function(){var l=SP_ITEMS.slice(),it,err=document.getElementById("pl-e");
   if(sel_.value===""){var c=document.getElementById("pl-c").value.trim(),n=document.getElementById("pl-n").value.trim(),q=parseInt(document.getElementById("pl-q").value,10),m=parseInt(document.getElementById("pl-m").value,10);
-   if(!c||!n){err.textContent="กรอกรหัสและชื่ออะไหล่";return}if(l.some(function(x){return x.c.toLowerCase()===c.toLowerCase()})){err.textContent="รหัสนี้มีอยู่แล้ว — เลือกจากรายการด้านบน";return}
+   if(!n){err.textContent="กรอกชื่ออะไหล่";return}if(!c){var mx=0;l.forEach(function(x){var mm=/^NC-(\d+)$/i.exec(String(x.c));if(mm)mx=Math.max(mx,+mm[1])});c="NC-"+("000"+(mx+1)).slice(-4)}if(l.some(function(x){return x.c.toLowerCase()===c.toLowerCase()})){err.textContent="รหัสนี้มีอยู่แล้ว — เลือกจากรายการด้านบน";return}
    it={c:c,n:n,k:"",m:[],q:q>=0?q:0,min:m>=0?m:0,u:document.getElementById("pl-u").value.trim()||"ชิ้น",r:"",s:0};l.push(it)}
   else it=l[+sel_.value];
   var fi=document.getElementById("pl-img").files[0],fin=function(){spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
