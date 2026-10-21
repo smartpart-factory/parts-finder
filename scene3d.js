@@ -41,8 +41,15 @@ function modelFor(i){var p=slotPos(i);if(!p||!i.mt)return null;var m=spDept.mode
  else{fit=[p.bw,p.bh,p.bd];if(r&&r.w<r.d)m.rotation.y=Math.PI/2}
  W.add(m);if(i.ry)W.rotation.y+=i.ry*Math.PI/180;var b=new THREE.Box3().setFromObject(W),sz=b.getSize(new THREE.Vector3()),s=Math.min(fit[0]*.94/sz.x,fit[1]*.94/sz.y,fit[2]*.94/sz.z,1.8);W.scale.setScalar(s);b.setFromObject(W);
  var y=i.dw?p.y-(b.min.y+b.max.y)/2:p.top-b.min.y;W.position.set(p.x,y,p.z);W.userData={code:i.c,s:s,y0:y,w:fit[0]};return W}
-function paint(){pgen++;clear(items);items.userData.blink=null;
- SP_ITEMS.forEach(function(i){if(!i.mt)return;var W=modelFor(i);if(!W)return;items.add(W);
+function packRack(){var map={},groups={};SP_ITEMS.forEach(function(i){if(!i.mt||i.dw||lpos(i)||!SP_RACKS[i.r]||!(i.s>0))return;(groups[i.r+"|"+i.s]=groups[i.r+"|"+i.s]||[]).push(i)});
+ Object.keys(groups).forEach(function(k){var l=groups[k],r=SP_RACKS[l[0].r],alongX=r.w>=r.d,Lg=alongX?r.w:r.d,Sh=alongX?r.d:r.w,sp=r.h/r.n,fh=sp*.72,fd=Math.min(.9,Sh*.8),y0=spDept.shelfY(r,l[0].s),arr=[],tot=0;
+  l.forEach(function(i){var m=spDept.model(i.mt);if(!m)return;var W=new THREE.Group();if(!alongX)m.rotation.y=Math.PI/2;W.add(m);if(i.ry)W.rotation.y+=i.ry*Math.PI/180;
+   var z=new THREE.Box3().setFromObject(W).getSize(new THREE.Vector3()),s=Math.min(fh/z.y,fd/(alongX?z.z:z.x),1.6),w=(alongX?z.x:z.z)*s;arr.push({i:i,W:W,s:s,w:w});tot+=w+.012});
+  var f=Math.min(1,(Lg-.1)/Math.max(tot,.01)),cur=(alongX?r.x:r.z)-Lg/2+.06;
+  arr.forEach(function(a){var s=a.s*f,w=a.w*f;a.W.scale.setScalar(s);var b=new THREE.Box3().setFromObject(a.W),c=cur+w/2,y=y0-b.min.y;cur+=w+.012*f;
+   a.W.position.set(alongX?c:r.x,y,alongX?r.z:c);a.W.userData={code:a.i.c,s:s,y0:y,w:w};map[a.i.c]=a.W})});return map}
+function paint(){pgen++;clear(items);items.userData.blink=null;var PKM=packRack();
+ SP_ITEMS.forEach(function(i){if(!i.mt)return;var W=PKM[i.c]||modelFor(i);if(!W)return;items.add(W);
   if(sel&&sel.c===i.c){var mats=[];W.traverse(function(n){if(n.isMesh&&n.material&&n.material.emissive)mats.push(n.material)});
    var halo=i.dw?null:new THREE.Mesh(new THREE.CircleGeometry(Math.max(.2,W.userData.w*.65),32),new THREE.MeshBasicMaterial({color:0xffd400,transparent:true,opacity:.5,depthWrite:false,depthTest:false}));if(halo){halo.rotation.x=-Math.PI/2;halo.position.set(W.position.x,W.userData.y0+.015,W.position.z);halo.renderOrder=7;items.add(halo)}
    items.userData.blink={g:W,s:W.userData.s,mats:mats,halo:halo}}});
@@ -65,14 +72,14 @@ function hlTarget(i,p){var best=null,ba=1e9;function tryR(o,pad){if(!o||!o.w||!o
  Object.keys(SP_RACKS).forEach(function(k){tryR(SP_RACKS[k],.12)});
  (spDept.furn||[]).forEach(function(f){if(f.t==="belt"||f.t==="stool"||f.t==="column")return;tryR(f,.12)});return best}
 function drawerBox(i){var f=spDept.furnById(i.dw[0]);if(!f)return null;var P=spDept.drawerPos(f,i.dw[1],i.dw[2]);return{f:f,P:P}}
-function highlight(i,p){clear(hlG);hlG.userData.fill=null;
+function highlight(i,p){clear(hlG);hlG.userData.fill=null;hlG.userData.band=null;hlG.userData.base=.03;hlG.userData.amp=.09;
  if(i.dw){var D_=drawerBox(i);if(!D_)return;var P=D_.P,g0=new THREE.BoxGeometry(P.cw*.98,P.ch*.98,.05),m0=new THREE.Mesh(g0,new THREE.MeshBasicMaterial({color:0xff2d2d,transparent:true,opacity:.4,depthWrite:false,depthTest:false}));
   m0.position.set(P.x,P.y,P.z+P.nz*.03);m0.renderOrder=8;var e0=new THREE.LineSegments(new THREE.EdgesGeometry(g0),new THREE.LineBasicMaterial({color:0xff0000,depthTest:false}));e0.position.copy(m0.position);e0.renderOrder=9;
   var fg=new THREE.BoxGeometry(D_.f.w+.06,D_.f.h+.06,D_.f.d+.06),eo=new THREE.LineSegments(new THREE.EdgesGeometry(fg),new THREE.LineBasicMaterial({color:0xff9500}));eo.position.set(D_.f.x,(D_.f.h+.06)/2,D_.f.z);eo.renderOrder=6;
-  if(P.nz<0){m0.position.z=P.z-.03;e0.position.z=P.z-.03}hlG.add(m0,e0,eo);hlG.userData.fill=m0;hlG.userData.edge=e0;return}
+  if(P.nz<0){m0.position.z=P.z-.03;e0.position.z=P.z-.03}hlG.add(m0,e0,eo);hlG.userData.base=.1;hlG.userData.amp=.2;hlG.userData.fill=m0;hlG.userData.edge=e0;return}
  var rk=SP_RACKS[i.r];if(rk&&i.s>0){var th=spDept.rackTheta(rk),L=Math.max(rk.w,rk.d),S=Math.min(rk.w,rk.d),sp=rk.h/rk.n,y0=spDept.shelfY(rk,i.s),hg=new THREE.Group();hg.position.set(rk.x,0,rk.z);hg.rotation.y=th;
-  var bg=new THREE.BoxGeometry(L-.01,sp*.8,.03),bm=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:0xff2d2d,transparent:true,opacity:.42,depthWrite:false,depthTest:false}));bm.position.set(0,y0+sp*.4,S/2+.03);bm.renderOrder=8;
-  var be=new THREE.LineSegments(new THREE.EdgesGeometry(bg),new THREE.LineBasicMaterial({color:0xff0000,depthTest:false}));be.position.copy(bm.position);be.renderOrder=9;hg.add(bm,be);hlG.add(hg)}
+  var bg=new THREE.BoxGeometry(L-.01,sp*.8,.03),bm=new THREE.Mesh(bg,new THREE.MeshBasicMaterial({color:0xff4d4d,transparent:true,opacity:.1,depthWrite:false,depthTest:false}));bm.position.set(0,y0+sp*.4,S/2+.03);bm.renderOrder=8;
+  var be=new THREE.LineSegments(new THREE.EdgesGeometry(bg),new THREE.LineBasicMaterial({color:0xff0000,depthTest:false}));be.position.copy(bm.position);be.renderOrder=9;hg.add(bm,be);hlG.add(hg);hlG.userData.band={m:bm,e:be}}
  var o=hlTarget(i,p);if(!o)return;var w=o.w+.06,d=o.d+.06,h=o.h+.06,g=new THREE.BoxGeometry(w,h,d);
  var m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffc400,transparent:true,opacity:.3,depthWrite:false}));m.position.set(o.x,h/2,o.z);m.renderOrder=5;
  var e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xff9500}));e.position.copy(m.position);e.renderOrder=6;hlG.add(m,e);hlG.userData.fill=m;hlG.userData.edge=e}
@@ -199,6 +206,6 @@ window.addEventListener("pointermove",function(e){if(placing&&!pd[e.pointerId]&&
  else if(drag){ang-=(e.clientX-lx)*.01;el=Math.max(.12,Math.min(1.52,el+(e.clientY-ly)*.008))}pd[e.pointerId]=e;lx=e.clientX;ly=e.clientY});
 host.addEventListener("wheel",function(e){e.preventDefault();if(walk){step(-Math.sin(wyaw)*e.deltaY*.004,Math.cos(wyaw)*e.deltaY*.004);return}FOC=null;dist=Math.max(1,Math.min(170,dist+e.deltaY*.03))},{passive:false});
 function rs(){W=host.clientWidth;H=host.clientHeight;if(!W||!H)return;ren.setSize(W,H);cam.aspect=W/H;cam.updateProjectionMatrix()}window.addEventListener("resize",rs);if(window.ResizeObserver)new ResizeObserver(rs).observe(host);document.addEventListener("fullscreenchange",function(){setTimeout(function(){rs();fitView(horiz)},100)});
-(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;var bl=items.userData.blink;if(bl){var q=.5+.5*Math.sin(Date.now()/170);bl.mats.forEach(function(m){m.emissive.setHex(0xffa800);m.emissiveIntensity=.1+.9*q});bl.g.scale.setScalar(bl.s*(1+.07*q));if(bl.halo)bl.halo.material.opacity=.2+.6*q}var hf=hlG.userData.fill;if(hf){var ph=Math.sin(Date.now()/170);hf.material.opacity=.12+.38*(.5+.5*ph);hlG.userData.edge.visible=ph>-.3}ren.render(sc,cam)})();
+(function loop(){requestAnimationFrame(loop);walkTick();var pk=(PK.r?1:0)-(PK.l?1:0),pv=(PK.d?1:0)-(PK.u?1:0);if(pk||pv)panBy(-pk*9,-pv*9);cp();if(mark)mark.position.y=mark.userData.y0+Math.sin(Date.now()/250)*.12;var bl=items.userData.blink;if(bl){var q=.5+.5*Math.sin(Date.now()/170);bl.mats.forEach(function(m){m.emissive.setHex(0xff6a00);m.emissiveIntensity=.05+1.0*q});bl.g.scale.setScalar(bl.s*(1+.07*q));if(bl.halo)bl.halo.material.opacity=.08+.22*q}var hf=hlG.userData.fill;if(hf){var ph=Math.sin(Date.now()/260),qq=.5+.5*ph,bs=hlG.userData.base==null?.03:hlG.userData.base,am=hlG.userData.amp==null?.09:hlG.userData.amp;hf.material.opacity=bs+am*qq;var ed=hlG.userData.edge;ed.material.transparent=true;ed.material.opacity=.2+.4*qq;var bd=hlG.userData.band;if(bd){bd.m.material.opacity=.07+.16*qq;bd.e.material.transparent=true;bd.e.material.opacity=.25+.4*qq}}ren.render(sc,cam)})();
 paint();
 var API={show:show,paint:paint,place:place,canEdit:canEdit,walk:setWalk,setCam:function(a){FREE=a},shot:function(){cp();ren.render(sc,cam);return ren.domElement.toDataURL('image/jpeg',.93)},ren:ren,B:B,fit:fitView,view:function(a,e,d,x,z){if(a!=null)ang=a;if(e!=null)el=e;if(d!=null)dist=d;if(x!=null){tx=x;tz=z}},scene:sc,THREE:THREE};window.spSceneApi=API;return API};
