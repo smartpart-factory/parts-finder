@@ -26,9 +26,9 @@ var SP_RACKS={
  L4:{x:6.555,z:8.835,w:1.188,d:0.438,h:1.25,n:2},
  W1:{x:7.275,z:12.495,w:1.737,d:1.562,h:2.5,n:4},
  W2:{x:7.275,z:14.415,w:1.737,d:1.65,h:2.5,n:4},
- K1:{x:2.16,z:18.75,w:0.938,d:1.5,h:2.25,n:3}};
+ K1:{x:2.16,z:18.55,w:0.6,d:2.1,h:1.15,n:2}};
 /* เวอร์ชันผังชั้นวาง: เมื่อเปลี่ยนผังเริ่มต้นใหม่ (เปลี่ยนเลขนี้) ผังที่เคยแก้ไว้ในเบราว์เซอร์จะถูกล้างหนึ่งครั้ง เพื่อใช้ผังใหม่ */
-var SP_RACKS_VER="floor1-v5";
+var SP_RACKS_VER="floor1-v6";
 try{if(localStorage.getItem("sp_racks_ver")!==SP_RACKS_VER){localStorage.removeItem("sp_racks");localStorage.setItem("sp_racks_ver",SP_RACKS_VER)}}catch(e){}
 try{var _rk=localStorage.getItem("sp_racks");if(_rk)SP_RACKS=JSON.parse(_rk)}catch(e){}
 function spRacksSave(o){SP_RACKS=o;localStorage.setItem("sp_racks",JSON.stringify(o));try{localStorage.setItem("sp_racks_ver",SP_RACKS_VER)}catch(e){}}
