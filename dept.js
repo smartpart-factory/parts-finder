@@ -147,6 +147,50 @@ D.model=function(t){
  }else if(t==="bin"){
   box(.38,.14,.26,0,.07,0,0x1f55c9);box(.34,.012,.22,0,.14,0,0x0b1d45);
   for(var i3=0;i3<5;i3++){var pc=cyl(.022,.022,.05+i3%2*.02,0xb8bcc2,{metalness:.7});pc.position.set(-.12+i3*.06,.17,(i3%2?.04:-.04))}box(.07,.04,.05,.1,.16,.05,0x111827)
+ }else if(t==="fender"){
+  var fs=new THREE.Shape();fs.moveTo(.34,0);fs.absarc(0,0,.34,0,Math.PI/2,false);fs.lineTo(0,.2);fs.absarc(0,0,.2,Math.PI/2,0,true);fs.lineTo(.34,0);
+  var fg=new THREE.ExtrudeGeometry(fs,{depth:.02,bevelEnabled:false}),fm=new THREE.Mesh(fg,M(0x3a3d44,{roughness:.6}));fm.rotation.x=-Math.PI/2;fm.position.set(-.17,.015,.17);g.add(fm);
+  var fw=new THREE.Mesh(fg,M(0xffffff,{transparent:true,opacity:.22,roughness:.15,depthWrite:false}));fw.rotation.x=-Math.PI/2;fw.scale.set(1.03,1.03,2);fw.position.set(-.175,.012,.175);g.add(fw)
+ }else if(t==="gearbox"){
+  box(.2,.2,.16,-.08,.11,-.02,0x6b7280,{metalness:.5});var gg=cyl(.1,.1,.06,0x15181d,{metalness:.5},"z");gg.position.set(.04,.14,.07);
+  var fl=cyl(.075,.075,.035,0xcdd3da,{metalness:.85,roughness:.25},"z");fl.position.set(.1,.07,.12);var ho=cyl(.03,.03,.04,0x2b2f36,{},"z");ho.position.set(.1,.07,.14);
+  var pu=cyl(.075,.075,.07,0x0f1115,{},"z");pu.position.set(-.16,.075,.12);box(.38,.012,.28,0,.006,0,0xe5e7eb);box(.34,.2,.26,0,.1,0,0xffffff,{transparent:true,opacity:.16,depthWrite:false,roughness:.15})
+ }else if(t==="bracket"){
+  box(.05,.26,.03,-.06,.14,0,0x3fcf7a,{roughness:.5});box(.16,.04,.03,.01,.02,0,0x3fcf7a,{roughness:.5});box(.1,.05,.04,-.14,.2,.0,0x3b3d44,{metalness:.5});
+  cyl(.07,.07,.22,0xefe6c8,{roughness:.9},"x").position.set(.07,.075,-.04);box(.34,.14,.14,0,.07,0,0xffffff,{transparent:true,opacity:.16,depthWrite:false,roughness:.15})
+ }else if(t==="beltbag"){
+  box(.42,.01,.3,0,.005,0,0xffffff,{transparent:true,opacity:.2,depthWrite:false,roughness:.1});box(.42,.012,.02,0,.012,.14,0x9ca3af);
+  for(var bi=0;bi<5;bi++){var bt=tor(.12+bi*.012,.012,-.07,.012+bi*.006,0,bi===4?0x1f2937:0xe8ecef,{roughness:.7},Math.PI/2);bt.scale.set(1.2,1,1)}
+  for(var bj=0;bj<4;bj++){var bu=tor(.09+bj*.01,.012,.08,.012+bj*.006,.02,0xe8ecef,{roughness:.7},Math.PI/2)}
+ }else if(t==="fiber"){
+  box(.44,.008,.3,0,.004,0,0xffffff,{transparent:true,opacity:.2,depthWrite:false,roughness:.1});
+  for(var fi=0;fi<3;fi++){var ft2=tor(.12+fi*.01,.005,0,.01+fi*.008,0,0xcfd5dc,{metalness:.85,roughness:.3},Math.PI/2);ft2.scale.set(1.3,1,1)}
+  box(.07,.004,.06,.0,.032,0,0xffffff);box(.02,.015,.02,.2,.012,-.1,0x22c55e);box(.012,.012,.02,.19,.012,-.11,0xdc2626)
+ }else if(t==="dcmotor"){
+  var dm=cyl(.07,.07,.3,0x1b1f27,{metalness:.35},"x");dm.position.set(0,.09,0);var ec=cyl(.075,.075,.035,0xc3c8cf,{metalness:.8,roughness:.3},"x");ec.position.set(.15,.09,0);var ec2=cyl(.075,.075,.035,0xc3c8cf,{metalness:.8,roughness:.3},"x");ec2.position.set(-.15,.09,0);
+  box(.06,.1,.1,-.04,.17,.0,0xb8bec6,{metalness:.7});box(.1,.05,.03,.02,.09,.07,0xeeeeee);var gh=cyl(.04,.04,.12,0xd5dae0,{metalness:.8},"x");gh.position.set(.22,.09,0);
+  var dw2=cyl(.095,.095,.34,0xffffff,{transparent:true,opacity:.16,depthWrite:false,roughness:.15},"x");dw2.position.set(.02,.09,0)
+ }else if(t==="micro"){
+  box(.2,.14,.12,0,.07,0,0x14161b,{roughness:.6});box(.07,.05,.12,-.07,.16,0,0x14161b);box(.12,.012,.12,.02,.146,0,0xd6dbe1,{metalness:.8,roughness:.3});
+  var mc=cyl(.045,.045,.12,0xd9dde2,{metalness:.8,roughness:.3});mc.position.set(.02,.21,0);var mk=cyl(.05,.05,.04,0xc9ced4,{metalness:.8,roughness:.4});mk.position.set(.02,.3,0);var mk2=cyl(.052,.052,.03,0xb9bec5,{metalness:.8,roughness:.4});mk2.position.set(.02,.255,0);
+  cyl(.012,.012,.03,0xd6dbe1,{metalness:.8}).position.set(.02,.335,0);cyl(.025,.025,.03,0x6b7280,{metalness:.7},"z").position.set(.02,.06,.075)
+ }else if(t==="roller"){
+  var ro=cyl(.11,.11,.09,0x4f5238,{roughness:.9});ro.position.y=.045;var rf=cyl(.09,.09,.02,0x1b1d22,{metalness:.5});rf.position.y=.095;var rh=cyl(.055,.055,.05,0x15171b,{metalness:.5});rh.position.y=.12;var rb=cyl(.03,.03,.052,0x050608,{});rb.position.y=.122;
+  for(var rk=0;rk<3;rk++){var ra=rk*2.1,rs=cyl(.008,.008,.004,0x9ca3af,{metalness:.8});rs.position.set(Math.cos(ra)*.075,.106,Math.sin(ra)*.075)}
+ }else if(t==="vgear"){
+  var vm=cyl(.085,.085,.2,0xa9b2ba,{metalness:.3});vm.position.set(0,.13,0);for(var vf=0;vf<6;vf++){var va=vf*Math.PI/3+.3;box(.012,.19,.04,Math.cos(va)*.09,.13,Math.sin(va)*.09,0xbac2c9,{metalness:.3}).rotation.y=-va}
+  cyl(.1,.1,.04,0x9aa3ab,{metalness:.4}).position.set(0,.01,0);cyl(.115,.115,.03,0x9aa3ab,{metalness:.4}).position.set(0,.245,0);box(.17,.13,.17,0,.325,0,0xa9b2ba,{metalness:.35});cyl(.12,.12,.025,0xb7bec5,{metalness:.5}).position.set(0,.405,0);
+  box(.1,.11,.09,.12,.17,0,0xb7bec5);cyl(.04,.04,.07,0x4b5563,{metalness:.6}).position.set(0,.45,0);cyl(.12,.12,.52,0xffffff,{transparent:true,opacity:.14,depthWrite:false,roughness:.15}).position.set(.01,.26,0)
+ }else if(t==="disc"){
+  var dc=cyl(.12,.12,.008,0xf3efc9,{roughness:.8});dc.position.y=.004;var dh2=cyl(.014,.014,.01,0x3b1d12,{});dh2.position.y=.005
+ }else if(t==="shaft"){
+  var s1=cyl(.017,.017,.2,0xd1d5db,{metalness:.9,roughness:.25},"x");s1.position.set(.08,.02,0);var s2=cyl(.019,.019,.1,0xc3c8cf,{metalness:.9,roughness:.3},"x");s2.position.set(-.07,.02,0);
+  for(var sp=0;sp<8;sp++){var sg=sp*Math.PI/4;box(.1,.004,.004,-.07,.02+Math.sin(sg)*.019,Math.cos(sg)*.019,0x9ca3af,{metalness:.8})}
+  for(var th=0;th<4;th++)cyl(.0175,.0175,.004,0x9ca3af,{metalness:.9},"x").position.set(.185+th*.007,.02,0)
+ }else if(t==="sensorcable"){
+  var ca=new THREE.Mesh(new THREE.TorusGeometry(.12,.008,8,24,Math.PI),M(0x15171b,{roughness:.7}));ca.position.set(0,.02,0);ca.rotation.x=-Math.PI/2;ca.rotation.z=0;g.add(ca);
+  var k1=cyl(.018,.018,.05,0xd0d4d9,{metalness:.9,roughness:.3},"x");k1.position.set(-.12,.02,0);cyl(.012,.012,.04,0x15171b,{},"x").position.set(-.15,.02,0);
+  var bn=cyl(.02,.02,.025,0xc9a227,{metalness:.8,roughness:.3},"x");bn.position.set(.12,.02,0);var cb2=cyl(.024,.024,.09,0xd9e4cd,{roughness:.8},"x");cb2.position.set(.18,.024,0);cyl(.0245,.0245,.01,0xf0d419,{},"x").position.set(.225,.024,0)
  }else{
   box(.32,.2,.26,0,.1,0,0xc8a26a,{roughness:.9});box(.07,.002,.26,0,.2,0,0xe7d6b0);box(.07,.1,.002,0,.15,.131,0xe7d6b0);
  }

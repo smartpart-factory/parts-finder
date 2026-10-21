@@ -39,12 +39,12 @@ function modelFor(i){var p=slotPos(i);if(!p||!i.mt)return null;var m=spDept.mode
  if(i.dw){var DB=drawerBox(i);if(!DB)return null;fit=[DB.P.cw*.86,DB.P.ch*.8,DB.f.d*.55];W.rotation.y=DB.P.nz<0?Math.PI:0}
  else if(p.spot&&!(r&&!lpos(i))){fit=[.5,.42,.4]}
  else{fit=[p.bw,p.bh,p.bd];if(r&&r.w<r.d)m.rotation.y=Math.PI/2}
- W.add(m);if(i.ry)W.rotation.y+=i.ry*Math.PI/180;var b=new THREE.Box3().setFromObject(W),sz=b.getSize(new THREE.Vector3()),s=Math.min(fit[0]*.94/sz.x,fit[1]*.94/sz.y,fit[2]*.94/sz.z,1.8);W.scale.setScalar(s);b.setFromObject(W);
+ W.add(m);if(i.ry)W.rotation.y+=i.ry*Math.PI/180;var b=new THREE.Box3().setFromObject(W),sz=b.getSize(new THREE.Vector3()),s=Math.min(fit[0]*.94/sz.x,fit[1]*.94/sz.y,fit[2]*.94/sz.z,1.8)*(i.sc||1);W.scale.setScalar(s);b.setFromObject(W);
  var y=i.dw?p.y-(b.min.y+b.max.y)/2:p.top-b.min.y;W.position.set(p.x,y,p.z);W.userData={code:i.c,s:s,y0:y,w:fit[0]};return W}
 function packRack(){var map={},groups={};SP_ITEMS.forEach(function(i){if(!i.mt||i.dw||lpos(i)||!SP_RACKS[i.r]||!(i.s>0))return;(groups[i.r+"|"+i.s]=groups[i.r+"|"+i.s]||[]).push(i)});
  Object.keys(groups).forEach(function(k){var l=groups[k],r=SP_RACKS[l[0].r],alongX=r.w>=r.d,Lg=alongX?r.w:r.d,Sh=alongX?r.d:r.w,sp=r.h/r.n,fh=sp*.72,fd=Math.min(.9,Sh*.8),y0=spDept.shelfY(r,l[0].s),arr=[],tot=0;
   l.forEach(function(i){var m=spDept.model(i.mt);if(!m)return;var W=new THREE.Group();if(!alongX)m.rotation.y=Math.PI/2;W.add(m);if(i.ry)W.rotation.y+=i.ry*Math.PI/180;
-   var z=new THREE.Box3().setFromObject(W).getSize(new THREE.Vector3()),s=Math.min(fh/z.y,fd/(alongX?z.z:z.x),1.6),w=(alongX?z.x:z.z)*s;arr.push({i:i,W:W,s:s,w:w});tot+=w+.012});
+   var z=new THREE.Box3().setFromObject(W).getSize(new THREE.Vector3()),s=Math.min(fh/z.y,fd/(alongX?z.z:z.x),1.6)*(i.sc||1),w=(alongX?z.x:z.z)*s;arr.push({i:i,W:W,s:s,w:w});tot+=w+.012});
   var f=Math.min(1,(Lg-.1)/Math.max(tot,.01)),cur=(alongX?r.x:r.z)-Lg/2+.06;
   arr.forEach(function(a){var s=a.s*f,w=a.w*f;a.W.scale.setScalar(s);var b=new THREE.Box3().setFromObject(a.W),c=cur+w/2,y=y0-b.min.y;cur+=w+.012*f;
    a.W.position.set(alongX?c:r.x,y,alongX?r.z:c);a.W.userData={code:a.i.c,s:s,y0:y,w:w};map[a.i.c]=a.W})});return map}
@@ -83,9 +83,12 @@ function highlight(i,p){clear(hlG);hlG.userData.fill=null;hlG.userData.band=null
  var o=hlTarget(i,p);if(!o)return;var w=o.w+.06,d=o.d+.06,h=o.h+.06,g=new THREE.BoxGeometry(w,h,d);
  var m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0xffc400,transparent:true,opacity:.3,depthWrite:false}));m.position.set(o.x,h/2,o.z);m.renderOrder=5;
  var e=new THREE.LineSegments(new THREE.EdgesGeometry(g),new THREE.LineBasicMaterial({color:0xff9500}));e.position.copy(m.position);e.renderOrder=6;hlG.add(m,e);hlG.userData.fill=m;hlG.userData.edge=e}
-function show(i){spDept.xray(false);sel=i;paint();drawRoute(null);clear(hlG);hlG.userData.fill=null;if(mark){sc.remove(mark);mark=null}
+function show(i){if(EDR){var rv=EDR;EDR=null;rv()}spDept.xray(false);sel=i;paint();drawRoute(null);clear(hlG);hlG.userData.fill=null;if(mark){sc.remove(mark);mark=null}
  var p=slotPos(i),r=SP_RACKS[i.r],h=head(i),btn="";
- if(canEdit())btn='<div style="margin-top:8px"><label style="font-size:12px;color:#475569">🧩 โมเดล 3D ของอะไหล่นี้</label><select id="mt-q" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;margin-top:3px">'+spModelOpts(i.mt||"")+'</select></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
+ if(canEdit())var RYO=[0,45,90,135,180,225,270,315].map(function(d){return '<option value="'+d+'"'+(d===(i.ry||0)?' selected':'')+'>'+d+'°</option>'}).join("");
+ btn='<div id="ed" style="margin-top:8px;padding:9px;border:1px solid #cfd8ea;border-radius:10px;background:#f8fafc"><label style="font-size:12px;color:#475569;font-weight:600">✏️ แก้ไขโมเดล 3D ของอะไหล่นี้</label><select id="mt-q" style="width:100%;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;margin-top:4px">'+spModelOpts(i.mt||"")+'</select>'
+  +'<div style="display:flex;align-items:center;gap:6px;margin-top:8px"><span style="font-size:12px;color:#475569">ขนาด</span><button type="button" class="btn" id="sc-m" style="padding:3px 10px">−</button><input type="range" id="sc-q" min="30" max="300" step="5" value="'+Math.round((i.sc||1)*100)+'" style="flex:1;min-width:60px"><button type="button" class="btn" id="sc-p" style="padding:3px 10px">+</button><b id="sc-v" style="font-size:12px;min-width:40px;text-align:right">'+Math.round((i.sc||1)*100)+'%</b></div>'
+  +'<div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap"><span style="font-size:12px;color:#475569">หมุน</span><select id="ry-q" style="padding:5px 8px;border:1px solid #cbd5e1;border-radius:8px;font:inherit">'+RYO+'</select><span style="flex:1"></span><button type="button" class="btn p" id="ed-s" style="padding:6px 12px">💾 บันทึก</button><button type="button" class="btn" id="ed-c" style="padding:6px 10px">↩ ยกเลิก</button></div><div id="ed-m" style="font-size:12px;margin-top:5px;min-height:15px"></div></div><div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn p" data-a="mv" style="padding:6px 10px">📌 '+(p?'ย้ายตำแหน่ง':'วางตำแหน่ง')+'</button>'+(i.pos?'<button class="btn" data-a="rm" style="padding:6px 10px">🗑 ลบหมุด</button>':'')+'</div>';
  infoEl.innerHTML=h+btn;wire(i);
  if(!p){infoEl.insertAdjacentHTML("afterbegin",'<div style="color:#dc2626;margin-bottom:4px">ยังไม่มีตำแหน่งในโมเดล 3D'+(i.r?' (ชั้นวาง '+esc(i.r)+' ไม่มีในผัง)':'')+'</div>');return}
  highlight(i,p);
@@ -98,8 +101,19 @@ function show(i){spDept.xray(false);sel=i;paint();drawRoute(null);clear(hlG);hlG
 function focusRack(k,lv){var r=SP_RACKS[k];if(!r)return;spDept.xray(false);var L=Math.max(r.w,r.d);var nm=(spDept.rackNames&&spDept.rackNames[k])||"",cb=/ตู้/.test(nm);spDept.xray(true,k);focus(r.x,spDept.shelfY(r,lv||1)+.2,r.z,(cb?(r.h<1.4?Math.max(2.6,L*1.1):3.4):Math.max(3,Math.min(L,5)*.85))*spDept.KD,spDept.rackTheta(r),cb?(r.h<1.4?.6:1.25):.4)}
 function diagram(f,dw){var cells="";for(var r=1;r<=f.rows;r++)for(var c=1;c<=f.cols;c++){var on=c===dw[1]&&r===dw[2];cells+='<i style="display:block;height:11px;border:1px solid '+(on?'#dc2626':'#b6c3cf')+';background:'+(on?'#ef4444':'#eef3f7')+';border-radius:2px;'+(on?'animation:spb .6s infinite alternate':'')+'"></i>'}
  return '<style>@keyframes spb{to{opacity:.35}}</style><div style="margin-top:8px;font-size:12px;color:#475569"><b>🗄 '+esc(f.n)+'</b> — แถว '+dw[1]+' (นับจากซ้าย มองจากด้านหน้า) · ชั้น '+dw[2]+' (นับจากบน)<div style="display:grid;grid-template-columns:repeat('+f.cols+',1fr);gap:2px;width:170px;margin-top:4px;padding:4px;background:#dfe7ee;border-radius:6px">'+cells+'</div></div>'}
+var EDR=null;
 function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelector('[data-a=rm]'),mq=infoEl.querySelector('#mt-q');
- if(mq)mq.onchange=function(){var l=SP_ITEMS.slice();if(mq.value)i.mt=mq.value;else delete i.mt;spItemsSave(l);paint();o.onChange&&o.onChange()};
+ if(mq){var og={mt:i.mt,sc:i.sc,ry:i.ry},sq=infoEl.querySelector('#sc-q'),sv=infoEl.querySelector('#sc-v'),rq=infoEl.querySelector('#ry-q'),sb=infoEl.querySelector('#ed-s'),cb=infoEl.querySelector('#ed-c'),em=infoEl.querySelector('#ed-m');
+  var dirty=function(){return (i.mt||"")!==(og.mt||"")||(i.sc||1)!==(og.sc||1)||(i.ry||0)!==(og.ry||0)};
+  var upd=function(msg){sv.textContent=Math.round((i.sc||1)*100)+'%';var d=dirty();sb.style.boxShadow=d?'0 0 0 3px rgba(37,99,235,.3)':'';em.innerHTML=msg||(d?'<span style="color:#d97706">มีการแก้ไขที่ยังไม่บันทึก — กด 💾 บันทึก เมื่อทำเสร็จ</span>':'');paint()};
+  var setSc=function(v){v=Math.max(.3,Math.min(3,v));if(Math.abs(v-1)<.001)delete i.sc;else i.sc=+v.toFixed(2);sq.value=Math.round((i.sc||1)*100);upd()};
+  mq.onchange=function(){if(mq.value)i.mt=mq.value;else delete i.mt;upd()};
+  sq.oninput=function(){setSc(sq.value/100)};infoEl.querySelector('#sc-m').onclick=function(){setSc((i.sc||1)-.1)};infoEl.querySelector('#sc-p').onclick=function(){setSc((i.sc||1)+.1)};
+  rq.onchange=function(){if(+rq.value)i.ry=+rq.value;else delete i.ry;upd()};
+  var rest=function(){if(og.mt)i.mt=og.mt;else delete i.mt;if(og.sc)i.sc=og.sc;else delete i.sc;if(og.ry)i.ry=og.ry;else delete i.ry};
+  sb.onclick=function(){var l=SP_ITEMS.slice();spItemsSave(l);og={mt:i.mt,sc:i.sc,ry:i.ry};upd('<span style="color:#16a34a">✅ บันทึกแล้ว</span>');o.onChange&&o.onChange()};
+  cb.onclick=function(){rest();mq.value=i.mt||"";sq.value=Math.round((i.sc||1)*100);rq.value=String(i.ry||0);upd()};
+  EDR=function(){if(dirty()){rest();paint()}}}
  if(m)m.onclick=function(){place(true,i)};
  if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;delete i.dw;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
 // ---- โหมดวางอะไหล่ ----
