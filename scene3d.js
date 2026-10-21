@@ -89,8 +89,9 @@ function ray(e){var rc=host.getBoundingClientRect(),v=new THREE.Vector2((e.clien
 function surfHit(e){var hs=ray(e).intersectObjects(PICKS,true);
  for(var k=0;k<hs.length;k++){var h=hs[k],ob=h.object,u=ob.userData;if(!u.surf)continue;
   if(u.dw){var f_=spDept.furnById(u.dw[0]),P_=spDept.drawerPos(f_,u.dw[1],u.dw[2]);return{x:P_.x,y:P_.y,z:P_.z,surf:u.surf,dw:u.dw}}if(h.face){var n=h.face.normal.clone().transformDirection(ob.matrixWorld);if(n.y<.5)continue}
-  return{x:h.point.x,y:h.point.y,z:h.point.z,surf:u.surf,rack:u.rack,level:u.level}}return null}
+  return{x:h.point.x,y:h.point.y,z:h.point.z,surf:u.surf,rack:u.rack,level:u.level,dwf:u.dwf}}return null}
 function form(h){
+ var DF=spDept.furnById(h.dw?h.dw[0]:h.dwf),CH=h.dw||null;if(DF)focus(DF.x,DF.h*.5,DF.z,1.9,DF.face===-1?Math.PI:0,.28);
  var IS="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;box-sizing:border-box",LB="font-size:12px;color:#475569;margin:2px 0 -2px;display:block";
  var opts='<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return{q:q,k:k}}).reverse().map(function(z){var q=z.q;return '<option value="'+z.k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("");
  infoEl.innerHTML='<b>📌 วางอะไหล่ที่จุดนี้</b> <small style="color:#64748b">('+esc(h.surf)+' · x '+h.x.toFixed(2)+', z '+h.z.toFixed(2)+')</small>'
@@ -98,7 +99,10 @@ function form(h){
   +'<div id="pl-new" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label style="'+LB+'">รหัสอะไหล่ <small>(ไม่มีเว้นว่างได้)</small></label><input id="pl-c" style="'+IS+'" placeholder="เว้นว่าง = NC-xxxx"></div><div><label style="'+LB+'">ชื่ออะไหล่ *</label><input id="pl-n" style="'+IS+'" placeholder="ชื่ออะไหล่"></div>'
   +'<div><label style="'+LB+'">คงเหลือ</label><input id="pl-q" type="number" min="0" value="1" style="'+IS+'"></div><div><label style="'+LB+'">ขั้นต่ำ</label><input id="pl-m" type="number" min="0" value="0" style="'+IS+'"></div><div style="grid-column:1/3"><label style="'+LB+'">หน่วย</label><input id="pl-u" value="ชิ้น" style="'+IS+'"></div></div>'
   +'<label style="'+LB+'">📷 รูปอะไหล่ (ใช้รูปเดียวกับหน้า "จัดการระบบ" — ไม่บังคับ)</label><div style="display:flex;gap:10px;align-items:center"><img id="pl-ip" alt="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1"><input id="pl-img" type="file" accept="image/*" style="flex:1;min-width:0"></div>'
+  +(DF?'<div><label style="'+LB+'">🗄 เลือกลิ้นชักที่เก็บ (แถวนับจากซ้าย · ชั้นนับจากบน) <small>— ไม่เลือก = วางบนตู้</small></label><div id="pl-dw" style="display:grid;grid-template-columns:repeat('+DF.cols+',1fr);gap:3px;max-width:240px;margin-top:4px;padding:5px;background:#dfe7ee;border-radius:8px"></div><div id="pl-dwt" style="font-size:12px;margin-top:3px;color:#dc2626"></div></div>':'')
   +'<div id="pl-e" style="color:#dc2626;font-size:12px"></div><div style="display:flex;gap:6px"><button class="btn p" id="pl-ok" style="padding:7px 14px">บันทึกตำแหน่ง</button><button class="btn" id="pl-no" style="padding:7px 12px">ยกเลิก</button></div></div>';
+ if(DF){var G=document.getElementById("pl-dw"),T=document.getElementById("pl-dwt");(function dr(){var x="";for(var r=1;r<=DF.rows;r++)for(var c=1;c<=DF.cols;c++){var on=CH&&CH[1]===c&&CH[2]===r;x+='<button type="button" data-c="'+c+'" data-r="'+r+'" title="แถว '+c+' ชั้น '+r+'" style="height:18px;padding:0;border:1px solid '+(on?'#dc2626':'#9fb0bf')+';background:'+(on?'#ef4444':'#f4f7fa')+';border-radius:3px;cursor:pointer"></button>'}
+  G.innerHTML=x;T.textContent=CH?"เลือกแล้ว: แถว "+CH[1]+" ชั้น "+CH[2]:"";Array.prototype.forEach.call(G.children,function(b){b.onclick=function(){var v=[DF.id,+b.dataset.c,+b.dataset.r];CH=CH&&CH[1]===v[1]&&CH[2]===v[2]?null:v;dr()}})})()}
  var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new");
  function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
  sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none";pim()};sel_.onchange();
@@ -111,7 +115,7 @@ function form(h){
   else it=l[+sel_.value];
   var fi=document.getElementById("pl-img").files[0],fin=function(){spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
   it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.spot=true;it.at=h.surf;
-  if(h.dw){it.dw=h.dw;it.r="";it.s=0}else{delete it.dw;if(h.rack){it.r=h.rack;it.s=h.level}else{it.r="";it.s=0}}
+  if(CH){var P_=spDept.drawerPos(DF,CH[1],CH[2]);it.pos=[+P_.x.toFixed(3),+P_.y.toFixed(3),+P_.z.toFixed(3)];it.at="ตู้ลิ้นชัก แถว "+CH[1]+" ชั้น "+CH[2];it.dw=CH;it.r="";it.s=0}else{delete it.dw;if(h.rack){it.r=h.rack;it.s=h.level}else{it.r="";it.s=0}}
   if(fi)spResize(fi,function(d){if(d)it.img=d;fin()});else fin()}}
 // ---- กล้อง ----
 var ang=.08,el=1.05,dist=span*1.25,horiz=false,drag=false,lx=0,ly=0,pd={},moved=0,PICKQ=new URLSearchParams(location.search).get("pick");

@@ -142,7 +142,7 @@ D.drawers=function(g,f,surf,pick){
  var body=0xe9edf1;
  bx(grp,w,h-.05,d,0,.05+(h-.05)/2,0,body,{roughness:.55,metalness:.15});
  bx(grp,w-.04,.05,d-.04,0,.025,0,0xcfd6de);
- var top=bx(grp,w+.02,.022,d+.02,0,h+.004,0,0xf1f4f7,{roughness:.5});surf(top,"บนตู้ลิ้นชัก");
+ var top=bx(grp,w+.02,.022,d+.02,0,h+.004,0,0xf1f4f7,{roughness:.5});surf(top,"บนตู้ลิ้นชัก");top.userData.dwf=f.id;
  // ลิ้นชักใส
  for(var c=1;c<=f.cols;c++)for(var r=1;r<=f.rows;r++){var P=D.drawerPos({x:0,z:0,w:w,d:d,h:h,cols:f.cols,rows:f.rows,face:1},c,r);
   var fw=G.cw-.012,fh=G.ch-.01,m=new THREE.Mesh(new THREE.BoxGeometry(fw,fh,d*.78),new THREE.MeshStandardMaterial({color:0xdde7ee,roughness:.2,metalness:0,transparent:true,opacity:.55,depthWrite:false}));
