@@ -98,7 +98,7 @@ function show(i){if(EDR){var rv=EDR;EDR=null;rv()}spDept.xray(false);sel=i;paint
  else if(r)focusRack(i.r,i.s);else focus(p.x,p.y*.6,p.z,3.4*spDept.KD,null,.7);
  if(!i.dw)mark=new THREE.Mesh(new THREE.ConeGeometry(.17,.38,16),new THREE.MeshBasicMaterial({color:0xf59e0b}));if(mark){mark.rotation.x=Math.PI;mark.userData.y0=p.y+p.bh/2+.55;mark.position.set(p.x,mark.userData.y0,p.z);sc.add(mark)}
  if(innerWidth<1100)host.scrollIntoView({behavior:"smooth",block:"center"})}
-function focusRack(k,lv){var r=SP_RACKS[k];if(!r)return;spDept.xray(false);var L=Math.max(r.w,r.d);var nm=(spDept.rackNames&&spDept.rackNames[k])||"",cb=/ตู้/.test(nm);spDept.xray(true,k);focus(r.x,spDept.shelfY(r,lv||1)+.2,r.z,(cb?(r.h<1.4?Math.max(2.6,L*1.1):3.4):Math.max(3,Math.min(L,5)*.85))*spDept.KD,spDept.rackTheta(r),cb?(r.h<1.4?.6:1.25):.4)}
+function focusRack(k,lv){var r=SP_RACKS[k];if(!r)return;spDept.xray(false);var L=Math.max(r.w,r.d);var nm=(spDept.rackNames&&spDept.rackNames[k])||"",cb=/ตู้/.test(nm);spDept.xray(true,k);focus(r.x,spDept.shelfY(r,lv||1)+.2,r.z,(cb?(r.h<1.4?Math.max(2.6,L*1.1):4.2):Math.max(3,Math.min(L,5)*.85))*spDept.KD,spDept.rackTheta(r),cb?(r.h<1.4?.6:.72):.4)}
 function diagram(f,dw){var cells="";for(var r=1;r<=f.rows;r++)for(var c=1;c<=f.cols;c++){var on=c===dw[1]&&r===dw[2];cells+='<i style="display:block;height:11px;border:1px solid '+(on?'#dc2626':'#b6c3cf')+';background:'+(on?'#ef4444':'#eef3f7')+';border-radius:2px;'+(on?'animation:spb .6s infinite alternate':'')+'"></i>'}
  return '<style>@keyframes spb{to{opacity:.35}}</style><div style="margin-top:8px;font-size:12px;color:#475569"><b>🗄 '+esc(f.n)+'</b> — แถว '+dw[1]+' (นับจากซ้าย มองจากด้านหน้า) · ชั้น '+dw[2]+' (นับจากบน)<div style="display:grid;grid-template-columns:repeat('+f.cols+',1fr);gap:2px;width:170px;margin-top:4px;padding:4px;background:#dfe7ee;border-radius:6px">'+cells+'</div></div>'}
 var EDR=null;
@@ -115,7 +115,7 @@ function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelecto
   cb.onclick=function(){rest();mq.value=i.mt||"";sq.value=Math.round((i.sc||1)*100);rq.value=String(i.ry||0);upd()};
   EDR=function(){if(dirty()){rest();paint()}}}
  if(m)m.onclick=function(){place(true,i)};
- if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;delete i.dw;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
+ if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;delete i.dw;EDR=null;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
 // ---- โหมดวางอะไหล่ ----
 var placing=false,target=null,hit=null;
 function place(on,item){placing=!!on;target=item||null;hit=null;ring.visible=false;host.style.cursor=on?"crosshair":"";
@@ -145,7 +145,7 @@ function form(h){
  if(h.rack)focusRack(h.rack,h.level);
  var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new");
  var mts=document.getElementById("pl-mt"),mtTouched=false;mts.onchange=function(){mtTouched=true};
- function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];mts.value=q?(q.mt||spModelGuess(q.n)):spModelGuess((document.getElementById("pl-n")||{}).value);mtTouched=false;if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
+ function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];mts.value=q?(q.mt||spModelGuess(q.n)):spModelGuess((document.getElementById("pl-n")||{}).value);document.getElementById("pl-ry").value=String(q&&q.ry||0);mtTouched=false;if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
  sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none";pim()};sel_.onchange();
  document.getElementById("pl-img").onchange=function(){var f=this.files[0],ip=document.getElementById("pl-ip");if(f){ip.src=URL.createObjectURL(f);ip.style.display="block"}else pim()};
  document.getElementById("pl-n").oninput=function(){if(!mtTouched&&sel_.value==="")mts.value=spModelGuess(this.value)};
@@ -155,7 +155,7 @@ function form(h){
    if(!n){err.textContent="กรอกชื่ออะไหล่";return}if(!c){var mx=0;l.forEach(function(x){var mm=/^NC-(\d+)$/i.exec(String(x.c));if(mm)mx=Math.max(mx,+mm[1])});c="NC-"+("000"+(mx+1)).slice(-4)}if(l.some(function(x){return x.c.toLowerCase()===c.toLowerCase()})){err.textContent="รหัสนี้มีอยู่แล้ว — เลือกจากรายการด้านบน";return}
    it={c:c,n:n,k:"",m:[],q:q>=0?q:0,min:m>=0?m:0,u:document.getElementById("pl-u").value.trim()||"ชิ้น",r:"",s:0};l.push(it)}
   else it=l[+sel_.value];
-  var fi=document.getElementById("pl-img").files[0],fin=function(){spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
+  var fi=document.getElementById("pl-img").files[0],fin=function(){EDR=null;spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
   var ry_=+document.getElementById("pl-ry").value;if(ry_)it.ry=ry_;else delete it.ry;var mv_=mts.value;if(mv_)it.mt=mv_;else delete it.mt;it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.gv=2;it.spot=true;it.at=h.surf;
   if(CH){var P_=spDept.drawerPos(DF,CH[1],CH[2]);it.pos=[+P_.x.toFixed(3),+P_.y.toFixed(3),+P_.z.toFixed(3)];it.at="ตู้ลิ้นชัก แถว "+CH[1]+" ชั้น "+CH[2];it.dw=CH;it.r="";it.s=0}else{delete it.dw;if(h.rack){it.r=h.rack;it.s=h.level}else{it.r="";it.s=0}}
   if(fi)spResize(fi,function(d){if(d)it.img=d;fin()});else fin()}}

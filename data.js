@@ -14,11 +14,11 @@ function spMachSave(a){SP_MACH=a;SP_MACHINES=a.map(function(m){return m.k});loca
 var SP_RACKS={
  S1:{x:3.18,z:4.875,w:1.25,d:4.875,h:2.625,n:3},
  S2:{x:6.075,z:4.875,w:1.212,d:4.875,h:2.625,n:3},
- C1:{x:6.195,z:0.645,w:0.963,d:0.587,h:2.25,n:3},
- C2:{x:7.68,z:0.66,w:1.062,d:0.625,h:2.25,n:3},
- C3:{x:8.22,z:2.445,w:0.575,d:1.1,h:2.25,n:3},
- C4:{x:8.04,z:4.11,w:0.587,d:1.4,h:2.25,n:3},
- C5:{x:8.07,z:5.865,w:0.637,d:1.188,h:2.25,n:3},
+ C1:{x:6.15,z:0.66,w:1.5,d:0.6,h:2.4,n:8},
+ C2:{x:7.7,z:0.66,w:1.5,d:0.6,h:2.25,n:5},
+ C3:{x:8.22,z:2.445,w:0.575,d:1.15,h:2.25,n:4},
+ C4:{x:8.04,z:4.11,w:0.575,d:1.15,h:2.25,n:4},
+ C5:{x:8.07,z:5.865,w:0.62,d:1.5,h:2.4,n:8},
  G1:{x:8.085,z:7.8,w:0.8,d:1.5,h:2.25,n:4},
  L1:{x:2.715,z:8.865,w:0.925,d:0.488,h:1.25,n:2},
  L2:{x:3.87,z:8.865,w:1.0,d:0.488,h:1.25,n:2},
@@ -28,7 +28,7 @@ var SP_RACKS={
  W2:{x:7.275,z:14.415,w:1.737,d:1.65,h:2.5,n:4},
  K1:{x:2.16,z:18.55,w:0.6,d:2.1,h:1.15,n:2}};
 /* เวอร์ชันผังชั้นวาง: เมื่อเปลี่ยนผังเริ่มต้นใหม่ (เปลี่ยนเลขนี้) ผังที่เคยแก้ไว้ในเบราว์เซอร์จะถูกล้างหนึ่งครั้ง เพื่อใช้ผังใหม่ */
-var SP_RACKS_VER="floor1-v6";
+var SP_RACKS_VER="floor1-v7";
 try{if(localStorage.getItem("sp_racks_ver")!==SP_RACKS_VER){localStorage.removeItem("sp_racks");localStorage.setItem("sp_racks_ver",SP_RACKS_VER)}}catch(e){}
 try{var _rk=localStorage.getItem("sp_racks");if(_rk)SP_RACKS=JSON.parse(_rk)}catch(e){}
 function spRacksSave(o){SP_RACKS=o;localStorage.setItem("sp_racks",JSON.stringify(o));try{localStorage.setItem("sp_racks_ver",SP_RACKS_VER)}catch(e){}}
