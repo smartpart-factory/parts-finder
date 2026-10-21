@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#1d4ed8"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="images/apple-touch-icon.png"><link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png"><link rel="shortcut icon" href="favicon.ico">
+<meta charset="utf-8">
+<script src="auth.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>บอร์ดข้อความ | SpareParts 3D</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Segoe UI",sans-serif;font-size:14px}
+.top{position:fixed;top:0;left:0;right:0;height:66px;background:#0b2150;display:flex;align-items:center;gap:20px;padding:0 20px;z-index:10;color:#fff}
+.logo{display:flex;align-items:center;gap:10px;width:200px}.logo b{font-size:20px;display:block;line-height:1.1}.logo small{font-size:11px;color:#a9bde6}
+.sp{flex:1}.user{display:flex;align-items:center;gap:10px}.av{width:38px;height:38px;border-radius:50%;background:#3b82f6;display:flex;align-items:center;justify-content:center}.user small{display:block;color:#a9bde6;font-size:11px}
+.side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
+.side a{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;text-decoration:none;margin-bottom:6px;cursor:pointer}
+.side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
+main{margin:66px 0 0 207px;padding:14px;max-width:1100px}
+.hh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}h2{margin:0;font-size:22px}
+.btn{padding:10px 18px;border:0;border-radius:8px;background:#1565d8;color:#fff;font:inherit;font-weight:600;cursor:pointer}
+.sum{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:12px}
+.sc{background:#fff;border:2px solid #e2e8f0;border-radius:8px;padding:10px 12px;cursor:pointer}.sc.on{border-color:#1565d8;background:#eaf2ff}.sc small{color:#64748b;display:block}.sc b{font-size:22px}
+.bar input{width:100%;padding:11px 14px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff;margin-bottom:12px}
+.cd{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px}
+.r1{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.r1 .id{font-weight:700;color:#1565d8}.r1 .tm{color:#94a3b8;font-size:12px;margin-left:auto}
+.bd{font-size:12px;padding:3px 12px;border-radius:99px;font-weight:600;white-space:nowrap}.w{background:#fff0d6;color:#d97706}.o{background:#d9f7e4;color:#16a34a}.x{background:#fde2e2;color:#dc2626}.c{background:#e5e7eb;color:#6b7280}
+.urg{background:#dc2626;color:#fff;font-size:11px;padding:2px 8px;border-radius:4px}
+.nm{margin:8px 0 2px;font-size:16px;font-weight:600}.mt{color:#64748b;font-size:13px}.rs{margin-top:6px;font-size:13px}
+.ac{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.ac button{padding:7px 14px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;border:1px solid #cbd5e1;background:#fff}
+.ac .g{background:#16a34a;color:#fff;border-color:#16a34a}.ac .rd{color:#dc2626;border-color:#dc2626}.ac .lk{color:#1565d8;border-color:#1565d8;margin-left:auto}
+.log{margin-top:8px;border-top:1px dashed #e2e8f0;padding-top:8px;font-size:12px;color:#64748b;display:none}.cd.open .log{display:block}
+.empty{background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:34px;text-align:center;color:#64748b}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:60;padding:14px}.ov.on{display:flex}
+.md{background:#fff;border-radius:12px;width:480px;max-width:100%;max-height:92vh;overflow:auto;padding:20px}.md h3{margin:0 0 14px}
+.md label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}.md input,.md select,.md textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mf{display:flex;gap:10px;justify-content:flex-end;margin-top:16px}.mf button{padding:10px 18px;border-radius:8px;font:inherit;cursor:pointer;border:1px solid #cbd5e1;background:#fff}
+.mf .p{background:#1565d8;color:#fff;border-color:#1565d8}.note{color:#94a3b8;font-size:12px;margin-top:14px}
+@media(max-width:900px){.sum{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}}
+
+.bf{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.bf button{padding:8px 14px;border-radius:99px;border:1px solid #cbd5e1;background:#fff;font:inherit;font-size:13px;cursor:pointer}.bf button.on{background:#1565d8;color:#fff;border-color:#1565d8}.bf input{flex:1;min-width:180px;padding:9px 14px;border:1px solid #cbd5e1;border-radius:99px;font:inherit;background:#fff}
+.th{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;margin-bottom:10px;border-left:4px solid #94a3b8}.th.un{border-left-color:#ef4444;background:#fffafa}.th.k-req{border-left-color:#d97706}.th.k-all{border-left-color:#7c3aed}
+.th .hd{display:flex;gap:8px;align-items:center;flex-wrap:wrap;cursor:pointer}.th .tm{margin-left:auto;color:#94a3b8;font-size:12px}.th .sj{font-weight:700;font-size:15px;margin:6px 0 2px}
+.kb{font-size:11px;padding:2px 9px;border-radius:99px;color:#fff;font-weight:600}.dot{width:9px;height:9px;border-radius:50%;background:#ef4444;display:inline-block}
+.bo{white-space:pre-wrap;word-break:break-word;font-size:14px;margin:4px 0}.th:not(.open) .bo{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.it{display:inline-block;background:#eef6ff;border:1px solid #cfe0fb;color:#1d4ed8;border-radius:8px;padding:4px 10px;font-size:13px;margin:4px 0}
+.rp{margin:8px 0 0 12px;padding-left:12px;border-left:2px solid #e2e8f0;display:none}.th.open .rp,.th.open .rb{display:block}.rp .m{margin-bottom:8px;font-size:13px}.rp .m small{color:#94a3b8}
+.rb{display:none;margin-top:10px}.rb textarea{width:100%;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;min-height:56px}.rb .ac{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.rb .ac button,.rb .ac a{padding:7px 14px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;border:1px solid #cbd5e1;background:#fff;text-decoration:none;color:#1e293b}.rb .ac .p{background:#1565d8;color:#fff;border-color:#1565d8}.rb .ac .g{background:#16a34a;color:#fff;border-color:#16a34a}.rb .ac .rd{color:#dc2626;border-color:#dc2626}
+.er{background:#fff3f3;border:1px solid #f5c2c2;color:#b91c1c;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px}
+</style>
+<style id="logo3d">
+.logo{width:208px!important;gap:10px!important;white-space:nowrap}
+.logo>div{line-height:1.15;min-width:0}
+.logo b{display:block;font-size:16px!important;letter-spacing:.2px}
+.logo small{display:block;font-size:10px!important;opacity:.8;white-space:nowrap}
+.bg3d{flex:none;width:46px;height:46px;border-radius:13px;display:inline-flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+font:900 23px/1 "Arial Black",Arial,sans-serif;letter-spacing:-1.5px;color:#fff;
+background:linear-gradient(145deg,#7fd4ff 0%,#2b84f5 48%,#0f48b8 100%);
+box-shadow:0 6px 14px rgba(0,20,80,.55),0 2px 0 #0a3a9a,inset 0 2px 3px rgba(255,255,255,.7),inset 0 -4px 6px rgba(0,30,110,.45);
+text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5fb8,5px 6px 8px rgba(0,20,80,.6)}
+.bg3d::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));border-radius:13px 13px 40% 40%}
+@media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+</head>
+<body>
+<div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
+<div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a class="on" href="board.html">💬 บอร์ดข้อความ</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<main>
+ <div class="hh"><h2>💬 บอร์ดข้อความ</h2><button class="btn" id="new">✉️ เขียนข้อความใหม่</button></div>
+ <div id="err"></div>
+ <div class="bf" id="fl"><button data-f="all" class="on">ทั้งหมด</button><button data-f="un">ยังไม่อ่าน <b id="n-un"></b></button><button data-f="me">ส่งถึงฉัน</button><button data-f="mine">ฉันส่ง</button><button data-f="req">ขอเบิก/ขอเพิ่ม (รอดำเนินการ)</button><input id="q" placeholder="ค้นหาข้อความ / ชื่อคน / รหัสอะไหล่"></div>
+ <div id="list"></div>
+ <div class="note">• ข้อความจะอัปเดตเองทุก 20 วินาที (ไม่ต้องกดรีเฟรช) · ส่งถึงรายคนจะเห็นเฉพาะผู้ส่งกับผู้รับ แม้แต่ผู้ดูแลระบบก็ไม่เห็น · "ขอเบิก/ขอเพิ่ม" เป็นข้อความขอระหว่างคน ไม่ได้ตัดสต็อกหรือสร้างคำขอเบิกคลังใหญ่โดยอัตโนมัติ</div>
+</main>
+<div class="ov" id="ov"><div class="md"><h3 id="mt"></h3><div id="mb"></div><div class="er" id="me" style="display:none"></div><div class="mf" id="mf"></div></div></div>
+<script src="data.js"></script>
+<script>
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function $(i){return document.getElementById(i)}
+var ME=SP_USER.id,ALL=[],USERS=[],F="all",OPEN={},KIND={msg:["💬 ข้อความ","#1565d8"],req:["📦 ขอเบิก/ขอเพิ่ม","#d97706"],all:["📣 ประกาศถึงทุกคน","#7c3aed"]},RT={admin:"ผู้ดูแลระบบ",manager:"ช่าง Day time",user:"ช่างกะ"};
+function tm(iso){var d=new Date(iso),n=new Date(),k=Math.round((new Date(n.getFullYear(),n.getMonth(),n.getDate())-new Date(d.getFullYear(),d.getMonth(),d.getDate()))/864e5),hm=("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);return k===0?"วันนี้ "+hm:k===1?"เมื่อวาน "+hm:d.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"})+" "+hm}
+function isUn(m){return m.from_id!==ME&&(m.read_by||[]).indexOf(ME)<0}
+function who(m){return (m.from_id===ME?"คุณ":esc(m.from_name||"?"))+" → "+(m.to_id?(m.to_id===ME?"คุณ":esc(m.to_name||"?")):"ทุกคน")}
+function itemTxt(m){if(!m.item_code)return"";var it=SP_ITEMS.filter(function(i){return i.c.toLowerCase()===m.item_code.toLowerCase()})[0];return '<div class="it">📦 '+esc(it?it.n:m.item_code)+(it?' ('+esc(it.c)+')':'')+(m.qty?' × '+m.qty+' '+esc(it?it.u||"":""):'')+'</div>'}
+function threads(){var by={},roots=[];ALL.forEach(function(m){if(!m.parent_id)roots.push(m)});roots.forEach(function(r){by[r.id]={r:r,rep:[]}});
+ ALL.forEach(function(m){if(m.parent_id&&by[m.parent_id])by[m.parent_id].rep.push(m)});
+ return roots.map(function(r){var t=by[r.id];t.rep.sort(function(a,b){return a.created_at<b.created_at?-1:1});t.last=t.rep.length?t.rep[t.rep.length-1].created_at:r.created_at;t.un=[r].concat(t.rep).filter(isUn);return t}).sort(function(a,b){return a.last<b.last?1:-1})}
+function match(t){var r=t.r,q=$("q").value.trim().toLowerCase();
+ if(F==="un"&&!t.un.length)return false;if(F==="me"&&!(r.to_id===ME||(!r.to_id&&r.from_id!==ME)))return false;if(F==="mine"&&r.from_id!==ME)return false;if(F==="req"&&!(r.kind==="req"&&r.status!=="done"))return false;
+ if(q&&([r.subject,r.body,r.from_name,r.to_name,r.item_code].concat(t.rep.map(function(x){return x.body+" "+x.from_name})).join(" ").toLowerCase().indexOf(q)<0))return false;return true}
+function draw(){var T=threads(),un=0;T.forEach(function(t){un+=t.un.length});$("n-un").textContent=un?"("+un+")":"";if(window.spBellSet)spBellSet(un);
+ var l=T.filter(match);if(!l.length){$("list").innerHTML='<div class="empty">'+(ALL.length?"ไม่พบข้อความตามตัวกรอง":"ยังไม่มีข้อความ — กด “✉️ เขียนข้อความใหม่” เพื่อเริ่ม")+'</div>';return}
+ $("list").innerHTML=l.map(function(t){var r=t.r,K=KIND[r.kind]||KIND.msg,op=OPEN[r.id],can=r.from_id===ME||r.to_id===ME||spCanEdit()||(!r.to_id&&r.kind==="req");
+  return '<div class="th k-'+r.kind+(t.un.length?' un':'')+(op?' open':'')+'" data-id="'+r.id+'"><div class="hd"><span class="kb" style="background:'+K[1]+'">'+K[0]+'</span><b>'+who(r)+'</b>'+(t.un.length?'<span class="dot" title="ยังไม่ได้อ่าน"></span>':'')
+  +(r.kind==="req"?'<span class="kb" style="background:'+(r.status==="done"?"#16a34a":"#f59e0b")+'">'+(r.status==="done"?"✓ ดำเนินการแล้ว":"รอดำเนินการ")+'</span>':'')+(t.rep.length?'<small style="color:#64748b">💬 '+t.rep.length+' ตอบกลับ</small>':'')+'<span class="tm">'+tm(t.last)+'</span></div>'
+  +(r.subject?'<div class="sj">'+esc(r.subject)+'</div>':'')+itemTxt(r)+'<div class="bo">'+esc(r.body)+'</div>'
+  +'<div class="rp">'+t.rep.map(function(x){return '<div class="m"><b>'+(x.from_id===ME?"คุณ":esc(x.from_name))+'</b> <small>'+tm(x.created_at)+(isUn(x)?' · ใหม่':'')+'</small><div class="bo" style="-webkit-line-clamp:unset;display:block">'+esc(x.body)+'</div></div>'}).join("")+'</div>'
+  +'<div class="rb"><textarea placeholder="พิมพ์ตอบกลับ..." maxlength="2000"></textarea><div class="ac"><button class="p" data-a="rep">ส่งตอบกลับ</button>'
+  +(r.kind==="req"&&r.item_code?'<a href="request-new.html?item='+encodeURIComponent(r.item_code)+'">📝 ไปหน้าขอเบิกคลังใหญ่</a>':'')
+  +(r.kind==="req"&&can?(r.status==="done"?'<button data-a="open">↩ เปิดอีกครั้ง</button>':'<button class="g" data-a="done">✓ ดำเนินการแล้ว</button>'):'')
+  +(r.from_id===ME||spIsAdmin()?'<button class="rd" data-a="del">🗑 ลบ</button>':'')+'</div></div></div>'}).join("");
+ Array.prototype.forEach.call($("list").querySelectorAll(".th"),function(e){var id=e.dataset.id;
+  e.querySelector(".hd").onclick=function(){OPEN[id]=!OPEN[id];if(OPEN[id]){var ids=[];ALL.forEach(function(m){if((m.id===id||m.parent_id===id)&&isUn(m)){ids.push(m.id);m.read_by=(m.read_by||[]).concat([ME])}});if(ids.length)SPM.mark(ids)}draw()};
+  Array.prototype.forEach.call(e.querySelectorAll("[data-a]"),function(b){b.onclick=function(){act(id,b.dataset.a,e)}})})}
+function showErr(e){var d=$("err");if(!e){d.innerHTML="";return}d.innerHTML='<div class="er">'+(e.missing?'ยังไม่ได้ตั้งค่าตารางข้อความในฐานข้อมูลกลาง — ผู้ดูแลระบบต้องรันไฟล์ <b>board-setup.sql</b> ใน Supabase (SQL Editor) ก่อน':'ติดต่อเซิร์ฟเวอร์ไม่สำเร็จ ลองใหม่อีกครั้ง')+'</div>'}
+function load(){return SPM.list().then(function(l){ALL=l;showErr(null);draw()},function(e){showErr(e||{})})}
+function act(id,a,el){var r=ALL.filter(function(m){return m.id===id})[0];if(!r)return;
+ if(a==="rep"){var ta=el.querySelector("textarea"),t=ta.value.trim();if(!t)return;SPM.send({parent_id:id,body:t,kind:"msg",to_id:r.from_id===ME?r.to_id:r.from_id}).then(function(){OPEN[id]=true;return load()},function(e){showErr(e||{})})}
+ else if(a==="done"||a==="open"){SPM.status(id,a==="done"?"done":"open").then(load,function(e){showErr(e||{})})}
+ else if(a==="del"){if(confirm("ลบข้อความนี้ (รวมข้อความตอบกลับ)?"))SPM.remove(id).then(load,function(e){showErr(e||{})})}}
+function compose(){var ps={};Array.prototype.forEach.call(USERS,function(u){ps[u.id]=1});
+ var ops='<option value="">👥 ทุกคน</option>'+USERS.map(function(u){return '<option value="'+esc(u.id)+'">'+esc(u.name)+' ('+(RT[u.role]||u.role)+')</option>'}).join("");
+ $("mt").textContent="เขียนข้อความใหม่";$("me").style.display="none";
+ $("mb").innerHTML='<div class="two"><div><label>ประเภท</label><select id="c-k"><option value="msg">💬 ข้อความทั่วไป</option><option value="req">📦 ขอเบิก/ขอเพิ่มอะไหล่</option><option value="all">📣 ประกาศถึงทุกคน</option></select></div><div id="c-tow"><label>ส่งถึง</label><select id="c-to">'+ops+'</select></div></div>'
+  +'<div id="c-iw" style="display:none"><div class="two"><div><label>อะไหล่ (รหัส/ชื่อ)</label><input id="c-i" list="c-dl" placeholder="พิมพ์ค้นหา"><datalist id="c-dl">'+SP_ITEMS.slice(0,800).map(function(i){return '<option value="'+esc(i.c)+'">'+esc(i.n)+'</option>'}).join("")+'</datalist></div><div><label>จำนวน</label><input id="c-q" type="number" min="1" value="1"></div></div></div>'
+  +'<label>หัวข้อ</label><input id="c-s" maxlength="120" placeholder="เช่น ขอเบิกสายพาน L11 / ฝากส่งต่องานกะดึก"><label>ข้อความ *</label><textarea id="c-b" rows="5" maxlength="2000"></textarea>';
+ $("mf").innerHTML='<button id="c-x">ยกเลิก</button><button class="p" id="c-ok">ส่งข้อความ</button>';$("ov").classList.add("on");
+ function kk(){var k=$("c-k").value;$("c-iw").style.display=k==="req"?"":"none";$("c-tow").style.display=k==="all"?"none":""}$("c-k").onchange=kk;kk();
+ $("c-x").onclick=function(){$("ov").classList.remove("on")};
+ $("c-ok").onclick=function(){var k=$("c-k").value,b=$("c-b").value.trim(),to=k==="all"?"":$("c-to").value;function bad(t){$("me").textContent=t;$("me").style.display="block";return false}
+  if(!b)return bad("พิมพ์ข้อความก่อน");var o={kind:k,to_id:to||null,subject:$("c-s").value.trim(),body:b};
+  if(k==="req"){var v=$("c-i").value.trim();if(!v)return bad("เลือกหรือพิมพ์อะไหล่ที่ขอ");var it=SP_ITEMS.filter(function(i){return i.c.toLowerCase()===v.toLowerCase()||i.n.toLowerCase()===v.toLowerCase()})[0];o.item_code=it?it.c:v;o.qty=parseInt($("c-q").value,10)||1}
+  $("c-ok").disabled=true;SPM.send(o).then(function(){$("ov").classList.remove("on");return load()},function(e){$("c-ok").disabled=false;bad(e&&e.missing?"ยังไม่ได้ตั้งค่าตารางข้อความ (ให้ผู้ดูแลระบบรัน board-setup.sql)":"ส่งไม่สำเร็จ ลองใหม่อีกครั้ง")})}}
+$("new").onclick=compose;$("ov").onclick=function(e){if(e.target===$("ov"))$("ov").classList.remove("on")};
+Array.prototype.forEach.call($("fl").querySelectorAll("button"),function(b){b.onclick=function(){F=b.dataset.f;Array.prototype.forEach.call($("fl").querySelectorAll("button"),function(x){x.className=x===b?"on":""});draw()}});
+$("q").oninput=draw;
+SPM.users().then(function(u){USERS=u});load();setInterval(function(){if(!document.hidden&&!$("ov").classList.contains("on")&&!document.activeElement.matches("textarea"))load()},20000);
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

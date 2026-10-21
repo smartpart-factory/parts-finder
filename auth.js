@@ -144,6 +144,7 @@ var SPC=(function(){
   updateUser:function(id,f){var r=callS("PATCH","/rest/v1/profiles?id=eq."+id,f,{tok:(fresh()||{}).at,prefer:"return=representation"});return r.s===200&&r.j&&r.j.length?{ok:true}:{ok:false,msg:r.s===200?"ไม่มีสิทธิ์แก้ไขผู้ใช้":errMsg(r)}},
   setPassword:function(id,pw){var r=callS("POST","/rest/v1/rpc/admin_set_password",{target:id,new_pw:pw},{tok:(fresh()||{}).at});return r.s>=200&&r.s<300?{ok:true}:{ok:false,msg:errMsg(r)}},
   deleteUser:function(id){var r=callS("POST","/rest/v1/rpc/admin_delete_user",{target:id},{tok:(fresh()||{}).at});return r.s>=200&&r.s<300?{ok:true}:{ok:false,msg:errMsg(r)}},
+  rest:function(m,p,b,pf){var s=fresh();return call(m,p,b,{tok:s&&s.at,prefer:pf})},
   flush:flushAll,
   logout:function(){var go=function(){signoutLocal();location.href="login.html"};var t=setTimeout(go,2500);flushAll().then(function(){clearTimeout(t);go()},go)},
   user:function(){var s=J(SK,null),p=J(PK,null);if(!s||!p||!p.active||p.role==="pending")return null;return{id:p.id,username:p.username,name:p.name,role:p.role,active:true,created:p.created_at}},
@@ -184,10 +185,11 @@ document.addEventListener("DOMContentLoaded",function(){
  if(u){var b=document.createElement("button");b.className="u-out";b.textContent="ออกจากระบบ";b.onclick=spLogout;u.appendChild(b)}
 
  var sd=document.querySelector(".side");
+ if(sd&&!sd.querySelector('a[href="board.html"]')){var bl=document.createElement("a");bl.href="board.html";bl.innerHTML='💬 บอร์ดข้อความ';var ad=sd.querySelector("a[data-admin]");if(ad)sd.insertBefore(bl,ad);else sd.appendChild(bl)}
  if(sd&&!document.getElementById("mnav")){var nv=document.createElement("nav");nv.id="mnav";
   Array.prototype.forEach.call(sd.querySelectorAll("a"),function(a){var t=a.textContent.trim(),m=t.match(/^(\S+)\s+(.*)$/),c=document.createElement("a");c.href=a.getAttribute("href");
    if(a.hasAttribute("data-editor"))c.setAttribute("data-editor","");if(a.hasAttribute("data-admin"))c.setAttribute("data-admin","");
-   var lab=(m?m[2]:t).replace(/\s*\(.*\)/,"").replace("ขอเบิกคลังใหญ่","ขอเบิก").replace("ค้นหาอะไหล่","ค้นหา").replace("ตำแหน่งจัดเก็บ","ตำแหน่ง 3D").replace("แผน PM / JOB","PM/JOB").replace("จัดการคำขอ","คำขอ").replace("จัดการระบบ","ระบบ");
+   var lab=(m?m[2]:t).replace(/\s*\(.*\)/,"").replace("ขอเบิกคลังใหญ่","ขอเบิก").replace("ค้นหาอะไหล่","ค้นหา").replace("ตำแหน่งจัดเก็บ","ตำแหน่ง 3D").replace("แผน PM / JOB","PM/JOB").replace("จัดการคำขอ","คำขอ").replace("จัดการระบบ","ระบบ").replace("บอร์ดข้อความ","แชต");
    c.innerHTML="<i>"+(m?m[1]:"•")+"</i><span>"+lab+"</span>";if(a.classList.contains("on"))c.className="on";nv.appendChild(c)});
   document.body.appendChild(nv);
   var cur=nv.querySelector(".on");if(cur&&cur.scrollIntoView)try{nv.scrollLeft=cur.offsetLeft-40}catch(e){}}
@@ -198,3 +200,36 @@ document.addEventListener("DOMContentLoaded",function(){
 function spCurrent(){return SPC?SPC.user():_spCurrentL()}
 function spLogout(){if(SPC)SPC.logout();else _spLogoutL()}
 function spLogin(u,p){if(!SPC)return _spLoginL(u,p);return SPC.login(u,p).then(function(r){window.SP_LOGIN_MSG=r.msg||"";return r.ok?r.user:null})}
+
+
+/* ===== บอร์ดข้อความ (SPM) + กระดิ่งแจ้งเตือน =====
+   ระบบกลาง: ตาราง msgs ใน Supabase (ดู board-setup.sql) | ไม่มีระบบกลาง: เก็บในเบราว์เซอร์ (localStorage sp_msgs) */
+var SPM=(function(){
+ var C=window.SPC;function me(){return window.SP_USER?SP_USER.id:""}
+ function lget(){try{return JSON.parse(localStorage.getItem("sp_msgs")||"[]")}catch(e){return[]}}
+ function lput(a){try{localStorage.setItem("sp_msgs",JSON.stringify(a))}catch(e){}}
+ function vis(m){return !m.to_id||m.to_id===me()||m.from_id===me()}
+ function bad(r){return{status:r&&r.s,missing:!!(r&&(r.s===404||(r.j&&/msgs|relation|schema cache/i.test(JSON.stringify(r.j)))))}}
+ var api={cloud:!!C,
+  list:function(){if(!C)return Promise.resolve(lget().filter(vis).sort(function(a,b){return a.created_at<b.created_at?1:-1}));
+   return C.rest("GET","/rest/v1/msgs?select=*&order=created_at.desc&limit=300").then(function(r){if(r.s===200&&Array.isArray(r.j))return r.j;throw bad(r)})},
+  send:function(m){if(!C){var u=SP_USER,a=lget(),to=m.to_id?spUsers().filter(function(x){return x.id===m.to_id})[0]:null;
+    var o={id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),created_at:new Date().toISOString(),from_id:u.id,from_name:u.name,to_id:m.to_id||null,to_name:to?to.name:"",kind:m.kind||"msg",subject:m.subject||"",body:m.body,item_code:m.item_code||"",qty:m.qty||null,parent_id:m.parent_id||null,status:"open",read_by:[u.id]};a.push(o);lput(a);return Promise.resolve(o)}
+   return C.rest("POST","/rest/v1/msgs",{to_id:m.to_id||null,kind:m.kind||"msg",subject:m.subject||"",body:m.body,item_code:m.item_code||"",qty:m.qty||null,parent_id:m.parent_id||null},"return=representation").then(function(r){if(r.s>=200&&r.s<300)return r.j&&r.j[0];throw bad(r)})},
+  mark:function(ids){if(!ids.length)return Promise.resolve();if(!C){var a=lget();a.forEach(function(m){if(ids.indexOf(m.id)>=0&&m.read_by.indexOf(me())<0)m.read_by.push(me())});lput(a);return Promise.resolve()}
+   return C.rest("POST","/rest/v1/rpc/msg_mark_read",{ids:ids})},
+  status:function(id,st){if(!C){var a=lget();a.forEach(function(m){if(m.id===id)m.status=st});lput(a);return Promise.resolve()}return C.rest("POST","/rest/v1/rpc/msg_set_status",{mid:id,st:st}).then(function(r){if(r.s>=200&&r.s<300)return;throw bad(r)})},
+  remove:function(id){if(!C){lput(lget().filter(function(m){return m.id!==id&&m.parent_id!==id}));return Promise.resolve()}return C.rest("DELETE","/rest/v1/msgs?id=eq."+id).then(function(r){if(r.s>=200&&r.s<300)return;throw bad(r)})},
+  users:function(){if(!C)return Promise.resolve(spUsers().filter(function(u){return u.active&&u.id!==me()}).map(function(u){return{id:u.id,name:u.name,role:u.role}}));
+   return C.rest("POST","/rest/v1/rpc/sp_directory",{}).then(function(r){if(r.s===200&&Array.isArray(r.j))return r.j.filter(function(u){return u.id!==me()});return[]})},
+  unreadOf:function(l){return l.filter(function(m){return m.from_id!==me()&&(m.read_by||[]).indexOf(me())<0})},
+  unread:function(){return api.list().then(function(l){return api.unreadOf(l).length},function(){return 0})}};
+ return api})();
+function spBellSet(n){var b=document.getElementById("u-bell");if(!b)return;var i=b.querySelector("i");i.textContent=n>99?"99+":n;i.style.display=n>0?"":"none";var l=document.querySelectorAll('.side a[href="board.html"],#mnav a[href="board.html"]');Array.prototype.forEach.call(l,function(a){var t=a.querySelector(".bdg");if(!t){t=document.createElement("b");t.className="bdg";t.style.cssText="margin-left:auto;background:#ef4444;color:#fff;border-radius:99px;font-size:11px;padding:1px 7px;font-style:normal";if(a.parentNode.id==="mnav"){t.style.cssText="position:absolute;top:2px;right:18%;background:#ef4444;color:#fff;border-radius:99px;font-size:10px;padding:0 5px;margin:0";a.style.position="relative"}a.appendChild(t)}t.textContent=n;t.style.display=n>0?"":"none"})}
+document.addEventListener("DOMContentLoaded",function(){
+ if(!SP_USER)return;var top=document.querySelector(".top"),us=document.querySelector(".top .user");if(!top||!us)return;
+ Array.prototype.forEach.call(document.querySelectorAll(".top .bell"),function(e){e.remove()});
+ var st=document.createElement("style");st.textContent="#u-bell{position:relative;font-size:20px;text-decoration:none;color:#fff;margin-right:6px;line-height:1}#u-bell i{position:absolute;top:-7px;right:-9px;background:#ef4444;color:#fff;font-style:normal;font-size:10px;border-radius:99px;padding:1px 5px;min-width:16px;text-align:center}";document.head.appendChild(st);
+ var b=document.createElement("a");b.id="u-bell";b.href="board.html";b.title="บอร์ดข้อความ";b.innerHTML='🔔<i style="display:none">0</i>';top.insertBefore(b,us);
+ function poll(){if(document.hidden)return;SPM.unread().then(spBellSet)}
+ poll();setInterval(poll,45000);document.addEventListener("visibilitychange",poll);window.spBellPoll=poll});
