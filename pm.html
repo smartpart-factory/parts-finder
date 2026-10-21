@@ -159,13 +159,30 @@ function chip(e){if(e.k==="log"){var T=SP_LOG_TYPES[e.l.type]||SP_LOG_TYPES.note
  if(e.k==="pm"){var p=e.o.plan;return '<span class="ch" style="background:'+SP_PM_CLR[p.type]+(e.o.over?";outline:2px solid #dc2626":"")+'">'+esc(p.machine)+' · '+p.type+'</span>'}
  if(e.k==="rec")return '<span class="ch" style="background:#16a34a">✓ '+esc(e.r.machine)+' · '+e.r.type+'</span>';
  return '<span class="ch" style="background:#0d9488">JOB '+esc(e.j.machine)+'</span>'}
+function dayCtx(ds,n){var h="",d0=spParse(ds),pl=spPlans().filter(function(p){return p.active!==false&&scM(p.machine)}),recs=spPmRec();
+ var nd=new Date(d0.getTime());nd.setDate(nd.getDate()+1);var to=new Date(d0.getTime());to.setDate(to.getDate()+30);
+ var up=[];spOccur(spYmd(nd),spYmd(to)).forEach(function(o){if(scM(o.plan.machine))up.push({d:o.date,t:tbadge(o.plan.type)+" "+esc(o.plan.machine)+" <small>(แผน PM)</small>"})});
+ spJobs().forEach(function(j){if(j.date>ds&&j.date<=spYmd(to)&&j.status!=="cancel"&&scM(j.machine))up.push({d:j.date,t:'<b style="color:#0d9488">JOB</b> '+esc(j.machine)+' <small>'+esc((j.from||"-")+" → "+(j.to||"-"))+'</small>'})});
+ up.sort(function(x,y){return x.d<y.d?-1:1});
+ var pv=[];recs.forEach(function(r){if(r.date<ds&&scM(r.machine))pv.push({d:r.date,t:'✓ '+tbadge(r.type)+' '+esc(r.machine)+' <small>ผู้ทำ: '+esc(r.tech||"-")+'</small>'})});
+ spDayLog().forEach(function(l){if(l.date<ds&&(!l.machine||scM(l.machine))){var T=SP_LOG_TYPES[l.type]||SP_LOG_TYPES.note;pv.push({d:l.date,t:T[0]+' '+(l.machine?'<b>'+esc(l.machine)+'</b> ':'')+esc(l.title)})}});
+ pv.sort(function(x,y){return x.d<y.d?1:-1});
+ function row(d,t){return '<div style="padding:4px 0;border-bottom:1px dashed #e2e8f0;font-size:13px"><span style="color:#64748b;display:inline-block;min-width:92px">'+spFmt(d)+'</span>'+t+'</div>'}
+ h+='<div style="margin-top:12px;padding:10px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px"><div style="font-weight:700;margin-bottom:4px">📌 แผน PM ที่ตั้งไว้ ('+pl.length+')</div>';
+ if(!pl.length)h+='<div class="empty" style="padding:6px">ยังไม่มีแผน PM</div>';
+ pl.forEach(function(p){var nx=spNextDue(p,recs),df=Math.round((spParse(nx)-d0)/864e5),ld=spLastDone(p,recs);
+  h+=row(nx,tbadge(p.type)+' <b>'+esc(p.machine)+'</b> <small style="color:'+(df<0?"#dc2626":"#64748b")+'">'+(df===0?"ตรงวันนี้":df>0?"อีก "+df+" วัน":"เลยมา "+(-df)+" วัน")+(ld?' · ทำล่าสุด '+spFmt(ld):' · ยังไม่เคยทำ')+'</small>')});
+ h+='<div style="font-weight:700;margin:10px 0 4px">🔜 งานที่จะถึงใน 30 วันหลังวันนี้ ('+up.length+')</div>'+(up.length?up.slice(0,8).map(function(x){return row(x.d,x.t)}).join(""):'<div class="empty" style="padding:6px">ไม่มี</div>')
+  +'<div style="font-weight:700;margin:10px 0 4px">🕘 บันทึกล่าสุดก่อนวันนี้</div>'+(pv.length?pv.slice(0,5).map(function(x){return row(x.d,x.t)}).join(""):'<div class="empty" style="padding:6px">ยังไม่มีบันทึก</div>')+'</div>';
+ return h}
 function dayModal(ds){var ev=monthEvents(+ds.slice(0,4),+ds.slice(5,7)-1)[ds]||[],b="";
- if(!ev.length)b='<div class="empty">ไม่มีรายการในวันนี้</div>';
+ if(!ev.length)b='<div class="empty">ไม่มีรายการลงวันนี้ — ดูแผนและบันทึกอื่นด้านล่าง</div>';
  ev.forEach(function(e,ix){
   if(e.k==="pm"){var p=e.o.plan,sh=spPartsShort(p).filter(function(x){return !x.ok});b+='<div class="ev"><b>'+tbadge(p.type)+' '+esc(p.machine)+'</b> '+(e.o.over?'<span class="tg" style="background:#dc2626">เลยกำหนด</span>':'')+'<br><small>กำหนด PM ตามแผน'+(sh.length?' · <span style="color:#dc2626">อะไหล่ไม่พอ: '+sh.map(function(x){return esc(x.c)+(x.known?' (มี '+x.have+'/'+x.need+')':' (ไม่พบในระบบ)')}).join(", ")+'</span>':'')+'</small><div class="ea">'+((ED||(ISM&&ds===spToday()))?'<button class="btn p" data-a="rec" data-i="'+ix+'">บันทึกการทำ PM</button>':'')+'<button class="btn" data-a="prt" data-i="'+ix+'">🖨️ พิมพ์ฟอร์ม</button></div></div>'}
   else if(e.k==="log"){b+=logCard(e.l,ix)}
   else if(e.k==="rec"){b+='<div class="ev"><b>✓ '+tbadge(e.r.type)+' '+esc(e.r.machine)+'</b><br><small>ผู้ทำ: '+esc(e.r.tech||"-")+' · อะไหล่ '+(e.r.parts||[]).length+' รายการ</small><div class="ea"><button class="btn" data-a="view" data-i="'+ix+'">ดู/พิมพ์</button></div></div>'}
   else{var j=e.j;b+='<div class="ev"><b style="color:#0d9488">🔄 JOB '+esc(j.machine)+'</b> '+(j.time?esc(j.time)+' น.':'')+'<br><small>'+esc(j.from||"-")+' → <b>'+esc(j.to||"-")+'</b>'+(j.note?' · '+esc(j.note):'')+'</small><div class="ea">'+(ED?'<button class="btn" data-a="jedit" data-i="'+ix+'">แก้ไข</button>':'')+'</div></div>'}});
+ b+=dayCtx(ds,ev.length);
  if(ED||(ISM&&ds===spToday()))b+='<div class="ea" style="margin-top:10px;border-top:1px solid #e2e8f0;padding-top:10px"><button class="btn p" data-a="addlog" style="background:#dc2626;border-color:#dc2626">+ บันทึกงาน / ซ่อม</button><button class="btn p" data-a="addrec">+ บันทึกการทำ PM วันนี้</button>'+(ED?'<button class="btn" data-a="addplan">+ เพิ่มแผน PM</button><button class="btn" data-a="addjob">+ เพิ่ม JOB</button>':'')+'</div>';
  modal(spFmt(ds,true),b,[{t:"ปิด"}],true);
  Array.prototype.forEach.call($("mb").querySelectorAll("[data-a]"),function(x){x.onclick=function(){var e=ev[+x.dataset.i],a=x.dataset.a;
@@ -297,7 +314,7 @@ function drawJobs(){var f=$("j-f").value,t=spToday(),y=t.slice(0,4),from=f==="up
   var tg=r.kind==="job"?'<span class="tg" style="background:#0d9488">JOB</span>':tbadge(r.type);
   return '<tr><td>'+spFmt(r.date)+(r.time?' '+esc(r.time)+' น.':'')+'</td><td>'+tg+'</td><td><b>'+esc(r.machine)+'</b><br><small style="color:#64748b">'+esc(spLineInfo(r.machine))+'</small></td><td>'+h+'</td><td>'+st+'</td><td class="act">'+ac+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ไม่มีรายการ</div>';
  Array.prototype.forEach.call($("jt").querySelectorAll("[data-a]"),function(b){b.onclick=function(){var r=l[+b.dataset.i],a=b.dataset.a;if(!r)return;
-  if(a==="ed")jobForm(r.job);else if(a==="ok"){jobForm(Object.assign({},r.job,{status:"done",doneDate:spToday(),by:SP_USER?SP_USER.name:""}))}else if(a==="del"&&confirm("ลบ JOB นี้ ?")){spJobsSave(spJobs().filter(function(x){return x.id!==r.job.id}));refresh()}
+  if(a==="ed")jobForm(r.job);else if(a==="ok"){var jl=spJobs(),jx=jl.findIndex(function(y){return y.id===r.job.id});if(jx<0){jobForm(Object.assign({},r.job,{status:"done"}));return}jl[jx]=Object.assign({},jl[jx],{status:"done",doneDate:spToday(),by:SP_USER?SP_USER.name:""});spJobsSave(jl);refresh()}else if(a==="del"&&confirm("ลบ JOB นี้ ?")){spJobsSave(spJobs().filter(function(x){return x.id!==r.job.id}));refresh()}
   else if(a==="rec")recForm({plan:r.plan,date:r.date<spToday()?spToday():r.date});else if(a==="prt")printPm(null,r.machine,r.type);else if(a==="view")viewRec(r.rec.id)}})}
 function jobForm(j){if(!ISA)return;var n=!j||!j.id;j=j||{};var o={id:j.id,date:j.date||spToday(),time:j.time||"",machine:j.machine||"",from:j.from||"",to:j.to||"",note:j.note||"",status:j.status||"plan",doneDate:j.doneDate||(j.status==="done"?j.date:""),by:j.by||""};
  modal(n?"เพิ่ม JOB":"แก้ไข JOB",machOpts()+'<div class="two"><div><label>วันที่ *</label><input type="date" id="j-d" value="'+esc(o.date)+'"></div><div><label>เวลาเริ่ม</label><input type="time" id="j-t" value="'+esc(o.time)+'"></div></div>'
