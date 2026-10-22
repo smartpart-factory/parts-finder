@@ -139,10 +139,10 @@ function surfHit(e){var hs=ray(e).intersectObjects(PICKS,true);
 function form(h){
  var DF=spDept.furnById(h.dw?h.dw[0]:h.dwf),CH=h.dw||null;if(DF)focus(DF.x,DF.h*.5,DF.z,1.9*spDept.KD,DF.face===-1?Math.PI:0,.28);
  var IS="width:100%;padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;box-sizing:border-box",LB="font-size:12px;color:#475569;margin:2px 0 -2px;display:block";
- function buildOpts(mc){return '<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return{q:q,k:k}}).filter(function(z){return !mc||(z.q.m||[]).indexOf(mc)>=0}).reverse().map(function(z){var q=z.q;return '<option value="'+z.k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("")}
- var opts=buildOpts("");
+ function buildOpts(mc){return '<option value="">➕ อะไหล่ใหม่ (กรอกด้านล่าง)</option>'+SP_ITEMS.map(function(q,k){return{q:q,k:k}}).filter(function(z){return !mc||!mc.length||mc.some(function(x){return (z.q.m||[]).indexOf(x)>=0})}).reverse().map(function(z){var q=z.q;return '<option value="'+z.k+'"'+(target&&target===q?' selected':'')+'>'+esc(q.c)+' · '+esc(q.n)+(q.r||q.pos?' — '+esc(spLocShort(q)):'')+'</option>'}).join("")}
+ var opts=buildOpts([]);
  infoEl.innerHTML='<b>📌 วางอะไหล่ที่จุดนี้</b> <small style="color:#64748b">('+esc(h.surf)+' · x '+h.x.toFixed(2)+', z '+h.z.toFixed(2)+')</small>'
-  +'<div style="display:grid;gap:8px;margin-top:8px"><label style="'+LB+'">🏭 หมวดเครื่องจักร <small>(เลือกเพื่อกรองรายการ / ใช้กับอะไหล่ใหม่)</small></label><select id="pl-mc" style="'+IS+'"><option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option value="'+esc(m)+'">'+esc(m)+'</option>'}).join("")+'</select><label style="'+LB+'">เลือกอะไหล่ (ที่เพิ่มล่าสุดอยู่บนสุด)</label><select id="pl-it" style="'+IS+'">'+opts+'</select>'
+  +'<div style="display:grid;gap:8px;margin-top:8px"><label style="'+LB+'">🏭 หมวดเครื่องจักร <small>(เลือกได้มากกว่า 1 · กรองรายการ / ใช้กับอะไหล่ใหม่)</small></label><div id="pl-mc" style="display:flex;flex-wrap:wrap;gap:6px">'+SP_MACHINES.map(function(m){return '<label style="display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border:1px solid #cbd5e1;border-radius:99px;background:#fff;cursor:pointer;font-size:13px"><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("")+'</div><label style="'+LB+'">เลือกอะไหล่ (ที่เพิ่มล่าสุดอยู่บนสุด)</label><select id="pl-it" style="'+IS+'">'+opts+'</select>'
   +'<div id="pl-new" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label style="'+LB+'">รหัสอะไหล่ <small>(ไม่มีเว้นว่างได้)</small></label><input id="pl-c" style="'+IS+'" placeholder="เว้นว่าง = NC-xxxx"></div><div><label style="'+LB+'">ชื่ออะไหล่ *</label><input id="pl-n" style="'+IS+'" placeholder="ชื่ออะไหล่"></div>'
   +'</div>'
   +'<label style="'+LB+'">📷 รูปอะไหล่ (ใช้รูปเดียวกับหน้า "จัดการระบบ" — ไม่บังคับ)</label><div style="display:flex;gap:10px;align-items:center"><img id="pl-ip" alt="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1"><input id="pl-img" type="file" accept="image/*" style="flex:1;min-width:0"></div>'
@@ -154,10 +154,10 @@ function form(h){
   G.innerHTML=x;T.textContent=CH?"เลือกแล้ว: แถว "+CH[1]+" ชั้น "+CH[2]:"";Array.prototype.forEach.call(G.children,function(b){b.onclick=function(){var v=[DF.id,+b.dataset.c,+b.dataset.r];CH=CH&&CH[1]===v[1]&&CH[2]===v[2]?null:v;dr()}})})()}
  try{infoEl.scrollIntoView({behavior:"smooth",block:"nearest"})}catch(e){}
  if(h.rack)focusRack(h.rack,h.level);
- var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new"),mcs=document.getElementById("pl-mc");
+ var sel_=document.getElementById("pl-it"),nw=document.getElementById("pl-new"),mcs=document.getElementById("pl-mc");function mcv(){return [].slice.call(mcs.querySelectorAll("input:checked")).map(function(x){return x.value})}
  var mts=document.getElementById("pl-mt"),mtTouched=false;mts.onchange=function(){mtTouched=true};
  function pim(){var ip=document.getElementById("pl-ip"),q=sel_.value===""?null:SP_ITEMS[+sel_.value];if(!mtTouched||(q&&q.mt))mts.value=q?(q.mt||spModelGuess(q.n)):spModelGuess((document.getElementById("pl-n")||{}).value);if(h.wall&&SP_WALLM.indexOf(mts.value)<0)mts.value="hbelt";document.getElementById("pl-ry").value=String(q&&q.ry||0);if(q&&q.mt)mtTouched=false;if(q&&q.img){ip.src=q.img;ip.style.display="block"}else ip.style.display="none"}
- mcs.onchange=function(){sel_.innerHTML=buildOpts(mcs.value);sel_.value="";sel_.onchange()};
+ mcs.onchange=function(){mcs.querySelectorAll("label").forEach(function(l){var c=l.firstChild.checked;l.style.background=c?"#dbeafe":"#fff";l.style.borderColor=c?"#3b82f6":"#cbd5e1"});sel_.innerHTML=buildOpts(mcv());sel_.value="";sel_.onchange()};
  sel_.onchange=function(){nw.style.display=sel_.value===""?"grid":"none";pim()};sel_.onchange();
  document.getElementById("pl-img").onchange=function(){var f=this.files[0],ip=document.getElementById("pl-ip");if(f){ip.src=URL.createObjectURL(f);ip.style.display="block"}else pim()};
  document.getElementById("pl-n").oninput=function(){if(!mtTouched&&sel_.value===""){mts.value=spModelGuess(this.value);if(h.wall&&SP_WALLM.indexOf(mts.value)<0)mts.value="hbelt"}};
@@ -165,7 +165,7 @@ function form(h){
  document.getElementById("pl-ok").onclick=function(){var l=SP_ITEMS.slice(),it,err=document.getElementById("pl-e");
   if(sel_.value===""){var c=document.getElementById("pl-c").value.trim(),n=document.getElementById("pl-n").value.trim();
    if(!n){err.textContent="กรอกชื่ออะไหล่";return}if(!c){var mx=0;l.forEach(function(x){var mm=/^NC-(\d+)$/i.exec(String(x.c));if(mm)mx=Math.max(mx,+mm[1])});c="NC-"+("000"+(mx+1)).slice(-4)}if(l.some(function(x){return x.c.toLowerCase()===c.toLowerCase()})){err.textContent="รหัสนี้มีอยู่แล้ว — เลือกจากรายการด้านบน";return}
-   it={c:c,n:n,k:"",m:mcs.value?[mcs.value]:[],q:1,min:0,r:"",s:0};l.push(it)}
+   it={c:c,n:n,k:"",m:mcv(),q:1,min:0,r:"",s:0};l.push(it)}
   else it=l[+sel_.value];
   var fi=document.getElementById("pl-img").files[0],fin=function(){EDR=null;spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
   var ry_=+document.getElementById("pl-ry").value;if(ry_)it.ry=ry_;else delete it.ry;var mv_=mts.value;if(mv_)it.mt=mv_;else delete it.mt;it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.gv=2;it.spot=true;it.at=h.surf;if(h.wall){it.wl=h.wl;delete it.ry}else delete it.wl;
