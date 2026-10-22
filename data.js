@@ -3,7 +3,7 @@
  r=ชั้นวาง(ต้องมีใน SP_RACKS)  s=ชั้นที่  u=หน่วย  rep=ข้อความ(ใส่เฉพาะของที่กำลังซ่อม)  glb=ไฟล์โมเดล 3D ของอะไหล่ชิ้นนี้ (ไม่บังคับ เช่น "models/bearing.glb")  pos=[x,y,z] ตำแหน่ง 3D เฉพาะ (ไม่บังคับ)
  ตัวอย่างข้อมูลเดิมเก็บไว้ที่ไฟล์ data.sample.js */
 /* เครื่องจักร/แผนก: แก้ได้ที่หน้า "จัดการระบบ" > "เครื่องจักร" (เพิ่ม/เปลี่ยนชื่อ/ใส่รูป) ค่าด้านล่างเป็นค่าเริ่มต้น */
-var SP_MACH=[{k:"ISM",d:"เครื่องเป่าขวด / ขวด PET",f:"ism.jpg"},{k:"RENGER",d:"เครื่องบรรจุ",f:"renger.jpg"},{k:"OLT",d:"เครื่องหดฟิล์ม / บรรจุรวม",f:"olt.jpg"},{k:"EVO",d:"ระบบลำเลียง / แพ็คกิ้ง",f:"evo.jpg"},{k:"COLD END",d:"ระบบทำความเย็น",f:"coldend.jpg"},{k:"METTAL",d:"เครื่องซีลรูป / ปั๊ม",f:"mettal.jpg"}];
+var SP_MACH=[{k:"ISM",d:"เครื่องเป่าขวด / ขวด PET",f:"ism.jpg"},{k:"RENGER",d:"เครื่องบรรจุ",f:"renger.jpg"},{k:"OLT",d:"เครื่องหดฟิล์ม / บรรจุรวม",f:"olt.jpg"},{k:"EVO",d:"ระบบลำเลียง / แพ็คกิ้ง",f:"evo.jpg"},{k:"COLD END",d:"ระบบทำความเย็น",f:"coldend.jpg"},{k:"MATEL",d:"เครื่องซีลรูป / ปั๊ม",f:"matel.jpg"}];
 try{var _mm=localStorage.getItem("sp_machines");if(_mm)SP_MACH=JSON.parse(_mm)}catch(e){}
 var SP_MACHINES=SP_MACH.map(function(m){return m.k});
 function spMachSave(a){SP_MACH=a;SP_MACHINES=a.map(function(m){return m.k});localStorage.setItem("sp_machines",JSON.stringify(a))}
@@ -77,6 +77,10 @@ function spSetStock(code,has){var l=SP_ITEMS.slice(),x=l.filter(function(i){retu
 /* ถ้า admin เคยแก้ข้อมูลในหน้า "จัดการระบบ" ข้อมูลจะถูกเก็บในเบราว์เซอร์และใช้แทนรายการด้านบน */
 var SP_BASE_ITEMS=SP_ITEMS.slice();
 try{var _sv=localStorage.getItem("sp_items");if(_sv)SP_ITEMS=JSON.parse(_sv)}catch(e){}
+/* แก้ชื่อเครื่องจักรที่สะกดเดิม (METTAL) ให้ตรงกับชื่อที่ตั้งไว้ในหน้าเครื่องจักร (เช่น MATEL) — คืน true ถ้ามีการแก้ */
+function spHealMach(){var to=SP_MACHINES.filter(function(m){return /^MA?T[A-Z]*L$/i.test(m)&&m.toUpperCase()!=="METTAL"})[0];if(!to||SP_MACHINES.indexOf("METTAL")>-1)return false;var ch=false;
+ SP_ITEMS.forEach(function(i){if(i.m&&i.m.indexOf("METTAL")>-1){i.m=i.m.map(function(x){return x==="METTAL"?to:x}).filter(function(x,k,a){return a.indexOf(x)===k});ch=true}});return ch}
+var SP_HEALED=spHealMach();
 function spItemsSave(a){var old=SP_ITEMS;SP_ITEMS=a;try{localStorage.setItem("sp_items",JSON.stringify(a))}catch(e){SP_ITEMS=old;throw e}}
 
 function spUsedKB(){var t=0;try{Object.keys(localStorage).forEach(function(k){t+=k.length+String(localStorage.getItem(k)||"").length})}catch(e){}return Math.round(t*2/1024)}

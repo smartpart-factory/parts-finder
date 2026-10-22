@@ -56,7 +56,8 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
 
  <div id="pg-p">
-  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn p" id="p-oth">📥 เพิ่มอะไหล่ COLD END / OLT / METTAL (42 รายการ)</button><button class="btn p" id="p-rg">📥 เพิ่มอะไหล่ ISM / RENGER (367 รายการ)</button><button class="btn p" id="p-evo">📥 เพิ่มอะไหล่ EVO (111 รายการ)</button><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
+  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><select id="pmc" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"></select><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
+  <div id="pcnt" style="margin:0 0 6px;color:#64748b;font-size:13px"></div>
   <div class="card"><table><thead><tr><th>รหัส / ชื่อ</th><th>เครื่องจักร</th><th>ตำแหน่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
   <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (นำทาง 3D ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในระบบกลาง ทุกเครื่องเห็นชุดเดียวกัน (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
  </div>
@@ -129,11 +130,12 @@ $("mx-save").onclick=function(){if(!ISA){alert("เฉพาะ ผู้ดู�
  var ren={},keep={};MM.forEach(function(m){if(m.old){keep[m.old]=1;if(m.old!==m.k)ren[m.old]=m.k}});
  var items=SP_ITEMS.map(function(it){var o=Object.assign({},it);o.m=(it.m||[]).map(function(n){return ren[n]||n}).filter(function(n){return names[n.toLowerCase()]});return o});
  spItemsSave(items);spMachSave(MM.map(function(m){var o={k:m.k,d:m.d.trim()};if(m.img)o.img=m.img;else if(m.f)o.f=m.f;return o}));mload();fillM();pdraw();mdraw();alert("บันทึกเครื่องจักรแล้ว")};
-function fillM(){$("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("")}
+function fillPM(){var s=$("pmc"),v=s.value;s.innerHTML='<option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option>'+esc(m)+'</option>'}).join("");s.value=v}
+function fillM(){fillPM();$("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("")}
 // ---- อะไหล่ ----
 var editing=null,edCode="";function edIdx(){if(!editing)return -1;var k=SP_ITEMS.indexOf(editing);if(k>=0)return k;for(var j=0;j<SP_ITEMS.length;j++)if(String(SP_ITEMS[j].c).toLowerCase()===edCode)return j;return -1}
 function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
- var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1});
+ var mc=$("pmc").value;var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1&&(!mc||(i.m||[]).indexOf(mc)>-1)});$("pcnt")&&($("pcnt").textContent="แสดง "+a.length+" จาก "+SP_ITEMS.length+" รายการ");
  if(!a.length){b.innerHTML='<tr><td colspan="5"><div class="empty">'+(SP_ITEMS.length?"ไม่พบรายการ":'ยังไม่มีอะไหล่ กด "+ เพิ่มอะไหล่" เพื่อเริ่มต้น')+'</div></td></tr>';return}
  a.forEach(function(i){var s=spStatus(i),tr=document.createElement("tr");
   tr.innerHTML='<td>'+(i.img?'<img src="'+i.img+'" alt="" style="width:34px;height:34px;object-fit:cover;border-radius:6px;float:left;margin-right:8px">':'')+'<b>'+esc(i.n)+'</b><small>'+esc(i.c)+'</small></td><td><div class="mt">'+i.m.map(function(m){return '<i>'+esc(m)+'</i>'}).join("")+'</div></td>'
@@ -146,7 +148,7 @@ function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
   tr.querySelector('[data-a="e"]').onclick=function(){openP(i)};
   tr.querySelector('[data-a="x"]').onclick=function(){if(!ISA)return;if(confirm('ลบ "'+i.n+'" ('+i.c+') ?')){spItemsSave(SP_ITEMS.filter(function(x){return x!==i}));pdraw()}};
   b.appendChild(tr)})}
-$("pq").oninput=pdraw;
+$("pq").oninput=pdraw;$("pmc").onchange=pdraw;fillPM();
 $("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("");
 function rkName(k){var n=(SP_RACKS[k]&&SP_RACKS[k].nm)||(window.SP_DEPT&&SP_DEPT.rackNames&&SP_DEPT.rackNames[k]);return n||"ชั้นวางที่เพิ่มเอง"}
 var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block":"none";if(curImg)p.src=curImg}
@@ -195,15 +197,6 @@ $("p-bfile").onchange=function(e){var fs=Array.prototype.slice.call(e.target.fil
   alert("นำเข้ารูปสำเร็จ "+ok+" ชิ้น"+(skip.length?"\nข้าม (รูปซ้ำของชิ้นเดิม) "+skip.length+" ไฟล์":"")+(miss.length?"\nไม่พบรหัสตรงกับชื่อไฟล์ "+miss.length+" ไฟล์ เช่น "+miss.slice(0,5).join(", "):""))}
  next()};
 $("p-mrg").onclick=function(){$("p-mfile").click()};
-$("p-oth").onclick=function(){fetch("other-parts-import.json?v="+Date.now()).then(function(r){return r.json()}).then(function(d){var map={};SP_ITEMS.forEach(function(i){map[String(i.c)]=i});var add=[],tag=0;
- promote(d.items);d.items.forEach(function(i){var o=map[String(i.c)];if(!o){add.push(i);return}var m=(o.m||[]).slice();i.m.forEach(function(x){if(m.indexOf(x)<0){m.push(x);tag++}});o.m=m});
- if(!add.length&&!tag){spItemsSave(SP_ITEMS.slice());alert("ไม่มีรายการใหม่");return}if(!confirm("เพิ่มใหม่ "+add.length+" รายการ"+(tag?"\nเพิ่มหมวดเครื่องจักรให้ของเดิมที่รหัสซ้ำ "+tag+" รายการ":"")+"\nยืนยัน?"))return;
- spItemsSave(SP_ITEMS.concat(add));alert("เรียบร้อย");location.reload()}).catch(function(){alert("โหลดไฟล์ other-parts-import.json ไม่ได้ — ตรวจว่า Push ไฟล์ขึ้นเว็บแล้ว")})};
-$("p-rg").onclick=function(){fetch("ranger-items.json?v="+Date.now()).then(function(r){return r.json()}).then(function(d){var map={};SP_ITEMS.forEach(function(i){map[String(i.c)]=i});var add=[],tag=0;
- promote(d.items);d.items.forEach(function(i){var o=map[String(i.c)];if(!o){add.push(i);return}var m=(o.m||[]).slice();i.m.forEach(function(x){if(m.indexOf(x)<0){m.push(x);tag++}});o.m=m});
- if(!add.length&&!tag){spItemsSave(SP_ITEMS.slice());alert("ไม่มีรายการใหม่");return}if(!confirm("เพิ่มใหม่ "+add.length+" รายการ"+(tag?"\nเพิ่มหมวดเครื่องจักรให้ของเดิมที่รหัสซ้ำ "+tag+" รายการ":"")+"\nยืนยัน?"))return;
- spItemsSave(SP_ITEMS.concat(add));alert("เรียบร้อย");location.reload()}).catch(function(){alert("โหลดไฟล์ ranger-items.json ไม่ได้ — ตรวจว่า Push ไฟล์ขึ้นเว็บแล้ว")})};
-$("p-evo").onclick=function(){fetch("evo-parts-import.json?v="+Date.now()).then(function(r){return r.json()}).then(function(d){pmerge(d.items,false)}).catch(function(){alert("โหลดไฟล์ evo-parts-import.json ไม่ได้ — ตรวจว่า Push ไฟล์ขึ้นเว็บแล้ว")})};
 function promote(list){var cs={},n=0;(list||[]).forEach(function(x){if(x&&x.c!=null)cs[String(x.c)]=1});SP_ITEMS.forEach(function(i){if(cs[String(i.c)]&&!(i.q>0)&&!i.min&&!i.pos&&!i.r&&!i.rep&&!i.rlog){i.q=1;n++}});return n}
 function pmerge(list,upd){promote(list);var map={};SP_ITEMS.forEach(function(i){map[String(i.c)]=i});var add=[],ch=0;
  list.forEach(function(i){if(!i||i.c==null||!i.n)return;var o=map[String(i.c)];if(!o){add.push(i);return}
@@ -282,6 +275,7 @@ $("m-save").onclick=function(){var u=$("m-url").value.trim();function bad(t){$("
  var sc=num($("m-sc").value,1);if(!(sc>0))return bad("ขนาด (scale) ต้องมากกว่า 0");
  spModelSave({url:u,scale:sc,x:num($("m-x").value,0),y:num($("m-y").value,0),z:num($("m-z").value,0),hideRacks:$("m-hide").checked});bad("");alert("บันทึกการตั้งค่าโมเดลแล้ว (เปิดหน้าเช็คของเพื่อดูผล)")};
 ["ov-p","ov-u"].forEach(function(i){$(i).onclick=function(e){if(e.target===$(i))$(i).classList.remove("on")}});
+if((SP_HEALED||spHealMach())&&ISA){try{spItemsSave(SP_ITEMS.slice())}catch(e){}}
 pdraw();udraw();rdraw();
 </script>
 <script>window.showOnMap=function(c){location.href="check-stock.html?item="+encodeURIComponent(c)}</script>
