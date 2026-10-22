@@ -55,7 +55,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a class="on" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a class="on" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <div class="hh"><h2>📋 จัดการคำขอ</h2><a class="btn" id="new" href="request-new.html" style="text-decoration:none">+ สร้างคำขอใหม่</a></div>
  <div class="sum" id="sum"></div>
@@ -90,14 +90,14 @@ function draw(){drawSum();var l=document.getElementById("list");l.innerHTML="";
   +'<div class="ac"></div><div class="log">'+r.log.map(function(g){return '• '+new Date(g.t).toLocaleString("th-TH")+' — '+esc(g.text)}).join("<br>")+'</div>';
   d.innerHTML=h;var ac=d.querySelector(".ac");
   function b(t,c,fn){var e=document.createElement("button");e.textContent=t;e.className=c;e.onclick=function(ev){ev.stopPropagation();fn()};ac.appendChild(e)}
-  if(r.status==="pending"&&r.retro){if(ADM)b("✓ ยืนยันการเบิก","g",function(){if(!spReqCut(r))return;r.status="done";logIt(r,"ตรวจสอบและยืนยันการเบิกย้อนหลังโดย "+ME+" · "+r.cutNote);save()});
+  if(r.status==="pending"&&r.retro){if(ADM)b("✓ ยืนยันการเบิก","g",function(){if(!spReqCut(r))return;r.status="done";logIt(r,"ตรวจสอบและยืนยันการเบิกย้อนหลังโดย "+ME);save()});
    if(ADM)b("↩ ให้คืนของ","rd",function(){var w=prompt("หมายเหตุ (เช่น ให้คืนที่ชั้นเดิม)");if(w===null)return;r.status="rejected";r.rej=w||"ให้คืนอะไหล่";logIt(r,"ให้คืนอะไหล่โดย "+ME+(w?" ("+w+")":""));save()});
    if(ADM||r.byId===SP_USER.id)b("ยกเลิกรายการ","",function(){if(confirm("ยกเลิกรายการ "+r.id+" ?")){r.status="cancelled";logIt(r,"ยกเลิกโดย "+ME);save()}})}
   else if(r.status==="pending"){if(ADM)b("✓ อนุมัติ","g",function(){r.status="approved";logIt(r,"อนุมัติโดย "+ME);save()});
    if(ADM)b("✕ ปฏิเสธ","rd",function(){var w=prompt("เหตุผลที่ปฏิเสธ (ไม่บังคับ)");if(w===null)return;r.status="rejected";r.rej=w;logIt(r,"ปฏิเสธโดย "+ME+(w?" ("+w+")":""));save()});
    if(ADM||r.byId===SP_USER.id)b("ยกเลิกคำขอ","",function(){if(confirm("ยกเลิกคำขอ "+r.id+" ?")){r.status="cancelled";logIt(r,"ยกเลิกโดย "+ME);save()}})}
-  if(r.status==="approved"&&ADM)b("📦 เบิกแล้ว (ตัดสต็อก)","g",function(){if(!spReqCut(r))return;r.status="done";logIt(r,"เบิกอะไหล่แล้ว · "+r.cutNote);save()});
-  if(r.status==="done"&&r.cut&&ADM)b("↩ ยกเลิกการเบิก (คืนสต็อก)","rd",function(){if(!confirm("คืนสต็อก "+r.cut+" ชิ้น และยกเลิกการเบิก "+r.id+" ?"))return;spReqUncut(r);r.status="approved";logIt(r,"ยกเลิกการเบิกโดย "+ME+" · "+r.cutNote);save()});
+  if(r.status==="approved"&&ADM)b("📦 เบิกแล้ว","g",function(){if(!spReqCut(r))return;r.status="done";logIt(r,"เบิกอะไหล่แล้วโดย "+ME);save()});
+  if(r.status==="done"&&ADM)b("↩ ยกเลิกการเบิก","rd",function(){if(!confirm("ยกเลิกการเบิก "+r.id+" ?"))return;r.status="approved";logIt(r,"ยกเลิกการเบิกโดย "+ME);save()});
   if(ADM)b(r.note?"💬 แก้ข้อความแจ้ง":"💬 แจ้งของไม่มี / หมายเหตุ","",function(){noteEd(r,d)});
   if(r.code&&SP_ITEMS.some(function(i){return i.c===r.code}))b("📍 ดูตำแหน่ง 3D","lk",function(){location.href="check-stock.html?item="+encodeURIComponent(r.code)});
   d.onclick=function(){d.classList.toggle("open")};l.appendChild(d)})}

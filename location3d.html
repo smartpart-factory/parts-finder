@@ -59,11 +59,11 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a class="on">📍 กำหนดตำแหน่ง (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a class="on" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <h2>📍 กำหนดตำแหน่งอะไหล่ (3D)</h2>
  <div class="sum" id="sum"></div>
- <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="new">เพิ่มล่าสุดก่อน</option><option value="n">เรียงตามชื่อ</option><option value="q">จำนวนน้อยสุดก่อน</option><option value="r">เรียงตามชั้นวาง</option></select></div>
+ <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="new">เพิ่มล่าสุดก่อน</option><option value="n">เรียงตามชื่อ</option><option value="r">เรียงตามชั้นวาง</option></select></div>
  <div class="grid">
   <div class="card"><div class="hd"><span></span><span>อะไหล่</span><span>ที่เก็บ (ที่พิมพ์ไว้)</span><span>หมุดใน 3D</span><span></span></div><div id="list"></div></div>
   <div class="card map"><h3>🗺️ แผนที่ห้องอะไหล่ (3D)</h3><div class="hint" style="margin:0">เลือกอะไหล่จากรายการ → กด “📌 วางตำแหน่ง” → คลิกจุดที่วางในโมเดล · ลากเพื่อหมุน · ล้อเมาส์/บีบนิ้วเพื่อซูม</div><div id="cv"></div>
@@ -89,10 +89,10 @@ document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase()
 // ---- รายการ ----
 function draw(){drawSum();
  var a=SP_ITEMS.filter(function(i){return (filt==="all"||(filt==="on")===placed(i))&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
- a.sort(function(x,y){return sort==="new"?SP_ITEMS.indexOf(y)-SP_ITEMS.indexOf(x):sort==="q"?x.q-y.q:sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
+ a.sort(function(x,y){return sort==="new"?SP_ITEMS.indexOf(y)-SP_ITEMS.indexOf(x):sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
  var l=document.getElementById("list");l.innerHTML="";
  if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มอะไหล่ที่หน้า “จัดการระบบ” ก่อน แล้วกลับมากำหนดตำแหน่งที่นี่')+'</div>';
- a.forEach(function(i){var s=spStatus(i),p=Math.min(100,i.q/(i.min*2)*100),d=document.createElement("div");d.className="rw"+(sel&&sel.c===i.c?" sel":"");
+ a.forEach(function(i){var s=spStatus(i),d=document.createElement("div");d.className="rw"+(sel&&sel.c===i.c?" sel":"");
   d.innerHTML='<div class="im">'+(ICON[i.c.slice(0,3)]||"📦")+'<img src="'+spImg(i)+'" alt="" onerror="this.remove()"></div>'
   +'<div><b>'+i.n+'</b><small>'+i.c+'</small></div>'
   +'<div class="mc mt"><span>'+esc(i.tx||i.r||"-")+'</span></div>'

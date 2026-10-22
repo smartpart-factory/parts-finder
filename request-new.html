@@ -52,7 +52,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a class="on">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a class="on">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <h2>📝 ขอเบิกคลังใหญ่</h2><div class="sub">ใช้เมื่อ <b>อะไหล่ไม่มีหรือไม่พอในแผนก</b> เท่านั้น — ถ้าของมีอยู่ในแผนกแล้ว หยิบใช้ได้เลย ไม่ต้องทำเรื่องขอ</div>
  <div class="how"><div class="g"><b>✅ มีของในแผนก</b>หยิบได้เลย ไม่ต้องทำเรื่องขอ<br><a href="search.html">ค้นหา / ดูตำแหน่ง →</a></div><div class="o"><b>📝 ไม่มี หรือไม่พอ</b>กรอกฟอร์มด้านล่าง ผู้ดูแลจะสั่งเบิกจากคลังใหญ่ให้</div></div>
@@ -64,7 +64,6 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
   <label>ความเร่งด่วน</label><select id="f-urg"><option value="0">ปกติ</option><option value="1">ด่วน</option></select>
     <label id="l-why">เหตุผล / รายละเอียด</label><textarea id="f-why" rows="3" placeholder="เช่น ของหมดในแผนก ตลับลูกปืนเสียงดัง ต้องเปลี่ยน"></textarea>
   <div id="err"></div><button class="btn" id="go">ส่งคำขอเบิกคลังใหญ่</button></div>
- <div class="box"><h3>✋ หยิบใช้ล่าสุดของฉัน</h3><div class="sub" style="margin:0 0 8px">บันทึกเพื่อให้สต็อกตรงกับของจริง (ไม่ต้องรออนุมัติ)</div><div id="takes"></div></div>
  <div class="box"><h3>คำขอของฉัน</h3><div id="mine"></div></div>
 </main>
 <script src="data.js"></script><script src="requests.js"></script><script src="pm.js"></script>
@@ -78,13 +77,11 @@ $("dl").innerHTML=SP_ITEMS.map(function(i){return '<option value="'+esc(i.n+" ("
 $("f-bd").innerHTML=spBldOpts();try{var lb=localStorage.getItem("sp_lastbld");if(lb)$("f-bd").value=lb}catch(e){}
 $("f-mc").innerHTML=SP_MACHINES.map(function(m){return '<option>'+esc(m)+'</option>'}).join("")+'<option>อื่นๆ</option>';
 function find(v){v=v.trim();return SP_ITEMS.filter(function(i){return i.n+" ("+i.c+")"===v||i.c===v||i.n===v})[0]}
-function avail(){var it=find(fi.value),qty=parseInt($("f-qty").value,10)||1;if(!it)return null;var s=spStatus(it);return{it:it,ok:s!=="repair"&&it.q>=qty,s:s,qty:qty}}
+function avail(){var it=find(fi.value);if(!it)return null;var s=spStatus(it);return{it:it,ok:s==="stock",s:s}}
 function preview(){var it=find(fi.value),p=$("pv");if(!it){p.style.display="none";return}var a=avail(),s=a.s;p.style.display="block";
- p.innerHTML='<b>'+esc(it.n)+'</b> <span class="tg s-'+s+'">'+SP_TXT[s]+'</span><br>คงเหลือในแผนก '+it.q+' '+esc(it.u||"")+' · ตำแหน่ง '+esc(spLoc(it))+
-  (a.ok?'<div class="avail y">✅ <b>มีของในแผนกพอแล้ว</b> — ไปหยิบได้เลย ไม่ต้องทำเรื่องขอ <a href="check-stock.html?item='+encodeURIComponent(it.c)+'">📍 ดูตำแหน่ง 3D</a><div id="tkw" style="margin-top:6px"><button type="button" class="btn" id="tkb" style="padding:6px 12px">✋ บันทึกการหยิบใช้</button></div></div>':
-  '<div class="avail n">📝 '+(s==="repair"?'อะไหล่นี้กำลังซ่อม ใช้ไม่ได้ในตอนนี้':'ในแผนกมี '+it.q+' '+esc(it.u||"")+' ไม่พอสำหรับ '+a.qty)+' — ขอเบิกจากคลังใหญ่ได้ที่ฟอร์มนี้</div>');if(it.m.length)$("f-mc").value=it.m[0]}
-function bindTk(){var b=$("tkb");if(b)b.onclick=function(){spTakeUI($("tkw"),find(fi.value),function(ok){if(ok){fi.value="";$("pv").style.display="none";takes()}else preview()})}}
-var _pv=preview;preview=function(){_pv();bindTk()};
+ p.innerHTML='<b>'+esc(it.n)+'</b> <span class="tg s-'+s+'">'+SP_TXT[s]+'</span><br>ตำแหน่ง '+esc(spLoc(it))+
+  (a.ok?'<div class="avail y">✅ <b>มีของในแผนก</b> — ไปหยิบได้เลย ถ้าจำเป็นต้องขอเพิ่มก็ส่งคำขอได้ <a href="check-stock.html?item='+encodeURIComponent(it.c)+'">🧭 นำทาง 3D</a></div>':
+  '<div class="avail n">📝 '+(s==="repair"?'อะไหล่นี้กำลังซ่อม ใช้ไม่ได้ในตอนนี้':'อะไหล่นี้หมดในแผนก')+' — ขอเบิกจากคลังใหญ่ได้ที่ฟอร์มนี้</div>');if(it.m.length)$("f-mc").value=it.m[0]}
 fi.oninput=fi.onchange=preview;$("f-qty").oninput=function(){if(find(fi.value))preview()};
 function mine(){var all=spReqLoad(),a=all.filter(function(r){return r.byId===SP_USER.id}).reverse(),b=$("mine");
  if(!a.length){b.innerHTML='<div class="empty">ยังไม่มีคำขอ</div>';return}b.innerHTML="";
@@ -95,7 +92,7 @@ function mine(){var all=spReqLoad(),a=all.filter(function(r){return r.byId===SP_
   b.appendChild(d)})}
 var LINES=[];
 function bad(t){$("err").textContent=t}
-function chkLine(){var v=fi.value.trim(),qty=parseInt($("f-qty").value,10);if(!v){bad("กรุณาระบุอะไหล่");fi.focus();return null}if(!(qty>0)){bad("กรุณาระบุจำนวนให้ถูกต้อง");return null}var av=avail();if(av&&av.ok){bad("อะไหล่นี้มีในแผนกพอแล้ว ("+av.it.q+" "+(av.it.u||"")+") หยิบใช้ได้เลย ไม่ต้องทำเรื่องขอ");return null}return{v:v,qty:qty}}
+function chkLine(){var v=fi.value.trim(),qty=parseInt($("f-qty").value,10);if(!v){bad("กรุณาระบุอะไหล่");fi.focus();return null}if(!(qty>0)){bad("กรุณาระบุจำนวนให้ถูกต้อง");return null}return{v:v,qty:qty}}
 function drawLines(){var b=$("lines");b.innerHTML=LINES.length?'<div style="font-size:13px;color:#475569;margin-bottom:4px">รายการที่จะขอ:</div>':"";LINES.forEach(function(L,k){var d=document.createElement("div");d.style.cssText="display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border:1px solid #cbd5e1;border-radius:8px;margin-bottom:4px;background:#f8fafc";d.innerHTML='<span><b>'+esc(L.v)+'</b> × '+L.qty+'</span><button type="button" style="border:0;background:none;color:#dc2626;cursor:pointer">✕ ลบ</button>';d.lastChild.onclick=function(){LINES.splice(k,1);drawLines()};b.appendChild(d)})}
 $("addln").onclick=function(){bad("");var L=chkLine();if(!L)return;LINES.push(L);fi.value="";$("f-qty").value=1;$("pv").style.display="none";drawLines();fi.focus()};
 $("go").onclick=function(){bad("");var ls=LINES.slice();if(fi.value.trim()){var L0=chkLine();if(!L0)return;ls.push(L0)}if(!ls.length){bad("กรุณาระบุอะไหล่");fi.focus();return}if(!$("f-bd").value){bad("กรุณาเลือกอาคาร / เตา ที่ใช้อะไหล่");$("f-bd").focus();return}try{localStorage.setItem("sp_lastbld",$("f-bd").value)}catch(e){}
@@ -109,9 +106,7 @@ $("go").onclick=function(){bad("");var ls=LINES.slice();if(fi.value.trim()){var 
  $("ok").style.display="block";$("ok").innerHTML=(RETRO?"✅ แจ้งเบิกย้อนหลัง <b>"+ids.join(", ")+"</b> เรียบร้อยแล้ว รอผู้ดูแลตรวจสอบและยืนยัน":"✅ ส่งคำขอ <b>"+ids.join(", ")+"</b> ("+ids.length+" รายการ) เรียบร้อยแล้ว สถานะ: รออนุมัติ");
  LINES=[];drawLines();fi.value="";$("f-qty").value=1;$("f-why").value="";$("f-urg").value="0";setMode(false);$("pv").style.display="none";mine();window.scrollTo({top:0,behavior:"smooth"})};
 var q=new URLSearchParams(location.search).get("item"),pre=q&&SP_ITEMS.filter(function(i){return i.c===q})[0];if(pre){fi.value=pre.n+" ("+pre.c+")";preview()}
-function takes(){var a=spTakeLoad().filter(function(k){return k.byId===SP_USER.id}).reverse().slice(0,8),b=$("takes");if(!a.length){b.innerHTML='<div class="empty">ยังไม่มีการหยิบใช้</div>';return}b.innerHTML="";
- a.forEach(function(k){var d=document.createElement("div");d.className="rq";d.innerHTML='<div><b>'+esc(k.item)+'</b> × '+k.qty+' '+esc(k.u||"")+'<small>'+spReqTime(k.time)+' · คงเหลือ '+k.left+'</small></div>';var c=document.createElement("button");c.className="cx";c.textContent="ยกเลิก (คืนสต็อก)";c.onclick=function(){if(confirm("ยกเลิกการหยิบ "+k.item+" × "+k.qty+" และคืนสต็อก ?")){spTakeUndo(k.id);takes()}};d.lastChild.appendChild(document.createTextNode(" "));d.lastChild.appendChild(c);b.appendChild(d)})}
-takes();mine();
+mine();
 </script>
 <script src="chatbot.js"></script>
 </body>

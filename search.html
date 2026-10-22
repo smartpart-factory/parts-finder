@@ -34,13 +34,11 @@ h2{margin:0 0 4px;font-size:22px}.sub{color:#64748b;margin-bottom:14px}
 .s-stock{background:#16a34a}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
 .ln{display:grid;grid-template-columns:90px 1fr;gap:4px 8px;font-size:13px}.ln span{color:#64748b}
 .mt{display:flex;gap:4px;flex-wrap:wrap}.mt i{font-style:normal;background:#e0ecff;color:#1565d8;font-size:11px;padding:2px 6px;border-radius:4px}
-.qb{height:6px;background:#e2e8f0;border-radius:99px;overflow:hidden}.qb i{display:block;height:100%}
 .note{background:#f3ecff;color:#6d28d9;border-radius:6px;padding:6px 10px;font-size:12px}
 .ac{display:flex;gap:8px}.ac button{flex:1;padding:9px;border-radius:8px;font:inherit;font-size:13px;cursor:pointer;border:1px solid #1565d8;background:#fff;color:#1565d8}.ac button.p{background:#1565d8;color:#fff}.ac button.o{border-color:#f59e0b;color:#c2410c}
 mark{background:#fde68a;border-radius:2px;padding:0 1px}
 .empty{grid-column:1/-1;background:#fff;border:1px dashed #cbd5e1;border-radius:10px;padding:30px;text-align:center;color:#64748b}
 @media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}#sg{right:0;top:58px}.sbar button{padding:0 16px}}
-.okn{display:inline-block;background:#e7f7ec;color:#15803d;border:1px solid #b7e4c4;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:600}
 </style>
 <style id="logo3d">
 .logo{width:208px!important;gap:10px!important;white-space:nowrap}
@@ -60,19 +58,19 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a class="on">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a class="on">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <h2>🔍 ค้นหาอะไหล่</h2><div class="sub">ค้นหาด้วยชื่อ รหัส รุ่น หรือชื่อที่ช่างเรียก เช่น "ลูกปืน" "สายพาน"</div>
  <div class="sbar"><input id="q" autocomplete="off" placeholder="พิมพ์ชื่อ รหัส หรือรุ่นอะไหล่..." autofocus><button id="cam" title="ค้นหาด้วยรูป">📷 ค้นหาด้วยรูป</button><button id="go">ค้นหา</button><div id="sg"></div></div>
  <div class="chips"><label>ยอดนิยม:</label><span id="pop"></span></div>
  <div class="chips" id="rcw" style="display:none"><label>ค้นหาล่าสุด:</label><span id="rc"></span><span class="chip" id="clr" style="border-style:dashed">ล้าง</span></div>
- <div class="flt"><select id="mc"></select><select id="rk"></select><span id="st"></span><select id="so"><option value="r">เรียงตามความตรง</option><option value="n">เรียงตามชื่อ</option><option value="q">จำนวนมากสุดก่อน</option></select></div>
+ <div class="flt"><select id="mc"></select><select id="rk"></select><span id="st"></span><select id="so"><option value="r">เรียงตามความตรง</option><option value="n">เรียงตามชื่อ</option></select></div>
  <div class="cnt" id="cnt"></div><div class="res" id="res"></div>
 </main>
 <script src="data.js"></script><script src="requests.js"></script>
 <script>
 var ICON={"BRG":"⚙️","BEL":"⭕","SEN":"🔌","SEA":"🔘","FLT":"🧪","MTR":"🔧","VLV":"🚰","FUS":"⚡","CTR":"🔲","PMP":"💧"};
-var CLR={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"};
+var CLR={stock:"#16a34a",out:"#dc2626",repair:"#7c3aed"};
 var qs="",mach="",rack="",sort="r",stf="";
 var POP=SP_ITEMS.slice(0,6).map(function(i){return i.n});
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -91,7 +89,7 @@ var pop=document.getElementById("pop");POP.forEach(function(t){var e=document.cr
 var mc=document.getElementById("mc");mc.innerHTML='<option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option>'+m+'</option>'}).join("");
 var rk=document.getElementById("rk");rk.innerHTML='<option value="">ทุกชั้นวาง</option>'+Object.keys(SP_RACKS).map(function(k){return '<option>'+k+'</option>'}).join("");
 mc.onchange=function(){mach=mc.value;draw()};rk.onchange=function(){rack=rk.value;draw()};document.getElementById("so").onchange=function(e){sort=e.target.value;draw()};
-var st=document.getElementById("st");[["","ทุกสถานะ"],["stock","มีของ"],["low","ใกล้หมด"],["out","หมด"],["repair","กำลังซ่อม"]].forEach(function(x){
+var st=document.getElementById("st");[["","ทุกสถานะ"],["stock","มีของ"],["out","หมด"],["repair","กำลังซ่อม"]].forEach(function(x){
  var e=document.createElement("span");e.className="chip"+(x[0]===""?" on":"");e.textContent=x[1];e.dataset.k=x[0];e.onclick=function(){stf=x[0];Array.prototype.forEach.call(st.children,function(c){c.className="chip"+(c.dataset.k===stf?" on":"")});draw()};st.appendChild(e)});
 // input + suggestions
 var q=document.getElementById("q"),sg=document.getElementById("sg");
@@ -108,19 +106,18 @@ document.addEventListener("click",function(e){if(!document.querySelector(".sbar"
 function draw(){
  var a=SP_ITEMS.map(function(i){return{i:i,sc:toks().length?score(i):0}}).filter(function(x){
   return x.sc>=0&&(!stf||spStatus(x.i)===stf)&&(!mach||x.i.m.indexOf(mach)>-1)&&(!rack||x.i.r===rack)});
- a.sort(function(x,y){return sort==="n"?x.i.n.localeCompare(y.i.n):sort==="q"?y.i.q-x.i.q:(y.sc-x.sc)||x.i.n.localeCompare(y.i.n)});
+ a.sort(function(x,y){return sort==="n"?x.i.n.localeCompare(y.i.n):(y.sc-x.sc)||x.i.n.localeCompare(y.i.n)});
  document.getElementById("cnt").textContent="พบ "+a.length+" รายการ"+(qs.trim()?' สำหรับ "'+qs.trim()+'"':"");
  var box=document.getElementById("res");box.innerHTML="";
  if(!a.length){box.innerHTML=!SP_ITEMS.length?'<div class="empty">ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มรายการในไฟล์ data.js แล้วรีเฟรชหน้านี้</div>':'<div class="empty">ไม่พบอะไหล่ที่ตรงกับเงื่อนไข<br>ลองใช้คำสั้นลง เปลี่ยนตัวกรอง หรือถามบอทที่ปุ่ม 💬 มุมขวาล่างครับ</div>';return}
- a.forEach(function(x){var i=x.i,s=spStatus(i),p=Math.min(100,i.q/(i.min*2)*100),d=document.createElement("div");d.className="cd";
+ a.forEach(function(x){var i=x.i,s=spStatus(i),d=document.createElement("div");d.className="cd";
   d.innerHTML='<div class="t"><div class="im">'+(ICON[i.c.slice(0,3)]||"📦")+'<img src="'+spImg(i)+'" alt="" onerror="this.remove()"></div><div><h3>'+hl(i.n)+'</h3><small>'+hl(i.c)+'</small></div><span class="tg s-'+s+'">'+SP_TXT[s]+'</span></div>'
-  +'<div class="ln"><span>คงเหลือ</span><div><b>'+i.q+'</b> '+i.u+' <small>(ขั้นต่ำ '+i.min+')</small><div class="qb"><i style="width:'+p+'%;background:'+CLR[s]+'"></i></div></div>'
-  +'<span>ตำแหน่ง</span><div><b>'+esc(spLoc(i))+'</b></div><span>ใช้กับ</span><div class="mt">'+i.m.map(function(m){return '<i>'+m+'</i>'}).join("")+'</div></div>'
-  +(i.rep?'<div class="note">🔧 '+esc(i.rep)+'</div>':'')+(i.t==="re"?'<div class="note" style="background:#eef6ff;color:#1d4ed8">♻️ ซ่อมแล้วใช้ซ้ำได้'+(i.rp>0?' · <b>กำลังซ่อม '+i.rp+' '+esc(i.u||"")+'</b>':'')+'</div><div class="rpw" style="margin:6px 0;display:flex;gap:6px;flex-wrap:wrap;align-items:center">'+(i.q>0?'<button class="rps" style="padding:6px 12px;border-radius:8px;border:1px solid #cbd5e1;background:#fff;cursor:pointer">🔧 ส่งซ่อม</button>':'')+(i.rp>0?'<button class="rpd" style="padding:6px 12px;border-radius:8px;border:1px solid #16a34a;background:#ecfdf5;color:#15803d;cursor:pointer">✅ ซ่อมเสร็จ (เพิ่มเข้าคลัง)</button>':'')+'</div>':'')
-  +'<div class="ac"><button class="p">📍 ดูตำแหน่ง 3D</button>'+((s==="stock"||s==="low")?(s==="stock"?'<span class="okn">✅ มีของในแผนก หยิบได้เลย</span> ':'')+'<span class="tkw"><button class="tk">✋ บันทึกการหยิบใช้</button></span>':'')+(s!=="stock"?'<button class="o">📝 ขอเบิกคลังใหญ่</button>':'')+'</div>';
+  +'<div class="ln"><span>ตำแหน่ง</span><div><b>'+esc(spLoc(i))+'</b></div><span>ใช้กับ</span><div class="mt">'+i.m.map(function(m){return '<i>'+m+'</i>'}).join("")+'</div></div>'
+  +(i.rep?'<div class="note">🔧 '+esc(i.rep)+'</div>':'')
+  +'<div class="ac"><button class="p">🧭 นำทาง 3D</button>'+(s==="out"?'<button class="o">📝 ขอเบิกคลังใหญ่</button>':'')+'</div>'
+  +(s==="stock"?'<div style="text-align:right;margin-top:6px"><button class="rpt" style="border:0;background:none;color:#b45309;font:inherit;font-size:12px;cursor:pointer;text-decoration:underline">แจ้งว่าของหมด</button></div>':'');
   d.querySelector(".p").onclick=function(){location.href="check-stock.html?item="+encodeURIComponent(i.c)};
-  var tk=d.querySelector(".tk");if(tk)tk.onclick=function(){spTakeUI(d.querySelector(".tkw"),i,function(ok){if(ok)draw();else d.querySelector(".tkw").innerHTML='<button class="tk">✋ บันทึกการหยิบใช้</button>',d.querySelector(".tk").onclick=tk.onclick})};
-  [[".rps","send"],[".rpd","done"]].forEach(function(z){var bt=d.querySelector(z[0]);if(bt)bt.onclick=function(){var w=d.querySelector(".rpw");spRepairUI(w,i,z[1],function(ok){draw()})}});
+  var rp=d.querySelector(".rpt");if(rp)rp.onclick=function(){if(!confirm("แจ้งว่า \""+i.n+"\" หมดแล้ว?"))return;var e=spSetStock(i.c,false);if(e)alert(e);draw()};
   var ob=d.querySelector(".o");if(ob)ob.onclick=function(){location.href="request-new.html?item="+encodeURIComponent(i.c)};
   box.appendChild(d)})}
 var pm0=new URLSearchParams(location.search).get("mach");if(pm0&&SP_MACHINES.indexOf(pm0)>-1){mc.value=pm0;mach=pm0}

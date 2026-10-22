@@ -31,7 +31,7 @@ function spOccur(from,to){var out=[],recs=spPmRec();spPlans().forEach(function(p
  while(d<=to&&i<80){if(d>=from||(i===0&&d<spToday()&&from<=spToday()))out.push({plan:p,date:d,over:i===0&&d<spToday()});d=spAddMonths(d,SP_PM_INT[p.type]);i++}});return out}
 /* ตรวจสต็อกอะไหล่ที่แผนต้องใช้: คืนรายการที่ไม่พอ */
 function spPartsLines(txt){return String(txt||"").split(/\n/).map(function(l){l=l.trim();if(!l)return null;var m=l.match(/^(.+?)\s*[x×*]\s*(\d+)\s*$/i);return m?{c:m[1].trim(),q:+m[2]}:{c:l,q:1}}).filter(Boolean)}
-function spPartsShort(plan){return spPartsLines(plan.parts).map(function(p){var it=SP_ITEMS.filter(function(i){return i.c.toLowerCase()===p.c.toLowerCase()})[0];return{c:p.c,need:p.q,have:it?it.q:null,name:it?it.n:"",u:it?(it.u||""):"",ok:it?it.q>=p.q:false,known:!!it}})}
+function spPartsShort(plan){return spPartsLines(plan.parts).map(function(p){var it=SP_ITEMS.filter(function(i){return i.c.toLowerCase()===p.c.toLowerCase()})[0];return{c:p.c,need:p.q,name:it?it.n:"",u:it?(it.u||""):"",ok:it?spStatus(it)==='stock':false,known:!!it}})}
 
 /* ===== โครงสร้างโรงงาน: อาคาร > เตา > ไลน์ (แก้ได้โดยเก็บ sp_lines) ===== */
 var SP_LINES_DEF=[{b:"A",f:"เตา 1",l:["L11","L12","L13"]},{b:"A",f:"เตา 2",l:["L21","L22","L23","L24"]},{b:"B",f:"เตา 3",l:["L31","L32","L33"]},{b:"B",f:"เตา 4",l:["L41","L42","L43","L44"]}];

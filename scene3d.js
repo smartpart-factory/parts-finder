@@ -65,7 +65,7 @@ if(SP_MODEL&&SP_MODEL.url){gltf().then(function(){new THREE.GLTFLoader().load(SP
   fl.visible=false;DEPT.visible=false;PICKS=[fl].concat(modelG.children)},undefined,function(){infoEl.insertAdjacentHTML("beforeend",'<div style="color:#dc2626;font-size:12px">โหลดโมเดล 3D ไม่สำเร็จ ('+esc(SP_MODEL.url)+')</div>')})}).catch(function(){})}
 // ---- ข้อมูล + เส้นทาง ----
 function canEdit(){return !!(window.spIsAdmin&&spIsAdmin())}
-function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" style="float:right;width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;margin:0 0 6px 10px">':'')+'<b>'+esc(i.n)+'</b> ('+esc(i.c)+') <span class="tg s-'+s+'" style="margin-left:4px">'+SP_TXT[s]+'</span><br>คงเหลือ '+i.q+' '+esc(i.u||"")+' (ขั้นต่ำ '+i.min+')<br>ตำแหน่ง: '+esc(spLoc(i))+'<br>ใช้กับ: '+(i.m||[]).map(esc).join(", ")+(i.rep?'<br>หมายเหตุ: '+esc(i.rep):'')}
+function head(i){var s=spStatus(i);return (i.img?'<img src="'+i.img+'" alt="" style="float:right;width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1;margin:0 0 6px 10px">':'')+'<b>'+esc(i.n)+'</b> ('+esc(i.c)+') <span class="tg s-'+s+'" style="margin-left:4px">'+SP_TXT[s]+'</span><br>ตำแหน่ง: '+esc(spLoc(i))+'<br>ใช้กับ: '+(i.m||[]).map(esc).join(", ")+(i.rep?'<br>หมายเหตุ: '+esc(i.rep):'')}
 function drawRoute(pts){clear(routeG);if(!pts)return;
  for(var k=0;k<pts.length-1;k++){var a=pts[k],b=pts[k+1],L=Math.hypot(b[0]-a[0],b[2]-a[2]);if(L<.01)continue;
   var m=new THREE.Mesh(new THREE.BoxGeometry(.12,.03,L+.12),new THREE.MeshBasicMaterial({color:0xef1c1c}));m.position.set((a[0]+b[0])/2,.17,(a[2]+b[2])/2);m.rotation.y=Math.atan2(b[0]-a[0],b[2]-a[2]);routeG.add(m)}}
@@ -144,7 +144,7 @@ function form(h){
  infoEl.innerHTML='<b>📌 วางอะไหล่ที่จุดนี้</b> <small style="color:#64748b">('+esc(h.surf)+' · x '+h.x.toFixed(2)+', z '+h.z.toFixed(2)+')</small>'
   +'<div style="display:grid;gap:8px;margin-top:8px"><label style="'+LB+'">🏭 หมวดเครื่องจักร <small>(เลือกเพื่อกรองรายการ / ใช้กับอะไหล่ใหม่)</small></label><select id="pl-mc" style="'+IS+'"><option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option value="'+esc(m)+'">'+esc(m)+'</option>'}).join("")+'</select><label style="'+LB+'">เลือกอะไหล่ (ที่เพิ่มล่าสุดอยู่บนสุด)</label><select id="pl-it" style="'+IS+'">'+opts+'</select>'
   +'<div id="pl-new" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label style="'+LB+'">รหัสอะไหล่ <small>(ไม่มีเว้นว่างได้)</small></label><input id="pl-c" style="'+IS+'" placeholder="เว้นว่าง = NC-xxxx"></div><div><label style="'+LB+'">ชื่ออะไหล่ *</label><input id="pl-n" style="'+IS+'" placeholder="ชื่ออะไหล่"></div>'
-  +'<div><label style="'+LB+'">คงเหลือ</label><input id="pl-q" type="number" min="0" value="1" style="'+IS+'"></div><div><label style="'+LB+'">ขั้นต่ำ</label><input id="pl-m" type="number" min="0" value="0" style="'+IS+'"></div><div style="grid-column:1/3"><label style="'+LB+'">หน่วย</label><input id="pl-u" value="ชิ้น" style="'+IS+'"></div></div>'
+  +'</div>'
   +'<label style="'+LB+'">📷 รูปอะไหล่ (ใช้รูปเดียวกับหน้า "จัดการระบบ" — ไม่บังคับ)</label><div style="display:flex;gap:10px;align-items:center"><img id="pl-ip" alt="" style="display:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1"><input id="pl-img" type="file" accept="image/*" style="flex:1;min-width:0"></div>'
   +(DF?'<div><label style="'+LB+'">🗄 เลือกลิ้นชักที่เก็บ (แถวนับจากซ้าย · ชั้นนับจากบน) <small>— ไม่เลือก = วางบนตู้</small></label><div id="pl-dw" style="display:grid;grid-template-columns:repeat('+DF.cols+',1fr);gap:3px;max-width:240px;margin-top:4px;padding:5px;background:#dfe7ee;border-radius:8px"></div><div id="pl-dwt" style="font-size:12px;margin-top:3px;color:#dc2626"></div></div>':'')
   +'<div><label style="'+LB+'">🧩 โมเดล 3D ของอะไหล่ <small>(แสดงตรงตำแหน่ง และกะพริบเมื่อค้นหา)</small></label><select id="pl-mt" style="'+IS+'">'+spModelOpts("",!!h.wall)+'</select></div>'
@@ -163,9 +163,9 @@ function form(h){
  document.getElementById("pl-n").oninput=function(){if(!mtTouched&&sel_.value===""){mts.value=spModelGuess(this.value);if(h.wall&&SP_WALLM.indexOf(mts.value)<0)mts.value="hbelt"}};
  document.getElementById("pl-no").onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
  document.getElementById("pl-ok").onclick=function(){var l=SP_ITEMS.slice(),it,err=document.getElementById("pl-e");
-  if(sel_.value===""){var c=document.getElementById("pl-c").value.trim(),n=document.getElementById("pl-n").value.trim(),q=parseInt(document.getElementById("pl-q").value,10),m=parseInt(document.getElementById("pl-m").value,10);
+  if(sel_.value===""){var c=document.getElementById("pl-c").value.trim(),n=document.getElementById("pl-n").value.trim();
    if(!n){err.textContent="กรอกชื่ออะไหล่";return}if(!c){var mx=0;l.forEach(function(x){var mm=/^NC-(\d+)$/i.exec(String(x.c));if(mm)mx=Math.max(mx,+mm[1])});c="NC-"+("000"+(mx+1)).slice(-4)}if(l.some(function(x){return x.c.toLowerCase()===c.toLowerCase()})){err.textContent="รหัสนี้มีอยู่แล้ว — เลือกจากรายการด้านบน";return}
-   it={c:c,n:n,k:"",m:mcs.value?[mcs.value]:[],q:q>=0?q:0,min:m>=0?m:0,u:document.getElementById("pl-u").value.trim()||"ชิ้น",r:"",s:0};l.push(it)}
+   it={c:c,n:n,k:"",m:mcs.value?[mcs.value]:[],q:1,min:0,r:"",s:0};l.push(it)}
   else it=l[+sel_.value];
   var fi=document.getElementById("pl-img").files[0],fin=function(){EDR=null;spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
   var ry_=+document.getElementById("pl-ry").value;if(ry_)it.ry=ry_;else delete it.ry;var mv_=mts.value;if(mv_)it.mt=mv_;else delete it.mt;it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.gv=2;it.spot=true;it.at=h.surf;if(h.wall){it.wl=h.wl;delete it.ry}else delete it.wl;

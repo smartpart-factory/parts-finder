@@ -87,7 +87,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="user"><div class="av">👤</div><div id="u-name"></div></div>
 </div>
 <div class="side">
- <a class="on" href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a>
+ <a class="on" href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a>
  <div class="ft"><div class="fb">🏭<div>โรงงานผลิตขวดแก้ว<br>ฝ่ายซ่อมบำรุง</div></div>Version 1.0.0</div>
 </div>
 <main>
@@ -95,13 +95,12 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
   <div><h1>ระบบจัดการอะไหล่และตำแหน่งจัดเก็บ</h1><p>ค้นหาเช็คสต็อก ขออะไหล่ และดูตำแหน่งจัดเก็บแบบ 3D ได้ในที่เดียว</p></div>
   <div class="r"><span style="font-size:40px">🏭</span><div><b>โรงงานผลิตขวดแก้ว</b>เพิ่มประสิทธิภาพการทำงาน<br>ด้วยระบบดิจิทัล</div></div></div>
  <div class="row">
-  <div class="act a1"><div class="ico">📦</div><h3>เช็คของ</h3><p>ตรวจสอบจำนวนสินค้า / สต็อก ดูสถานะการจัดเก็บ และตำแหน่งที่เก็บ</p><button onclick="location.href='check-stock.html'">ไปที่เช็คของ →</button></div>
-  <div class="act a2"><div class="ico">🔍</div><h3>ค้นหาอะไหล่</h3><p>ค้นหาอะไหล่ รหัสสินค้า หรือรุ่น พร้อมดูข้อมูลและตำแหน่งจัดเก็บ</p><button onclick="location.href='search.html'">ไปที่ค้นหาอะไหล่ →</button></div>
+  <div class="act a1"><div class="ico">🧭</div><h3>นำทาง 3D</h3><p>เลือกอะไหล่ ดูว่ามีของไหม แล้วนำทางไปตำแหน่งในโมเดล 3D</p><button onclick="location.href='check-stock.html'">ไปที่นำทาง 3D →</button></div>
+  <div class="act a2"><div class="ico">🔍</div><h3>ค้นหาอะไหล่</h3><p>พิมพ์ชื่อหรือรหัสอะไหล่ ดูว่ามีของไหม และกดนำทางไปตำแหน่งได้ทันที</p><button onclick="location.href='search.html'">ไปที่ค้นหาอะไหล่ →</button></div>
   <div class="act a3"><div class="ico">📝</div><h3>ขอเบิกคลังใหญ่</h3><p>ใช้เมื่อของไม่มีในแผนก (ถ้ามีของแล้วหยิบได้เลย ไม่ต้องขอ)</p><button onclick="location.href='request-new.html'">ไปที่ขอเบิกคลังใหญ่ →</button></div>
   <div class="box"><h4>📊 สรุปสถานะสต็อก</h4><div class="sub">อัปเดตล่าสุด <span id="upd"></span></div>
    <div class="st"><span>จำนวนอะไหล่ทั้งหมด</span><b id="st-all">0 รายการ</b></div>
    <div class="st"><span><i class="dot" style="background:#16a34a"></i>มีในสต็อก</span><b id="st-ok" style="color:#16a34a">0 รายการ</b></div>
-   <div class="st"><span><i class="dot" style="background:#f59e0b"></i>ใกล้หมด</span><b id="st-low" style="color:#d97706">0 รายการ</b></div>
    <div class="st"><span><i class="dot" style="background:#dc2626"></i>หมดสต็อก</span><b id="st-out" style="color:#dc2626">0 รายการ</b></div>
    <div class="link" onclick="location.href='check-stock.html'">ดูรายละเอียดทั้งหมด →</div></div>
  </div>
@@ -109,16 +108,16 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="three">
   <div class="box"><div class="hd"><h4>🔥 อะไหล่ที่ค้นหาบ่อย</h4><a href="search.html" style="cursor:pointer">ดูทั้งหมด →</a></div><div id="parts"></div></div>
   <div class="box"><h4>📍 ตำแหน่งจัดเก็บ (3D)</h4><div class="sub" style="margin:0 0 8px"></div>
-   <div class="wh vid" id="wh"><video id="vid3d" src="images/dept3d.mp4" poster="images/dept3d.jpg" autoplay muted loop playsinline preload="auto"></video><a class="go" href="location3d.html">ดูแผนผัง 3D →</a><span class="vtag">▶ ทัวร์ 3D แผนก</span></div>
-   <div class="leg"><span>🟢 ชั้นวางปกติ</span><span>🟠 ของใกล้หมด</span><span>🔴 หมดสต็อก</span></div>
-   <div style="text-align:right;margin-top:6px"><a href="location3d.html" style="color:#1565d8;font-size:12px">เปิดโมเดล 3D เต็มจอ →</a></div></div>
+   <div class="wh vid" id="wh"><video id="vid3d" src="images/dept3d.mp4" poster="images/dept3d.jpg" autoplay muted loop playsinline preload="auto"></video><a class="go" href="check-stock.html">ดูแผนผัง 3D →</a><span class="vtag">▶ ทัวร์ 3D แผนก</span></div>
+   <div class="leg"><span>🟢 มีของ</span><span>🔴 หมด</span></div>
+   <div style="text-align:right;margin-top:6px"><a href="check-stock.html" style="color:#1565d8;font-size:12px">เปิดโมเดล 3D เต็มจอ →</a></div></div>
   <div class="box"><div class="hd"><h4>📄 คำขอล่าสุด</h4><a href="request-new.html" id="reqall">ดูทั้งหมด →</a></div>
    <div id="reqs"></div></div>
  </div>
  <div class="foot">
   <div><span class="i">📦</span><div><b>ค้นหาเร็ว</b><small>ด้วยรหัสสินค้า / ชื่อ / รุ่น</small></div></div>
   <div><span class="i">📍</span><div><b>รู้ตำแหน่งชัดเจน</b><small>แสดงตำแหน่งจัดเก็บแบบ 3D</small></div></div>
-  <div><span class="i">🛡️</span><div><b>ลดปัญหาของขาด</b><small>แจ้งเตือนของใกล้หมด / หมดสต็อก</small></div></div>
+  <div><span class="i">🛡️</span><div><b>รู้ว่าของหมดทันที</b><small>ช่างกด "แจ้งว่าของหมด" ได้เองในหน้าค้นหา</small></div></div>
   <div><span class="i">⚙️</span><div><b>ทำงานได้ทุกที่</b><small>รองรับทุกอุปกรณ์</small></div></div>
  </div>
 </main>
@@ -146,7 +145,7 @@ function wSvg(h){var s='<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid
  return s+'</svg>'}
 var PAL=[["#1e4fa8","#9fb4d6",0],["#5b6f8f","#2b4f9e",0],["#3a4a66","#1e63c9",0],["#7c8aa0","#4a6a9e",0],["#4a86d8","#9fb4d6",1],["#1b3f8a","#6b7a92",0]];
 var MACHINES=SP_MACH.map(function(m,i){var p=PAL[i%PAL.length];return{k:m.k,d:m.d||"",f:m.img||m.f||(m.k.toLowerCase().replace(/[^a-z0-9]/g,"")+".jpg"),a:p[0],b:p[1],t:p[2]}});
-var PARTS=SP_ITEMS.map(function(i){return{n:i.n,c:i.c,m:i.m,t:i.m.length>=SP_MACHINES.length?"ทุกเครื่องจักร":i.m.slice(0,2).join(" / "),u:"คงเหลือ "+i.q,f:i.img||(i.c+".jpg")}});
+var PARTS=SP_ITEMS.map(function(i){return{n:i.n,c:i.c,m:i.m,t:i.m.length>=SP_MACHINES.length?"ทุกเครื่องจักร":i.m.slice(0,2).join(" / "),u:spStatus(i)==="stock"?"มีของ":SP_TXT[spStatus(i)],f:i.img||(i.c+".jpg")}});
 var mach="",qs="";
 slot(document.getElementById("hero"),"hero.jpg",mSvg("#1e4fa8","#9fb4d6",1));
 var me=document.getElementById("mach");
@@ -169,9 +168,9 @@ draw();
 </script>
 <script>window.showOnMap=function(c){location.href="check-stock.html?item="+encodeURIComponent(c)}</script>
 <script>
-(function(){var c={all:SP_ITEMS.length,ok:0,low:0,out:0};SP_ITEMS.forEach(function(i){var t=spStatus(i);if(t==="stock")c.ok++;else if(t==="low")c.low++;else if(t==="out")c.out++});
+(function(){var c={all:SP_ITEMS.length,ok:0,out:0};SP_ITEMS.forEach(function(i){var t=spStatus(i);if(t==="stock")c.ok++;else if(t==="out")c.out++});
  function f(n){return n.toLocaleString("en-US")+" รายการ"}
- document.getElementById("st-all").textContent=f(c.all);document.getElementById("st-ok").textContent=f(c.ok);document.getElementById("st-low").textContent=f(c.low);document.getElementById("st-out").textContent=f(c.out);
+ document.getElementById("st-all").textContent=f(c.all);document.getElementById("st-ok").textContent=f(c.ok);document.getElementById("st-out").textContent=f(c.out);
  document.getElementById("upd").textContent=new Date().toLocaleString("th-TH",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+" น.";
  if(spCanEdit())document.getElementById("reqall").href="requests.html";
  var R=spReqLoad().filter(function(r){return spCanEdit()||r.byId===SP_USER.id}).slice(-5).reverse(),b=document.getElementById("reqs");

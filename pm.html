@@ -71,7 +71,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html" class="on">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html" class="on">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <div class="hh"><h2>🗓️ แผน PM และตาราง JOB</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="b-img" data-editor>📷 นำเข้า JOB จากรูป</button><button class="btn" id="b-print">🖨️ พิมพ์เอกสาร</button><button class="btn p" id="b-rec" data-rec>➕ บันทึกการทำ PM</button><button class="btn p" id="b-log" data-rec style="background:#dc2626;border-color:#dc2626">📝 บันทึกงานวันนี้</button></div></div>
  <div class="cards" id="kp"></div>
@@ -180,7 +180,7 @@ function dayCtx(ds,n){var h="",d0=spParse(ds),pl=spPlans().filter(function(p){re
 function dayModal(ds){var ev=monthEvents(+ds.slice(0,4),+ds.slice(5,7)-1)[ds]||[],b="";
  if(!ev.length)b='<div class="empty">ไม่มีรายการลงวันนี้ — ดูแผนและบันทึกอื่นด้านล่าง</div>';
  ev.forEach(function(e,ix){
-  if(e.k==="pm"){var p=e.o.plan,sh=spPartsShort(p).filter(function(x){return !x.ok});b+='<div class="ev"><b>'+tbadge(p.type)+' '+esc(p.machine)+'</b> '+(e.o.over?'<span class="tg" style="background:#dc2626">เลยกำหนด</span>':'')+'<br><small>กำหนด PM ตามแผน'+(sh.length?' · <span style="color:#dc2626">อะไหล่ไม่พอ: '+sh.map(function(x){return esc(x.c)+(x.known?' (มี '+x.have+'/'+x.need+')':' (ไม่พบในระบบ)')}).join(", ")+'</span>':'')+'</small><div class="ea">'+((ED||(ISM&&ds===spToday()))?'<button class="btn p" data-a="rec" data-i="'+ix+'">บันทึกการทำ PM</button>':'')+'<button class="btn" data-a="prt" data-i="'+ix+'">🖨️ พิมพ์ฟอร์ม</button></div></div>'}
+  if(e.k==="pm"){var p=e.o.plan,sh=spPartsShort(p).filter(function(x){return !x.ok});b+='<div class="ev"><b>'+tbadge(p.type)+' '+esc(p.machine)+'</b> '+(e.o.over?'<span class="tg" style="background:#dc2626">เลยกำหนด</span>':'')+'<br><small>กำหนด PM ตามแผน'+(sh.length?' · <span style="color:#dc2626">อะไหล่ไม่พอ: '+sh.map(function(x){return esc(x.c)+(x.known?' (หมด)':' (ไม่พบในระบบ)')}).join(", ")+'</span>':'')+'</small><div class="ea">'+((ED||(ISM&&ds===spToday()))?'<button class="btn p" data-a="rec" data-i="'+ix+'">บันทึกการทำ PM</button>':'')+'<button class="btn" data-a="prt" data-i="'+ix+'">🖨️ พิมพ์ฟอร์ม</button></div></div>'}
   else if(e.k==="log"){b+=logCard(e.l,ix)}
   else if(e.k==="rec"){b+='<div class="ev"><b>✓ '+tbadge(e.r.type)+' '+esc(e.r.machine)+'</b><br><small>ผู้ทำ: '+esc(e.r.tech||"-")+' · อะไหล่ '+(e.r.parts||[]).length+' รายการ</small><div class="ea"><button class="btn" data-a="view" data-i="'+ix+'">ดู/พิมพ์</button></div></div>'}
   else{var j=e.j;b+='<div class="ev" style="border-left:4px solid '+jobClr(j)+'"><b style="color:'+jobClr(j)+'">🔄 '+jobLbl(j)+' '+esc(j.machine)+'</b> '+(j.time?esc(j.time)+' น.':'')+'<br><small>'+esc(j.from||"-")+' → <b>'+esc(j.to||"-")+'</b>'+(j.note?' · '+esc(j.note):'')+'</small><div class="ea">'+(ED?'<button class="btn" data-a="jedit" data-i="'+ix+'">แก้ไข</button>':'')+'</div></div>'}});
@@ -253,7 +253,6 @@ function recForm(o){if(!ISM)return;o=o||{};RECED=o.rec||null;var ER=RECED;if(ER&
  +'<label>ข้างที่ต้องทำ PM</label><div id="r-sd" style="display:flex;gap:16px;margin-bottom:4px">'+SP_SIDES.map(function(s){return '<label style="font-weight:400"><input type="checkbox" value="'+s+'" '+(spPlanSides(p).indexOf(s)>=0?"checked":"")+'> ข้าง '+s+'</label>'}).join("")+'</div>'
  +'<label>หัวข้อตรวจสอบ (ติ๊กที่ทำแล้ว)</label><div id="r-ck" class="ck"></div><div style="display:flex;gap:6px;margin:6px 0 2px"><input id="r-cknew" placeholder="พิมพ์หัวข้อใหม่ แล้วกด Enter หรือ + เพิ่ม"><button class="btn" type="button" id="r-ckadd" style="white-space:nowrap">+ เพิ่มหัวข้อ</button></div><label style="font-weight:400"><input type="checkbox" id="r-cksv" checked> จำหัวข้อที่เพิ่มไว้ในแผน (ใช้ครั้งต่อไป)</label>'
  +'<label>อะไหล่ที่เปลี่ยน / ใช้</label><div id="r-ps"></div><div style="display:flex;gap:6px;margin:6px 0"><button class="btn" id="r-addp" type="button">+ เพิ่มอะไหล่</button><button class="btn" id="r-fromp" type="button">นำจากแผน</button></div>'
- +'<label><input type="checkbox" id="r-ded" checked> ตัดสต็อกอะไหล่ที่ใช้อัตโนมัติ (เฉพาะรหัสที่มีในระบบ)</label>'
  +'<label>หมายเหตุ / ข้อเสนอแนะ</label><textarea id="r-n" rows="3"></textarea>',
  [{t:"ยกเลิก"},{t:"บันทึก",p:1,keep:1,f:saveRec}],true);
  $("r-t").value=t;
@@ -271,15 +270,13 @@ function recForm(o){if(!ISM)return;o=o||{};RECED=o.rec||null;var ER=RECED;if(ER&
  if(ER){$("r-ck").innerHTML="";(ER.checks||[]).forEach(function(c){ckAdd(c.t,c.done)});if(!(ER.checks||[]).length)ck();
   Array.prototype.forEach.call($("r-sd").querySelectorAll("input"),function(x){x.checked=(ER.sides||[]).indexOf(x.value)>=0});
   $("r-ps").innerHTML="";(ER.parts||[]).forEach(function(x){row(x.c,x.q);var rs=$("r-ps").querySelectorAll(".pr");rs[rs.length-1].querySelector(".ps").value=x.s||""});
-  $("r-n").value=ER.notes||"";$("r-u").value=ER.tech||"";$("r-ded").checked=!!ER.deducted;$("r-m").readOnly=!ISA;$("r-t").disabled=!ISA}}
+  $("r-n").value=ER.notes||"";$("r-u").value=ER.tech||"";$("r-m").readOnly=!ISA;$("r-t").disabled=!ISA}}
 function findItem(s){s=String(s).trim().toLowerCase();return SP_ITEMS.filter(function(i){return i.c.toLowerCase()===s||i.n.toLowerCase()===s})[0]}
 function saveRec(){if(!ISM)return;var ER=RECED,m=$("r-m").value.trim(),t=$("r-t").value,d=$("r-d").value;if(!ISA)d=ER?ER.date:spToday();if(!m||!d)return bad("กรอกเครื่องจักรและวันที่");
- var checks=Array.prototype.map.call($("r-ck").querySelectorAll("input"),function(x){return{t:x.dataset.t,done:x.checked}}),parts=[],deds=[];
- Array.prototype.forEach.call($("r-ps").querySelectorAll(".pr"),function(r){var i=r.querySelectorAll("input"),v=i[0].value.trim(),q=parseInt(i[1].value,10)||1;if(!v)return;var it=findItem(v);parts.push({c:it?it.c:v,n:it?it.n:v,q:q,u:it?(it.u||""):"",inv:!!it,s:r.querySelector(".ps").value});if(it)deds.push([it,q])});
+ var checks=Array.prototype.map.call($("r-ck").querySelectorAll("input"),function(x){return{t:x.dataset.t,done:x.checked}}),parts=[];
+ Array.prototype.forEach.call($("r-ps").querySelectorAll(".pr"),function(r){var i=r.querySelectorAll("input"),v=i[0].value.trim(),q=parseInt(i[1].value,10)||1;if(!v)return;var it=findItem(v);parts.push({c:it?it.c:v,n:it?it.n:v,q:q,u:it?(it.u||""):"",inv:!!it,s:r.querySelector(".ps").value})});
  var sides=Array.prototype.map.call($("r-sd").querySelectorAll("input:checked"),function(x){return x.value});if(!sides.length)return bad("เลือกข้างที่ทำ PM อย่างน้อย 1 ข้าง");
- var rec={id:ER?ER.id:spPmId(),sides:sides,machine:m,type:t,date:d,tech:$("r-u").value.trim(),checks:checks,parts:parts,notes:$("r-n").value.trim(),deducted:false};
- if(ER&&ER.deducted){var l0=SP_ITEMS.slice();(ER.parts||[]).forEach(function(x){if(!x.inv)return;var it=l0.filter(function(i){return i.c===x.c})[0];if(it)it.q+=x.q});spItemsSave(l0);deds=deds.map(function(x){return[findItem(x[0].c),x[1]]})}
- if($("r-ded").checked&&deds.length){var l=SP_ITEMS.slice();deds.forEach(function(x){x[0].q=Math.max(0,x[0].q-x[1])});spItemsSave(l);rec.deducted=true}
+ var rec={id:ER?ER.id:spPmId(),sides:sides,machine:m,type:t,date:d,tech:$("r-u").value.trim(),checks:checks,parts:parts,notes:$("r-n").value.trim()};
  var rs=spPmRec();if(ER){var ix=rs.findIndex(function(y){return y.id===ER.id});if(ix>=0)rs[ix]=rec;else rs.push(rec)}else rs.push(rec);spPmRecSave(rs);
  if(ISA&&!ER){
  var pl0=planFor(m,t);if(pl0&&$("r-cksv").checked){var have=(pl0.checklist||"").split("\n").map(function(x){return x.trim()}),add=checks.map(function(c){return c.t}).filter(function(x){return have.indexOf(x)<0});if(add.length){var all=spPlans();all.forEach(function(p){if(p.id===pl0.id)p.checklist=((p.checklist||"").trim()+"\n"+add.join("\n")).trim()});spPlansSave(all)}}
@@ -289,7 +286,7 @@ function saveRec(){if(!ISM)return;var ER=RECED,m=$("r-m").value.trim(),t=$("r-t"
 function viewRec(id){var r=spPmRec().filter(function(x){return x.id===id})[0];if(!r)return;
  modal("ประวัติ PM — "+r.machine,'<p><b>'+SP_PM_NAME[r.type]+'</b> · '+spFmt(r.date,true)+' · ผู้ทำ: '+esc(r.tech||"-")+'</p>'+((r.sides&&r.sides.length)?'<p><b>ข้างที่ทำ:</b> '+r.sides.join(", ")+'</p>':'')
  +'<b>รายการตรวจสอบ</b><ul class="ul">'+(r.checks||[]).map(function(c){return '<li>'+(c.done?'☑':'☐')+' '+esc(c.t)+'</li>'}).join("")+'</ul>'
- +'<b>อะไหล่ที่เปลี่ยน/ใช้</b>'+((r.parts||[]).length?'<ul class="ul">'+r.parts.map(function(x){return '<li>'+esc(x.c)+' — '+esc(x.n)+(x.s?' [ข้าง '+x.s+']':'')+' × '+x.q+' '+esc(x.u||"")+'</li>'}).join("")+'</ul>'+(r.deducted?'<small>ตัดสต็อกแล้ว</small>':''):'<div class="empty" style="padding:6px">ไม่มี</div>')
+ +'<b>อะไหล่ที่เปลี่ยน/ใช้</b>'+((r.parts||[]).length?'<ul class="ul">'+r.parts.map(function(x){return '<li>'+esc(x.c)+' — '+esc(x.n)+(x.s?' [ข้าง '+x.s+']':'')+' × '+x.q+' '+esc(x.u||"")+'</li>'}).join("")+'</ul>'+'':'<div class="empty" style="padding:6px">ไม่มี</div>')
  +(r.notes?'<p><b>หมายเหตุ:</b> '+esc(r.notes)+'</p>':''),
  [{t:"ปิด"},(ISA||(ISM&&r.date===spToday()))?{t:"✎ แก้ไข",keep:1,f:function(){closeM();recForm({rec:r})}}:{t:""},ISA?{t:"ลบ",d:1,f:function(){if(!confirm("ลบประวัติ PM นี้? (ไม่คืนสต็อก)"))return false;spPmRecSave(spPmRec().filter(function(x){return x.id!==id}));refresh()}}:{t:""},{t:"🖨️ พิมพ์ฟอร์ม",p:1,keep:1,f:function(){closeM();printPm(r)}}].filter(function(b){return b.t}),true)}
 $("b-rec").onclick=function(){recForm({})};

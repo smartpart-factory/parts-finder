@@ -189,8 +189,8 @@ document.addEventListener("DOMContentLoaded",function(){
  if(sd&&!sd.querySelector('a[href="board.html"]')){var bl=document.createElement("a");bl.href="board.html";bl.innerHTML='💬 บอร์ดข้อความ';var ad=sd.querySelector("a[data-admin]");if(ad)sd.insertBefore(bl,ad);else sd.appendChild(bl)}
  if(sd&&!document.getElementById("mnav")){var nv=document.createElement("nav");nv.id="mnav";
   Array.prototype.forEach.call(sd.querySelectorAll("a"),function(a){var t=a.textContent.trim(),m=t.match(/^(\S+)\s+(.*)$/),c=document.createElement("a");c.href=a.getAttribute("href");
-   if(a.hasAttribute("data-editor"))c.setAttribute("data-editor","");if(a.hasAttribute("data-admin"))c.setAttribute("data-admin","");
-   var lab=(m?m[2]:t).replace(/\s*\(.*\)/,"").replace("ขอเบิกคลังใหญ่","ขอเบิก").replace("ค้นหาอะไหล่","ค้นหา").replace("ตำแหน่งจัดเก็บ","ตำแหน่ง 3D").replace("แผน PM / JOB","PM/JOB").replace("จัดการคำขอ","คำขอ").replace("จัดการระบบ","ระบบ").replace("บอร์ดข้อความ","แชต");
+   if(a.hasAttribute("data-editor"))c.setAttribute("data-editor","");if(a.hasAttribute("data-admin"))c.setAttribute("data-admin","");if(a.hasAttribute("data-adminonly"))c.setAttribute("data-adminonly","");
+   var lab=(m?m[2]:t).replace(/\s*\(.*\)/,"").replace("ขอเบิกคลังใหญ่","ขอเบิก").replace("ค้นหาอะไหล่","ค้นหา").replace("จัดวางโมเดล","จัดวาง 3D").replace("แผน PM / JOB","PM/JOB").replace("จัดการคำขอ","คำขอ").replace("จัดการระบบ","ระบบ").replace("บอร์ดข้อความ","แชต");
    c.innerHTML="<i>"+(m?m[1]:"•")+"</i><span>"+lab+"</span>";if(a.classList.contains("on"))c.className="on";nv.appendChild(c)});
   document.body.appendChild(nv);
   var cur=nv.querySelector(".on");if(cur&&cur.scrollIntoView)try{nv.scrollLeft=cur.offsetLeft-40}catch(e){}}

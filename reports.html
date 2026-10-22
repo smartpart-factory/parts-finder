@@ -25,7 +25,7 @@ main{margin:66px 0 0 207px;padding:14px;max-width:1200px}
 .leg{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:#475569}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 .bar{display:grid;grid-template-columns:110px 1fr 54px;gap:8px;align-items:center;margin:6px 0;font-size:13px}.bar .t{height:14px;background:#e2e8f0;border-radius:99px;overflow:hidden}.bar .t i{display:block;height:100%;background:#1565d8}.bar span:last-child{text-align:right;color:#475569}
 table{width:100%;border-collapse:collapse;min-width:480px}th{font-size:12px;color:#64748b;text-align:left;background:#f8fafc;padding:8px 10px;border-bottom:1px solid #e2e8f0}td{padding:8px 10px;border-bottom:1px solid #f1f5f9}
-.tg{font-size:12px;padding:2px 9px;border-radius:99px;color:#fff;white-space:nowrap}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
+.tg{font-size:12px;padding:2px 9px;border-radius:99px;color:#fff;white-space:nowrap}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
 .empty{padding:18px;text-align:center;color:#94a3b8}.note{color:#94a3b8;font-size:12px;margin-top:8px}
 @media(max-width:1100px){.cards{grid-template-columns:repeat(4,1fr)}.g2{grid-template-columns:1fr}}
 @media(max-width:760px){.side{display:none}main{margin-left:0}.logo{width:auto}.logo small,.user div{display:none}.cards{grid-template-columns:repeat(2,1fr)}}
@@ -49,19 +49,18 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <body>
 <div class="top"><div class="logo"><span class="bg3d" aria-label="BG">BG</span><div><b>SpareParts 3D</b><small>Smart Part • Smart Factory</small></div></div>
 <div class="sp"></div><div class="user"><div class="av">👤</div><div id="u-name"></div></div></div>
-<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">📦 เช็คของ</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html">📍 ตำแหน่งจัดเก็บ (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a class="on">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
+<div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a class="on">📊 รายงาน</a><a href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <div class="hh"><h2>📊 รายงาน</h2><div><button class="btn" id="csv1">⬇ สต็อก (CSV)</button> <button class="btn" id="csv2">⬇ คำขอ (CSV)</button> <button class="btn" onclick="print()">🖨 พิมพ์</button></div></div>
  <div class="cards" id="cards"></div>
  <div class="box" style="margin-bottom:12px"><h3>สัดส่วนสถานะอะไหล่</h3><div class="stk" id="stk"></div><div class="leg" id="leg"></div></div>
- <div class="box" style="margin-bottom:12px"><h3>⚠️ รายการที่ควรสั่งเพิ่ม (ใกล้หมด / หมด)</h3><div id="need"></div></div>
+ <div class="box" style="margin-bottom:12px"><h3>⚠️ อะไหล่ที่หมด (ควรขอเบิกคลังใหญ่)</h3><div id="need"></div></div>
  <div class="g2">
   <div class="box"><h3>จำนวนรายการอะไหล่ตามเครื่องจักร</h3><div id="bym"></div></div>
   <div class="box"><h3>คำขอตามสถานะ</h3><div id="rst"></div></div>
  </div>
  <div class="g2">
   <div class="box"><h3>คำขอรายเดือน (6 เดือนล่าสุด)</h3><div id="rmo"></div></div>
-  <div class="box"><h3>✋ การหยิบใช้ล่าสุด (ของในแผนก)</h3><div id="tkrep"></div></div>
   <div class="box"><h3>อะไหล่ที่ถูกขอมากที่สุด (รวมจำนวน)</h3><div id="top"></div></div>
  </div>
  <div class="g2">
@@ -75,16 +74,16 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <script>
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function $(i){return document.getElementById(i)}
-var CL={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"},ADM=spCanEdit();
+var CL={stock:"#16a34a",out:"#dc2626",repair:"#7c3aed"},ADM=spCanEdit();
 var REQ=spReqLoad().filter(function(r){return ADM||r.byId===SP_USER.id});
-var cnt={stock:0,low:0,out:0,repair:0};SP_ITEMS.forEach(function(i){cnt[spStatus(i)]++});
+var cnt={stock:0,out:0,repair:0};SP_ITEMS.forEach(function(i){cnt[spStatus(i)]++});
 var pend=REQ.filter(function(r){return r.status==="pending"}).length;
-$("cards").innerHTML=[["อะไหล่ทั้งหมด",SP_ITEMS.length,"#1e293b"],["มีของ",cnt.stock,CL.stock],["ใกล้หมด",cnt.low,CL.low],["หมด",cnt.out,CL.out],["กำลังซ่อม",cnt.repair,CL.repair],["คำขอทั้งหมด",REQ.length,"#1e293b"],["รออนุมัติ",pend,"#d97706"]].map(function(x){return '<div class="k"><small>'+x[0]+'</small><b style="color:'+x[2]+'">'+x[1]+'</b></div>'}).join("");
+$("cards").innerHTML=[["อะไหล่ทั้งหมด",SP_ITEMS.length,"#1e293b"],["มีของ",cnt.stock,CL.stock],["หมด",cnt.out,CL.out],["กำลังซ่อม",cnt.repair,CL.repair],["คำขอทั้งหมด",REQ.length,"#1e293b"],["รออนุมัติ",pend,"#d97706"]].map(function(x){return '<div class="k"><small>'+x[0]+'</small><b style="color:'+x[2]+'">'+x[1]+'</b></div>'}).join("");
 var tot=SP_ITEMS.length||1;
-$("stk").innerHTML=["stock","low","out","repair"].map(function(k){return '<i style="width:'+cnt[k]/tot*100+'%;background:'+CL[k]+'"></i>'}).join("");
-$("leg").innerHTML=["stock","low","out","repair"].map(function(k){return '<span><i class="dot" style="background:'+CL[k]+'"></i>'+SP_TXT[k]+' '+cnt[k]+' ('+Math.round(cnt[k]/tot*100)+'%)</span>'}).join("");
-var need=SP_ITEMS.filter(function(i){var s=spStatus(i);return s==="low"||s==="out"}).sort(function(a,b){return (b.min-b.q)-(a.min-a.q)});
-$("need").innerHTML=need.length?'<table><thead><tr><th>รหัส</th><th>ชื่อ</th><th>คงเหลือ</th><th>ขั้นต่ำ</th><th>ขาด</th><th>ตำแหน่ง</th><th>สถานะ</th></tr></thead><tbody>'+need.map(function(i){var s=spStatus(i);return '<tr><td>'+esc(i.c)+'</td><td>'+esc(i.n)+'</td><td>'+i.q+' '+esc(i.u||"")+'</td><td>'+i.min+'</td><td><b>'+Math.max(0,i.min-i.q)+'</b></td><td>'+esc(spLocShort(i))+'</td><td><span class="tg s-'+s+'">'+SP_TXT[s]+'</span></td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ไม่มีรายการที่ใกล้หมดหรือหมด 👍</div>';
+$("stk").innerHTML=["stock","out","repair"].map(function(k){return '<i style="width:'+cnt[k]/tot*100+'%;background:'+CL[k]+'"></i>'}).join("");
+$("leg").innerHTML=["stock","out","repair"].map(function(k){return '<span><i class="dot" style="background:'+CL[k]+'"></i>'+SP_TXT[k]+' '+cnt[k]+' ('+Math.round(cnt[k]/tot*100)+'%)</span>'}).join("");
+var need=SP_ITEMS.filter(function(i){return spStatus(i)==="out"});
+$("need").innerHTML=need.length?'<table><thead><tr><th>รหัส</th><th>ชื่อ</th><th>ตำแหน่ง</th><th></th></tr></thead><tbody>'+need.map(function(i){return '<tr><td>'+esc(i.c)+'</td><td>'+esc(i.n)+'</td><td>'+esc(spLocShort(i))+'</td><td><a href="request-new.html?item='+encodeURIComponent(i.c)+'">📝 ขอเบิก</a></td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ไม่มีอะไหล่ที่หมด 👍</div>';
 function bars(el,rows,fmt){var mx=Math.max.apply(null,rows.map(function(r){return r[1]}).concat([1]));
  $(el).innerHTML=rows.length?rows.map(function(r){return '<div class="bar"><span>'+esc(r[0])+'</span><div class="t"><i style="width:'+r[1]/mx*100+'%"></i></div><span>'+(fmt?fmt(r[1]):r[1])+'</span></div>'}).join(""):'<div class="empty">ยังไม่มีข้อมูล</div>'}
 bars("bym",SP_MACHINES.map(function(m){return [m,SP_ITEMS.filter(function(i){return i.m.indexOf(m)>-1}).length]}));
@@ -98,8 +97,7 @@ $("scope").textContent=(ADM?"":"ส่วนคำขอแสดงเฉพา
 // CSV (ใส่ BOM ให้ Excel อ่านภาษาไทยได้ และกันสูตรแฝง)
 function cell(v){v=String(v==null?"":v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
 function dl(name,rows){var t="﻿"+rows.map(function(r){return r.map(cell).join(",")}).join("\r\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/csv;charset=utf-8"}));a.download=name+"-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
-$("csv1").onclick=function(){dl("stock",[["รหัส","ชื่อ","เครื่องจักร","คงเหลือ","ขั้นต่ำ","หน่วย","ชั้นวาง","ชั้นที่","สถานะ","หมายเหตุ"]].concat(SP_ITEMS.map(function(i){return [i.c,i.n,i.m.join(" / "),i.q,i.min,i.u||"",i.r||i.at||i.tx||"",i.s||"",SP_TXT[spStatus(i)],i.rep||""]})))};
-(function(){var a=spTakeLoad().slice().reverse().slice(0,15);$("tkrep").innerHTML=a.length?'<table><thead><tr><th>เวลา</th><th>อะไหล่</th><th>จำนวน</th><th>ผู้หยิบ</th></tr></thead><tbody>'+a.map(function(k){return '<tr><td>'+new Date(k.time).toLocaleString("th-TH",{dateStyle:"short",timeStyle:"short"})+'</td><td>'+esc(k.item)+'</td><td>'+k.qty+' '+esc(k.u||"")+'</td><td>'+esc(k.by||"")+'</td></tr>'}).join("")+'</tbody></table>':'<div class="empty">ยังไม่มีการหยิบใช้</div>'})();
+$("csv1").onclick=function(){dl("stock",[["รหัส","ชื่อ","เครื่องจักร","ชั้นวาง","ชั้นที่","สถานะ","หมายเหตุ"]].concat(SP_ITEMS.map(function(i){return [i.c,i.n,i.m.join(" / "),i.r||i.at||i.tx||"",i.s||"",SP_TXT[spStatus(i)],i.rep||""]})))};
 $("csv2").onclick=function(){dl("requests",[["เลขที่","วันที่","อะไหล่","รหัส","จำนวน","เครื่องจักร","อาคาร/เตา","ด่วน","ผู้ขอ","สถานะ","เหตุผล"]].concat(REQ.map(function(r){return [r.id,new Date(r.time).toLocaleString("th-TH"),r.item,r.code,r.qty,r.machine,spReqBld(r),r.urgent?"ด่วน":"",r.by,SP_REQ_TXT[r.status],r.why||""]})))};
 
 /* ---- PM / JOB ---- */

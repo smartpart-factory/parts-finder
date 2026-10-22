@@ -13,21 +13,6 @@ function spBldOpts(){var o='<option value="">— เลือกอาคาร 
 function spBldVal(v){if(!v)return{};var p=v.split("|");return{bld:p[0],furn:p[1]||""}}
 function spReqBld(r){return r.bld?(r.bld==="-"?"อื่นๆ":"อาคาร "+r.bld+(r.furn?" · "+r.furn:"")):""}
 
-/* ตัดสต็อกเมื่อเบิกจริง: คืน false = ผู้ใช้ยกเลิก */
-function spReqCut(r){if(r.cut)return true;var l=SP_ITEMS.slice(),it=l.filter(function(i){return r.code&&i.c===r.code})[0];if(!it){r.cutNote="ไม่พบรหัสในคลัง จึงไม่ตัดสต็อก";return true}
- if(it.q<r.qty&&!confirm("ในคลังเหลือ "+it.q+" "+(it.u||"")+" น้อยกว่าที่เบิก "+r.qty+"\nตัดสต็อกเหลือ 0 และดำเนินการต่อ ?"))return false;
- var n=Math.min(it.q,r.qty);it.q=it.q-n;r.cut=n;r.cutNote="ตัดสต็อก "+n+" "+(it.u||"")+" (คงเหลือ "+it.q+")";spItemsSave(l);return true}
-function spReqUncut(r){if(!r.cut)return;var l=SP_ITEMS.slice(),it=l.filter(function(i){return i.c===r.code})[0];if(it){it.q+=r.cut;spItemsSave(l)}r.cutNote="คืนสต็อก "+r.cut;r.cut=0}
-
-/* ===== บันทึกการหยิบใช้ (ของมีในแผนก ไม่ต้องขอเบิก — บันทึกเพื่อให้สต็อกตรง) ===== */
-function spTakeLoad(){try{return JSON.parse(localStorage.getItem("sp_takes")||"[]")}catch(e){return[]}}
-function spTakeSave(a){try{localStorage.setItem("sp_takes",JSON.stringify(a));return true}catch(e){return false}}
-/* คืนข้อความ error หรือ "" ถ้าสำเร็จ */
-function spTake(it,qty){qty=parseInt(qty,10);if(!(qty>0))return "ใส่จำนวนให้ถูกต้อง";var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===it.c})[0];if(!x)return "ไม่พบอะไหล่นี้ในคลัง";
- if(qty>x.q)return "ในแผนกมีแค่ "+x.q+" "+(x.u||"");x.q-=qty;spItemsSave(l);var t=spTakeLoad(),u=window.SP_USER||{};
- t.push({id:"TK-"+Date.now(),code:x.c,item:x.n,qty:qty,u:x.u||"",by:u.name||"",byId:u.id||"",time:new Date().toISOString(),left:x.q});return spTakeSave(t)?"":"บันทึกประวัติไม่สำเร็จ"}
-function spTakeUndo(id){var t=spTakeLoad(),r=t.filter(function(k){return k.id===id})[0];if(!r)return;var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===r.code})[0];if(x){x.q+=r.qty;spItemsSave(l)}spTakeSave(t.filter(function(k){return k.id!==id}))}
-/* กล่องกรอกจำนวนในหน้า: box = element ที่จะใส่ UI, done = callback หลังบันทึก */
-function spTakeUI(box,it,done){box.innerHTML='<span class="tkb">หยิบกี่'+(it.u?' ('+it.u+')':'')+'? <input type="number" min="1" max="'+it.q+'" value="1" style="width:70px;padding:6px;border:1px solid #cfd8ea;border-radius:8px"> <button type="button" class="ok2">✔ ยืนยัน</button> <button type="button" class="cn2">ยกเลิก</button> <span class="er2" style="color:#dc2626;font-size:12px"></span></span>';
- var inp=box.querySelector("input");inp.focus();box.querySelector(".cn2").onclick=function(){done&&done(false)};
- box.querySelector(".ok2").onclick=function(){var e=spTake(it,inp.value);if(e){box.querySelector(".er2").textContent=e;return}done&&done(true)}}
+/* ไม่นับจำนวนคงเหลือแล้ว — การเบิกไม่ตัดสต็อก (คงฟังก์ชันไว้ให้โค้ดเดิมเรียกได้) */
+function spReqCut(r){return true}
+function spReqUncut(r){}
