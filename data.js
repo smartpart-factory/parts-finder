@@ -60,7 +60,7 @@ function spModelGuess(n){var s=String(n||"").toLowerCase();
  if(/valve|วาล์ว|cylinder|กระบอก|solenoid|โซลินอยด์/.test(s))return "valve";if(/sensor|เซนเซอร์|เซ็นเซอร์|switch|สวิตช์|สวิทช์/.test(s))return "sensor";if(/pump|ปั๊ม/.test(s))return "pump";return ""}
 function spLocShort(i){if(i.dw)return "ลิ้นชัก "+i.dw[1]+"-"+i.dw[2];return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปักหมุด":"ยังไม่กำหนด"))}
 /* รูปอะไหล่: ย่อรูปที่เลือกเป็น JPEG ไม่เกิน 360px (เก็บเป็น data URL ในเบราว์เซอร์) */
-function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,360/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.78))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}
+function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,240/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.62))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}
 function spImg(i){return i.img||("images/"+i.c+".jpg")}
 function spStatus(i){return i.rep?"repair":(i.t==="re"&&i.q<=0&&i.rp>0)?"repair":i.q<=0?"out":i.q<=i.min?"low":"stock"}
 /* อะไหล่ประเภท "ซ่อมแล้วใช้ซ้ำได้" (i.t==="re"): ส่งซ่อม = ย้ายจากคงเหลือไปยอดกำลังซ่อม (i.rp), ซ่อมเสร็จ = กลับมาเพิ่มในคงเหลือ */
@@ -75,3 +75,7 @@ function spRepairUI(box,it,dir,done){var mx=dir==="send"?it.q:(it.rp||0);box.inn
 var SP_BASE_ITEMS=SP_ITEMS.slice();
 try{var _sv=localStorage.getItem("sp_items");if(_sv)SP_ITEMS=JSON.parse(_sv)}catch(e){}
 function spItemsSave(a){var old=SP_ITEMS;SP_ITEMS=a;try{localStorage.setItem("sp_items",JSON.stringify(a))}catch(e){SP_ITEMS=old;throw e}}
+
+function spUsedKB(){var t=0;try{Object.keys(localStorage).forEach(function(k){t+=k.length+String(localStorage.getItem(k)||"").length})}catch(e){}return Math.round(t*2/1024)}
+function spShrink(list,cb){var L=list.filter(function(i){return i.img&&String(i.img).indexOf("data:")===0&&i.img.length>7000}),n=0;if(!L.length)return cb();
+ L.forEach(function(i){var im=new Image();im.onload=function(){var k=Math.min(1,200/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);var u=c.toDataURL("image/jpeg",.55);if(u.length<i.img.length)i.img=u;if(++n===L.length)cb()};im.onerror=function(){if(++n===L.length)cb()};im.src=i.img})}
