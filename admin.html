@@ -56,7 +56,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
 
  <div id="pg-p">
-  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><select id="pmc" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"></select><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-kw">✨ เพิ่มคำค้นให้ทุกรายการ</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
+  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><select id="pmc" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"></select><select id="pvis" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"><option value="">แสดง+ซ่อน ทั้งหมด</option><option value="s">เฉพาะที่แสดงอยู่</option><option value="h">เฉพาะที่ซ่อนอยู่</option></select><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-hall" title="ซ่อนรายการที่แสดงในตารางตอนนี้ (ตามช่องค้นหา/เครื่องจักรที่เลือก)">🙈 ซ่อนทั้งหมด</button><button class="btn" id="p-sall" title="ยกเลิกซ่อนรายการที่แสดงในตารางตอนนี้">👁 ยกเลิกซ่อนทั้งหมด</button><button class="btn" id="p-kw">✨ เพิ่มคำค้นให้ทุกรายการ</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
   <div id="pcnt" style="margin:0 0 6px;color:#64748b;font-size:13px"></div>
   <div class="card"><table><thead><tr><th>รหัส / ชื่อ</th><th>เครื่องจักร</th><th>ตำแหน่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
   <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (นำทาง 3D ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในระบบกลาง ทุกเครื่องเห็นชุดเดียวกัน (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
@@ -92,7 +92,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <label>คำค้นเพิ่ม (ชื่อเรียกอื่น คั่นด้วยเว้นวรรค เช่น ลูกปืน แบริ่ง)</label><div style="display:flex;gap:6px"><input type="text" id="f-k" style="flex:1"><button type="button" class="btn" id="f-kg" title="ให้ระบบคิดชื่อเรียกอื่นจากชื่ออะไหล่">✨ แนะนำคำค้น</button></div><div id="f-ks" class="note" style="display:none;margin:4px 0"></div>
  <label>ใช้กับเครื่องจักร</label><div class="cb" id="f-m"></div>
  <label>🧩 โมเดล 3D (แสดงในแผนที่ 3D ตรงตำแหน่งที่เก็บ)</label><select id="f-mt"></select>
- <label>สถานะ</label><select id="f-st"><option value="1">✅ มีของ</option><option value="0">❌ หมด</option><option value="o">🛒 กำลังสั่งของ</option><option value="r">🔧 กำลังซ่อม</option></select><input type="text" id="f-rn" placeholder="หมายเหตุ เช่น คาดเสร็จ 2 วัน / สั่งแล้ว ของมาวันที่ 25" style="display:none">
+ <label>สถานะ</label><select id="f-st"><option value="1">✅ มีของ</option><option value="0">❌ หมด</option><option value="o">🛒 กำลังสั่งของ</option><option value="r">🔧 กำลังซ่อม</option></select><label style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" id="f-hid"> 🙈 ซ่อนรายการนี้ (ช่างไม่เห็นในหน้าค้นหา/นำทาง/บอท)</label><input type="text" id="f-rn" placeholder="หมายเหตุ เช่น คาดเสร็จ 2 วัน / สั่งแล้ว ของมาวันที่ 25" style="display:none">
  <label>ตำแหน่งจัดเก็บ (พิมพ์บอกคร่าวๆ)</label><input type="text" id="f-at" placeholder="เช่น ตู้เหล็กข้างประตู ชั้น 2 / บนชั้นเหล็กสีฟ้า">
  <div id="f-3d" class="note" style="margin:6px 0 10px">📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>"จัดวางโมเดล (3D)"</b> (ปุ่ม "วางตำแหน่ง") หลังบันทึกอะไหล่</div>
  <label>รูปอะไหล่ (เลือกรูปจากเครื่อง/ถ่ายรูป — ย่อให้อัตโนมัติ)</label><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><img id="f-imgp" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1;display:none"><input type="file" id="f-img" accept="image/*" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-imgx" style="padding:5px 10px">ลบรูป</button></div>
@@ -104,7 +104,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <label>รหัสผ่าน (อย่างน้อย 6 ตัว)</label><input type="password" id="u-pw" autocomplete="new-password"><label>บทบาท</label><select id="u-rl"><option value="user">ช่างกะ</option><option value="manager">ช่าง Day time</option><option value="admin">ผู้ดูแลระบบ</option></select>
  <div class="err" id="ue"></div><div class="mf"><button class="btn" id="uc">ยกเลิก</button><button class="btn p" id="us">สร้างผู้ใช้</button></div></div></div>
 
-<script src="data.js"></script><script src="pm.js"></script><script src="dept.js"></script>
+<script>window.SP_SHOWHID=1</script><script src="data.js"></script><script src="pm.js"></script><script src="dept.js"></script>
 <script>
 if(!spCanEdit()){alert("หน้านี้สำหรับ ผู้ดูแลระบบ และ ช่าง Day time เท่านั้น");location.replace("index.html")}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -134,17 +134,19 @@ function fillPM(){var s=$("pmc"),v=s.value;s.innerHTML='<option value="">ทุ�
 function fillM(){fillPM();$("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("")}
 // ---- อะไหล่ ----
 var editing=null,edCode="";function edIdx(){if(!editing)return -1;var k=SP_ITEMS.indexOf(editing);if(k>=0)return k;for(var j=0;j<SP_ITEMS.length;j++)if(String(SP_ITEMS[j].c).toLowerCase()===edCode)return j;return -1}
-function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
- var mc=$("pmc").value;var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1&&(!mc||(i.m||[]).indexOf(mc)>-1)});$("pcnt")&&($("pcnt").textContent="แสดง "+a.length+" จาก "+SP_ITEMS.length+" รายการ");
+var VIS=[];function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
+ var mc=$("pmc").value,vf=$("pvis").value;var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1&&(!mc||(i.m||[]).indexOf(mc)>-1)&&(!vf||(vf==="h")===!!i.hid)});VIS=a;var nh=SP_ITEMS.filter(function(i){return i.hid}).length;$("pcnt")&&($("pcnt").textContent="แสดงในตาราง "+a.length+" จาก "+SP_ITEMS.length+" รายการ · ซ่อนอยู่ "+nh+" รายการ (ช่างจะไม่เห็นรายการที่ซ่อน)");
  if(!a.length){b.innerHTML='<tr><td colspan="5"><div class="empty">'+(SP_ITEMS.length?"ไม่พบรายการ":'ยังไม่มีอะไหล่ กด "+ เพิ่มอะไหล่" เพื่อเริ่มต้น')+'</div></td></tr>';return}
  a.forEach(function(i){var s=spStatus(i),tr=document.createElement("tr");
-  tr.innerHTML='<td>'+(i.img?'<img src="'+i.img+'" alt="" style="width:34px;height:34px;object-fit:cover;border-radius:6px;float:left;margin-right:8px">':'')+'<b>'+esc(i.n)+'</b><small>'+esc(i.c)+'</small></td><td><div class="mt">'+i.m.map(function(m){return '<i>'+esc(m)+'</i>'}).join("")+'</div></td>'
+  if(i.hid)tr.style.opacity=".55";
+  tr.innerHTML='<td>'+(i.hid?'<span class="tg" style="background:#64748b;margin-right:6px">🙈 ซ่อนอยู่</span>':'')+(i.img?'<img src="'+i.img+'" alt="" style="width:34px;height:34px;object-fit:cover;border-radius:6px;float:left;margin-right:8px">':'')+'<b>'+esc(i.n)+'</b><small>'+esc(i.c)+'</small></td><td><div class="mt">'+i.m.map(function(m){return '<i>'+esc(m)+'</i>'}).join("")+'</div></td>'
   +'<td>'+esc(spLocShort(i))+'</td>'
-  +'<td><select class="tg s-'+s+'" data-a="t" title="เปลี่ยนสถานะ" style="border:0;cursor:pointer;font:inherit;font-weight:600;padding:4px 6px"><option value="stock">มีของ</option><option value="out">หมด</option><option value="ordering">กำลังสั่งของ</option><option value="repair">กำลังซ่อม</option></select>'+(i.rep?'<small>'+esc(i.rep)+'</small>':'')+(i.ord&&s==="ordering"?'<small>🛒 '+esc(i.ord)+'</small>':'')+'</td><td style="white-space:nowrap"><button class="btn s" data-a="e">แก้ไข</button> <button class="btn s d" data-a="x">ลบ</button></td>';
+  +'<td><select class="tg s-'+s+'" data-a="t" title="เปลี่ยนสถานะ" style="border:0;cursor:pointer;font:inherit;font-weight:600;padding:4px 6px"><option value="stock">มีของ</option><option value="out">หมด</option><option value="ordering">กำลังสั่งของ</option><option value="repair">กำลังซ่อม</option></select>'+(i.rep?'<small>'+esc(i.rep)+'</small>':'')+(i.ord&&s==="ordering"?'<small>🛒 '+esc(i.ord)+'</small>':'')+'</td><td style="white-space:nowrap"><button class="btn s" data-a="v" title="'+(i.hid?'ยกเลิกซ่อน':'ซ่อน')+'">'+(i.hid?'👁':'🙈')+'</button> <button class="btn s" data-a="e">แก้ไข</button> <button class="btn s d" data-a="x">ลบ</button></td>';
   var sel=tr.querySelector('[data-a="t"]');sel.value=s;sel.style.color="#fff";sel.querySelectorAll("option").forEach(function(o){o.style.color="#1e293b";o.style.background="#fff"});
   sel.onchange=function(){var v=sel.value,note="";if(v==="ordering"){note=prompt("หมายเหตุการสั่งของ (เว้นว่างได้) เช่น สั่งแล้ว ของมาวันที่ 25",i.ord&&s==="ordering"?i.ord:"");if(note===null){sel.value=s;return}}
    if(v==="repair"){note=prompt("หมายเหตุการซ่อม (เว้นว่างได้) เช่น คาดเสร็จ 2 วัน",i.rep||"");if(note===null){sel.value=s;return}}
    var e=spSetStatus(i.c,v,(note||"").trim());if(e)alert(e);pdraw()};
+  tr.querySelector('[data-a="v"]').onclick=function(){var l=SP_ITEMS.map(function(x){if(x===i){var o=Object.assign({},x);if(o.hid)delete o.hid;else o.hid=1;return o}return x});spItemsSave(l);pdraw()};
   tr.querySelector('[data-a="e"]').onclick=function(){openP(i)};
   tr.querySelector('[data-a="x"]').onclick=function(){if(!ISA)return;if(confirm('ลบ "'+i.n+'" ('+i.c+') ?')){spItemsSave(SP_ITEMS.filter(function(x){return x!==i}));pdraw()}};
   b.appendChild(tr)})}
@@ -154,13 +156,18 @@ $("f-kg").onclick=function(){var tmp={n:$("f-n").value,k:$("f-k").value},a=spAut
 $("p-kw").onclick=function(){var n=0,w=0,l=SP_ITEMS.map(function(i){var o=Object.assign({},i),a=spAutoKeys(i);if(a.length){o.k=((i.k||"").trim()+" "+a.join(" ")).trim();n++;w+=a.length}return o});
  if(!n){alert("ทุกรายการมีคำค้นครบแล้ว");return}if(!confirm("จะเพิ่มคำค้น (ชื่อเรียกอื่นไทย/อังกฤษ) ให้ "+n+" รายการ รวม "+w+" คำ\nคำเดิมไม่ถูกลบ ยืนยัน?"))return;
  try{spItemsSave(l);alert("เพิ่มคำค้นให้ "+n+" รายการแล้ว");pdraw()}catch(e){alert("บันทึกไม่สำเร็จ")}};
+$("pvis").onchange=pdraw;
+function bulkHide(h){var cs={};VIS.forEach(function(i){if(!!i.hid!==h)cs[i.c]=1});var n=Object.keys(cs).length;if(!n){alert(h?"ไม่มีรายการให้ซ่อน (ในตารางตอนนี้ซ่อนครบแล้ว)":"ไม่มีรายการที่ซ่อนอยู่ในตารางตอนนี้");return}
+ if(!confirm((h?"ซ่อน ":"ยกเลิกซ่อน ")+n+" รายการ ที่แสดงในตารางตอนนี้?\n(ใช้ช่องค้นหา / เลือกเครื่องจักรเพื่อจำกัดกลุ่มก่อนได้)"))return;
+ var l=SP_ITEMS.map(function(x){if(!cs[x.c])return x;var o=Object.assign({},x);if(h)o.hid=1;else delete o.hid;return o});try{spItemsSave(l);pdraw()}catch(e){alert("บันทึกไม่สำเร็จ")}}
+$("p-hall").onclick=function(){bulkHide(true)};$("p-sall").onclick=function(){bulkHide(false)};
 $("pq").oninput=pdraw;$("pmc").onchange=pdraw;fillPM();
 $("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("");
 function rkName(k){var n=(SP_RACKS[k]&&SP_RACKS[k].nm)||(window.SP_DEPT&&SP_DEPT.rackNames&&SP_DEPT.rackNames[k]);return n||"ชั้นวางที่เพิ่มเอง"}
 var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block":"none";if(curImg)p.src=curImg}
 $("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){curImg=d;showImg()})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
 function openP(i){editing=i||null;edCode=i?String(i.c).toLowerCase():"";curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
- $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-st").value=!i?"1":i.rep?"r":i.q>0?"1":i.ord?"o":"0";$("f-rn").value=i?(i.rep&&i.rep!=="กำลังซ่อม"?i.rep:i.ord&&i.ord!=="สั่งของแล้ว"?i.ord:""):"";$("f-rn").style.display=/[ro]/.test($("f-st").value)?"block":"none";
+ $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-st").value=!i?"1":i.rep?"r":i.q>0?"1":i.ord?"o":"0";$("f-rn").value=i?(i.rep&&i.rep!=="กำลังซ่อม"?i.rep:i.ord&&i.ord!=="สั่งของแล้ว"?i.ord:""):"";$("f-hid").checked=!!(i&&i.hid);$("f-rn").style.display=/[ro]/.test($("f-st").value)?"block":"none";
  $("f-at").value=i&&i.tx?i.tx:"";$("f-mt").value=i&&i.mt||"";$("f-3d").innerHTML=i&&(i.r||i.pos||i.at)?"📍 ตำแหน่งในโมเดล 3D ตอนนี้: <b>"+esc(spLoc(i))+"</b> — ย้าย/แก้ที่หน้า <b>\"จัดวางโมเดล (3D)\"</b> (ปุ่ม \"ย้ายตำแหน่ง\")":"📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>\"จัดวางโมเดล (3D)\"</b> (ปุ่ม \"วางตำแหน่ง\") หลังบันทึกอะไหล่";$("f-glb").value=i&&i.glb?i.glb:"";
  Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(c){c.checked=!!(i&&i.m.indexOf(c.value)>-1)});$("ov-p").classList.add("on");$("f-c").focus()}
 $("f-mt").innerHTML=spModelOpts("");
@@ -179,6 +186,7 @@ function bad(t){$("pe").textContent=t}
  if(glb)o.glb=glb;
  if($("f-st").value==="r")o.rep=$("f-rn").value.trim()||"กำลังซ่อม";
  if($("f-st").value==="o")o.ord=$("f-rn").value.trim()||"สั่งของแล้ว";
+ if($("f-hid").checked)o.hid=1;else delete o.hid;
  var tx=$("f-at").value.trim();if(tx)o.tx=tx;else delete o.tx;
  var l=SP_ITEMS.slice();if(editing&&ex>=0)l[ex]=o;else l.push(o);var fin=function(){$("ov-p").classList.remove("on");pdraw();
  if(!editing&&!o.pos&&!o.r&&confirm("บันทึกอะไหล่แล้ว\nไปกำหนดตำแหน่งในแผนที่ 3D ตอนนี้เลยไหม ?")){location.href="location3d.html?item="+encodeURIComponent(o.c)}};

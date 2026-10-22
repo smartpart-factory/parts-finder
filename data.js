@@ -81,6 +81,8 @@ try{var _sv=localStorage.getItem("sp_items");if(_sv)SP_ITEMS=JSON.parse(_sv)}cat
 function spHealMach(){var to=SP_MACHINES.filter(function(m){return /^MA?T[A-Z]*L$/i.test(m)&&m.toUpperCase()!=="METTAL"})[0];if(!to||SP_MACHINES.indexOf("METTAL")>-1)return false;var ch=false;
  SP_ITEMS.forEach(function(i){if(i.m&&i.m.indexOf("METTAL")>-1){i.m=i.m.map(function(x){return x==="METTAL"?to:x}).filter(function(x,k,a){return a.indexOf(x)===k});ch=true}});return ch}
 var SP_HEALED=spHealMach();
+/* ซ่อนอะไหล่: รายการที่มี hid=1 จะไม่แสดงในหน้าทั่วไป (ค้นหา/นำทาง/บอท/รายงาน ฯลฯ) — เห็นและจัดการได้เฉพาะหน้า "จัดการระบบ" และ "จัดวางโมเดล" (ตั้ง window.SP_SHOWHID=1 ก่อนโหลด data.js) */
+var SP_FULL=SP_ITEMS;if(!window.SP_SHOWHID)SP_ITEMS=SP_FULL.filter(function(i){return !i.hid});
 /* ===== ช่วยคิดคำค้น/ชื่อเรียกอื่น (ไทย-อังกฤษ) จากชื่ออะไหล่ ===== */
 var SP_SYN=[
 [/halogen/,"ฮาโลเจน หลอดฮาโลเจน หลอดไฟ"],[/\blamp|bulb|osram|หลอดไฟ/,"หลอดไฟ หลอด lamp bulb"],[/\bled\b|flash/,"แอลอีดี ไฟled ไฟ"],
@@ -117,7 +119,9 @@ var SP_SYN=[
 ];
 function spAutoKeys(i){var t=((i.n||"")+" "+(i.k||"")).toLowerCase(),have={};t.split(/[\s,\/()]+/).forEach(function(w){if(w)have[w]=1});var out=[];
  SP_SYN.forEach(function(p){if(p[0].test(t))p[1].split(" ").forEach(function(w){if(w&&!have[w.toLowerCase()]&&out.indexOf(w)<0&&t.indexOf(w.toLowerCase())<0)out.push(w)})});return out.slice(0,14)}
-function spItemsSave(a){var old=SP_ITEMS;SP_ITEMS=a;try{localStorage.setItem("sp_items",JSON.stringify(a))}catch(e){SP_ITEMS=old;throw e}}
+function spItemsSave(a){var old=SP_ITEMS,oldF=SP_FULL,out=a;
+ if(!window.SP_SHOWHID){var m={},seen={};a.forEach(function(x){m[x.c]=x});out=SP_FULL.map(function(x){seen[x.c]=1;return x.hid?x:(m[x.c]||x)}).concat(a.filter(function(x){return !seen[x.c]}))}
+ try{localStorage.setItem("sp_items",JSON.stringify(out));SP_FULL=out;SP_ITEMS=window.SP_SHOWHID?out:out.filter(function(i){return !i.hid})}catch(e){SP_ITEMS=old;SP_FULL=oldF;throw e}}
 
 function spUsedKB(){var t=0;try{Object.keys(localStorage).forEach(function(k){t+=k.length+String(localStorage.getItem(k)||"").length})}catch(e){}return Math.round(t*2/1024)}
 function spShrink(list,cb){var L=list.filter(function(i){return i.img&&String(i.img).indexOf("data:")===0&&i.img.length>7000}),n=0;if(!L.length)return cb();
