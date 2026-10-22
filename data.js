@@ -74,4 +74,4 @@ function spRepairUI(box,it,dir,done){var mx=dir==="send"?it.q:(it.rp||0);box.inn
 /* ถ้า admin เคยแก้ข้อมูลในหน้า "จัดการระบบ" ข้อมูลจะถูกเก็บในเบราว์เซอร์และใช้แทนรายการด้านบน */
 var SP_BASE_ITEMS=SP_ITEMS.slice();
 try{var _sv=localStorage.getItem("sp_items");if(_sv)SP_ITEMS=JSON.parse(_sv)}catch(e){}
-function spItemsSave(a){SP_ITEMS=a;localStorage.setItem("sp_items",JSON.stringify(a))}
+function spItemsSave(a){var old=SP_ITEMS;SP_ITEMS=a;try{localStorage.setItem("sp_items",JSON.stringify(a))}catch(e){SP_ITEMS=old;throw e}}

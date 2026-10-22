@@ -168,7 +168,7 @@ function bad(t){$("pe").textContent=t}
  if(glb)o.glb=glb;
  if($("f-rp").checked)o.rep=$("f-rn").value.trim()||"กำลังซ่อม";
  var tx=$("f-at").value.trim();if(tx)o.tx=tx;else delete o.tx;
- var l=SP_ITEMS.slice();if(editing&&ex>=0)l[ex]=o;else l.push(o);spItemsSave(l);$("ov-p").classList.remove("on");pdraw();
+ var l=SP_ITEMS.slice();if(editing&&ex>=0)l[ex]=o;else l.push(o);try{spItemsSave(l)}catch(e){var tot=0;try{for(var kk in localStorage)tot+=(localStorage[kk]||"").length}catch(z){}return bad("บันทึกไม่ได้ — พื้นที่เก็บข้อมูลของเบราว์เซอร์เต็ม (ใช้ไปประมาณ "+Math.round(tot/1024)+" KB จาก ~5,000 KB) ลองลบรูปอะไหล่ที่ไม่จำเป็นหรือใช้รูปเล็กลง")}$("ov-p").classList.remove("on");pdraw();
  if(!editing&&!o.pos&&!o.r&&confirm("บันทึกอะไหล่แล้ว\nไปกำหนดตำแหน่งในแผนที่ 3D ตอนนี้เลยไหม ?")){location.href="location3d.html?item="+encodeURIComponent(o.c)}};
 // สำรอง / นำเข้า / รีเซ็ต
 
