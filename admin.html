@@ -132,7 +132,7 @@ $("mx-save").onclick=function(){if(!ISA){alert("เฉพาะ ผู้ดู�
  spItemsSave(items);spMachSave(MM.map(function(m){var o={k:m.k,d:m.d.trim()};if(m.img)o.img=m.img;else if(m.f)o.f=m.f;return o}));mload();fillM();pdraw();mdraw();alert("บันทึกเครื่องจักรแล้ว")};
 function fillM(){$("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("")}
 // ---- อะไหล่ ----
-var editing=null;
+var editing=null,edCode="";function edIdx(){if(!editing)return -1;var k=SP_ITEMS.indexOf(editing);if(k>=0)return k;for(var j=0;j<SP_ITEMS.length;j++)if(String(SP_ITEMS[j].c).toLowerCase()===edCode)return j;return -1}
 function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
  var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1});
  if(!a.length){b.innerHTML='<tr><td colspan="7"><div class="empty">'+(SP_ITEMS.length?"ไม่พบรายการ":'ยังไม่มีอะไหล่ กด "+ เพิ่มอะไหล่" เพื่อเริ่มต้น')+'</div></td></tr>';return}
@@ -149,7 +149,7 @@ $("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="check
 function rkName(k){var n=(SP_RACKS[k]&&SP_RACKS[k].nm)||(window.SP_DEPT&&SP_DEPT.rackNames&&SP_DEPT.rackNames[k]);return n||"ชั้นวางที่เพิ่มเอง"}
 var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block":"none";if(curImg)p.src=curImg}
 $("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){curImg=d;showImg()})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
-function openP(i){editing=i||null;curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
+function openP(i){editing=i||null;edCode=i?String(i.c).toLowerCase():"";curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
  $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-q").value=i?i.q:0;$("f-min").value=i?i.min:0;$("f-u").value=i?(i.u||""):"ตัว";
  $("f-at").value=i&&i.tx?i.tx:"";$("f-t").value=i&&i.t||"";$("f-mt").value=i&&i.mt||"";$("f-rp").value=i&&i.rp||0;$("f-rpw").style.display=$("f-t").value?"block":"none";$("f-3d").innerHTML=i&&(i.r||i.pos||i.at)?"📍 ตำแหน่งในโมเดล 3D ตอนนี้: <b>"+esc(spLoc(i))+"</b> — ย้าย/แก้ที่หน้า <b>\"ตำแหน่งจัดเก็บ (3D)\"</b> (ปุ่ม \"ย้ายตำแหน่ง\")":"📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>\"ตำแหน่งจัดเก็บ (3D)\"</b> (ปุ่ม \"วางตำแหน่ง\") หลังบันทึกอะไหล่";$("f-glb").value=i&&i.glb?i.glb:"";$("f-rp").checked=!!(i&&i.rep);$("f-rn").value=i&&i.rep?i.rep:"";
  Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(c){c.checked=!!(i&&i.m.indexOf(c.value)>-1)});$("ov-p").classList.add("on");$("f-c").focus()}
@@ -160,15 +160,15 @@ $("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim(),q
  function spNextNC(extra){var mx=0;SP_ITEMS.concat(extra||[]).forEach(function(i){var m=/^NC-(\d+)$/i.exec(String(i.c));if(m)mx=Math.max(mx,+m[1])});return "NC-"+("000"+(mx+1)).slice(-4)}
 function bad(t){$("pe").textContent=t}
  if(!n)return bad("กรุณากรอกชื่ออะไหล่");if(/^[\s\-–—._]*$/.test(c))c=(editing&&/^NC-\d+$/i.test(editing.c))?editing.c:spNextNC();
- if(SP_ITEMS.some(function(x){return x!==editing&&x.c.toLowerCase()===c.toLowerCase()}))return bad("รหัสนี้มีอยู่แล้ว");
+ if(SP_ITEMS.some(function(x){return SP_ITEMS.indexOf(x)!==edIdx()&&x.c.toLowerCase()===c.toLowerCase()}))return bad("รหัสนี้มีอยู่แล้ว");
  if(!(q>=0)||!(mn>=0))return bad("ตัวเลขต้องไม่ติดลบ");
  var m=[];Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(x){if(x.checked)m.push(x.value)});
  var glb=$("f-glb").value.trim();if(glb&&!/^(https?:\/\/|[\w\-./]+)[^\s"'<>]*\.(glb|gltf)$/i.test(glb))return bad("ไฟล์โมเดลต้องลงท้ายด้วย .glb หรือ .gltf และไม่มีช่องว่าง");
- var o=Object.assign({},editing||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:q,min:mn,u:$("f-u").value.trim()||"ตัว"});delete o.rep;delete o.glb;delete o.img;if($("f-t").value){o.t="re";o.rp=Math.max(0,parseInt($("f-rp").value,10)||0)}else{delete o.t;delete o.rp;delete o.rlog}if($("f-mt").value)o.mt=$("f-mt").value;else delete o.mt;if(curImg)o.img=curImg;
+ var ex=edIdx(),o=Object.assign({},(ex>=0?SP_ITEMS[ex]:editing)||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:q,min:mn,u:$("f-u").value.trim()||"ตัว"});delete o.rep;delete o.glb;delete o.img;if($("f-t").value){o.t="re";o.rp=Math.max(0,parseInt($("f-rp").value,10)||0)}else{delete o.t;delete o.rp;delete o.rlog}if($("f-mt").value)o.mt=$("f-mt").value;else delete o.mt;if(curImg)o.img=curImg;
  if(glb)o.glb=glb;
  if($("f-rp").checked)o.rep=$("f-rn").value.trim()||"กำลังซ่อม";
  var tx=$("f-at").value.trim();if(tx)o.tx=tx;else delete o.tx;
- var l=SP_ITEMS.slice();if(editing)l[l.indexOf(editing)]=o;else l.push(o);spItemsSave(l);$("ov-p").classList.remove("on");pdraw();
+ var l=SP_ITEMS.slice();if(editing&&ex>=0)l[ex]=o;else l.push(o);spItemsSave(l);$("ov-p").classList.remove("on");pdraw();
  if(!editing&&!o.pos&&!o.r&&confirm("บันทึกอะไหล่แล้ว\nไปกำหนดตำแหน่งในแผนที่ 3D ตอนนี้เลยไหม ?")){location.href="location3d.html?item="+encodeURIComponent(o.c)}};
 // สำรอง / นำเข้า / รีเซ็ต
 
