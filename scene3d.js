@@ -162,7 +162,7 @@ function form(h){
   var fi=document.getElementById("pl-img").files[0],fin=function(){EDR=null;spItemsSave(l);place(false);o.onChange&&o.onChange();show(it);if(o.onSelect)o.onSelect(it)};
   var ry_=+document.getElementById("pl-ry").value;if(ry_)it.ry=ry_;else delete it.ry;var mv_=mts.value;if(mv_)it.mt=mv_;else delete it.mt;it.pos=[+h.x.toFixed(3),+h.y.toFixed(3),+h.z.toFixed(3)];it.gv=2;it.spot=true;it.at=h.surf;if(h.wall){it.wl=h.wl;delete it.ry}else delete it.wl;
   if(CH){var P_=spDept.drawerPos(DF,CH[1],CH[2]);it.pos=[+P_.x.toFixed(3),+P_.y.toFixed(3),+P_.z.toFixed(3)];it.at="ตู้ลิ้นชัก แถว "+CH[1]+" ชั้น "+CH[2];it.dw=CH;it.r="";it.s=0}else{delete it.dw;if(h.rack){it.r=h.rack;it.s=h.level}else{it.r="";it.s=0}}
-  if(fi)spResize(fi,function(d){if(d)it.img=d;fin()});else fin()}}
+  if(fi)spResize(fi,function(d){if(!d)return fin();spUploadImg(d,it.c,function(u){it.img=u||d;fin()})});else fin()}}
 // ---- กล้อง ----
 var ang=.08,el=1.05,dist=span*1.25,horiz=false,drag=false,lx=0,ly=0,pd={},moved=0,PICKQ=new URLSearchParams(location.search).get("pick");
 var ty=0,FOC=null,tx=cx,tz=cz,walk=false,wx=DOOR[0],wz=DOOR[1]-.8,wyaw=0,wpit=-.05,keys={},COL=spDept.colliders(SP_RACKS),RAD=.24,last=Date.now(),BTN={};

@@ -53,7 +53,7 @@ function vsim(a,b){var i,dot=0,na=0,nb=0,hi=0,ha=0,hb=0,gd=0;
  var cs=hi/(Math.max(ha,hb)||1);
  for(i=0;i<27;i++)gd+=Math.abs(a.g[i]-b.g[i]);var gs=Math.max(0,1-gd/27/255*2.2);
  return .5*hs+.25*cs+.25*gs}
-function loadImg(u){return new Promise(function(ok){var im=new Image();im.onload=function(){ok(im)};im.onerror=function(){ok(null)};im.src=u})}
+function loadImg(u){return new Promise(function(ok){var im=new Image();if(u.indexOf("data:")!==0)im.crossOrigin="anonymous";im.onload=function(){ok(im)};im.onerror=function(){ok(null)};im.src=u})}
 function itemFeats(items){var C=fload(),dirty=false,out=[],p=Promise.resolve();
  items.forEach(function(i){if(!i.img)return;var key=i.img.length+":"+i.img.slice(-24);var e=C[i.c];
   if(e&&e.k===key){out.push({i:i,f:e.f});return}

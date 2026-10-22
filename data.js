@@ -60,7 +60,7 @@ function spModelGuess(n){var s=String(n||"").toLowerCase();
  if(/valve|วาล์ว|cylinder|กระบอก|solenoid|โซลินอยด์/.test(s))return "valve";if(/sensor|เซนเซอร์|เซ็นเซอร์|switch|สวิตช์|สวิทช์/.test(s))return "sensor";if(/pump|ปั๊ม/.test(s))return "pump";return ""}
 function spLocShort(i){if(i.dw)return "ลิ้นชัก "+i.dw[1]+"-"+i.dw[2];return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปักหมุด":"ยังไม่กำหนด"))}
 /* รูปอะไหล่: ย่อรูปที่เลือกเป็น JPEG ไม่เกิน 360px (เก็บเป็น data URL ในเบราว์เซอร์) */
-function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,240/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.62))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}
+function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.74))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}
 function spImg(i){return i.img||("images/"+i.c+".jpg")}
 function spStatus(i){return i.rep?"repair":(i.t==="re"&&i.q<=0&&i.rp>0)?"repair":i.q<=0?"out":i.q<=i.min?"low":"stock"}
 /* อะไหล่ประเภท "ซ่อมแล้วใช้ซ้ำได้" (i.t==="re"): ส่งซ่อม = ย้ายจากคงเหลือไปยอดกำลังซ่อม (i.rp), ซ่อมเสร็จ = กลับมาเพิ่มในคงเหลือ */
@@ -79,3 +79,13 @@ function spItemsSave(a){var old=SP_ITEMS;SP_ITEMS=a;try{localStorage.setItem("sp
 function spUsedKB(){var t=0;try{Object.keys(localStorage).forEach(function(k){t+=k.length+String(localStorage.getItem(k)||"").length})}catch(e){}return Math.round(t*2/1024)}
 function spShrink(list,cb){var L=list.filter(function(i){return i.img&&String(i.img).indexOf("data:")===0&&i.img.length>7000}),n=0;if(!L.length)return cb();
  L.forEach(function(i){var im=new Image();im.onload=function(){var k=Math.min(1,200/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);var u=c.toDataURL("image/jpeg",.55);if(u.length<i.img.length)i.img=u;if(++n===L.length)cb()};im.onerror=function(){if(++n===L.length)cb()};im.src=i.img})}
+
+/* ===== เก็บรูปบน Supabase Storage (bucket "parts") — ถ้าอัปโหลดไม่ได้จะใช้รูปในเบราว์เซอร์แทน ===== */
+function spUploadImg(du,tag,cb){try{var C=window.SP_CLOUD,T=window.SPC&&SPC.token&&SPC.token();if(!C||!T||!/^data:image\//.test(du||""))return cb("");
+ var b=atob(du.split(",")[1]),a=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)a[i]=b.charCodeAt(i);var mime=du.slice(5,du.indexOf(";")),ext=mime.indexOf("png")>0?"png":"jpg",
+ p="items/"+String(tag||"x").replace(/[^A-Za-z0-9_-]/g,"_").slice(0,40)+"-"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+"."+ext;
+ fetch(C.url+"/storage/v1/object/parts/"+p,{method:"POST",headers:{apikey:C.key,Authorization:"Bearer "+T,"Content-Type":mime,"x-upsert":"false"},body:a}).then(function(r){cb(r.ok?C.url+"/storage/v1/object/public/parts/"+p:"")},function(){cb("")})}catch(e){cb("")}}
+function spMigrateImgs(prog,cb){var L=[];SP_ITEMS.forEach(function(i){if(i.img&&String(i.img).indexOf("data:")===0)L.push({o:i,t:i.c})});SP_MACH.forEach(function(m){if(m.img&&String(m.img).indexOf("data:")===0)L.push({o:m,t:"mach-"+m.k})});
+ var n=L.length,done=0,ok=0,k=0;if(!n)return cb({n:0,ok:0});
+ function next(){if(k>=L.length)return;var e=L[k++];spUploadImg(e.o.img,e.t,function(u){if(u){e.o.img=u;ok++}done++;prog&&prog(done,n);if(done===n){var er="";try{spItemsSave(SP_ITEMS);spMachSave(SP_MACH)}catch(x){er="save"}cb({n:n,ok:ok,err:er})}else next()})}
+ for(var w=0;w<3&&w<n;w++)next()}

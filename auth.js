@@ -144,6 +144,7 @@ var SPC=(function(){
   updateUser:function(id,f){var r=callS("PATCH","/rest/v1/profiles?id=eq."+id,f,{tok:(fresh()||{}).at,prefer:"return=representation"});return r.s===200&&r.j&&r.j.length?{ok:true}:{ok:false,msg:r.s===200?"ไม่มีสิทธิ์แก้ไขผู้ใช้":errMsg(r)}},
   setPassword:function(id,pw){var r=callS("POST","/rest/v1/rpc/admin_set_password",{target:id,new_pw:pw},{tok:(fresh()||{}).at});return r.s>=200&&r.s<300?{ok:true}:{ok:false,msg:errMsg(r)}},
   deleteUser:function(id){var r=callS("POST","/rest/v1/rpc/admin_delete_user",{target:id},{tok:(fresh()||{}).at});return r.s>=200&&r.s<300?{ok:true}:{ok:false,msg:errMsg(r)}},
+  token:function(){var s=fresh();return s&&s.at||""},
   rest:function(m,p,b,pf){var s=fresh();return call(m,p,b,{tok:s&&s.at,prefer:pf})},
   flush:flushAll,
   logout:function(){var go=function(){signoutLocal();location.href="login.html"};var t=setTimeout(go,2500);flushAll().then(function(){clearTimeout(t);go()},go)},

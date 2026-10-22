@@ -56,7 +56,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
 
  <div id="pg-p">
-  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
+  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
   <div class="card"><table><thead><tr><th>รหัส / ชื่อ</th><th>เครื่องจักร</th><th>คงเหลือ</th><th>ขั้นต่ำ</th><th>ตำแหน่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
   <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (เช็คของ ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในระบบกลาง ทุกเครื่องเห็นชุดเดียวกัน (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
  </div>
@@ -156,7 +156,9 @@ function openP(i){editing=i||null;edCode=i?String(i.c).toLowerCase():"";curImg=i
 $("f-mt").innerHTML=spModelOpts("");
 $("f-t").onchange=function(){$("f-rpw").style.display=$("f-t").value?"block":"none"};
 $("p-add").onclick=function(){openP()};$("pc").onclick=function(){$("ov-p").classList.remove("on")};
+var upTried="";
 $("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim(),q=parseInt($("f-q").value,10),mn=parseInt($("f-min").value,10);
+ if(curImg&&/^data:/.test(curImg)&&upTried!==curImg&&n){upTried=curImg;$("pe").textContent="กำลังอัปโหลดรูป...";spUploadImg(curImg,c||n,function(u){if(u)curImg=u;$("ps").onclick()});return}
  function spNextNC(extra){var mx=0;SP_ITEMS.concat(extra||[]).forEach(function(i){var m=/^NC-(\d+)$/i.exec(String(i.c));if(m)mx=Math.max(mx,+m[1])});return "NC-"+("000"+(mx+1)).slice(-4)}
 function bad(t){$("pe").textContent=t}
  if(!n)return bad("กรุณากรอกชื่ออะไหล่");if(/^[\s\-–—._]*$/.test(c))c=(editing&&/^NC-\d+$/i.test(editing.c))?editing.c:spNextNC();
@@ -171,6 +173,10 @@ function bad(t){$("pe").textContent=t}
  var l=SP_ITEMS.slice();if(editing&&ex>=0)l[ex]=o;else l.push(o);var fin=function(){$("ov-p").classList.remove("on");pdraw();
  if(!editing&&!o.pos&&!o.r&&confirm("บันทึกอะไหล่แล้ว\nไปกำหนดตำแหน่งในแผนที่ 3D ตอนนี้เลยไหม ?")){location.href="location3d.html?item="+encodeURIComponent(o.c)}};
  try{spItemsSave(l);fin()}catch(e){bad("พื้นที่เก็บข้อมูลเต็ม — กำลังบีบอัดรูปเดิมให้เล็กลง...");spShrink(l,function(){try{spItemsSave(l);fin()}catch(e2){bad("บันทึกไม่ได้ — พื้นที่เก็บข้อมูลของเบราว์เซอร์ยังเต็ม (ใช้ไปประมาณ "+spUsedKB()+" KB จาก ~5,000 KB) ลองลบรูปที่ไม่จำเป็น")}})}};
+$("p-mig").onclick=function(){var b=$("p-mig");if(!(window.SPC&&SPC.token&&SPC.token())){alert("ต้องล็อกอินด้วยระบบกลางก่อน");return}
+ var c=SP_ITEMS.filter(function(i){return i.img&&String(i.img).indexOf("data:")===0}).length;if(!c&&!SP_MACH.some(function(m){return m.img&&String(m.img).indexOf("data:")===0})){alert("ไม่มีรูปที่ต้องย้าย (รูปทั้งหมดอยู่ที่เก็บกลางแล้ว)");return}
+ b.disabled=true;spMigrateImgs(function(d,n){b.textContent="กำลังย้าย "+d+"/"+n+" ..."},function(r){b.disabled=false;b.textContent="☁️ ย้ายรูปไปที่เก็บรูปกลาง";pdraw();
+  alert(r.err?"ย้ายได้ "+r.ok+" จาก "+r.n+" รูป แต่บันทึกไม่สำเร็จ":r.ok===r.n?"ย้ายรูปสำเร็จ "+r.ok+" รูป":"ย้ายได้ "+r.ok+" จาก "+r.n+" รูป — ที่เหลืออัปโหลดไม่ผ่าน ตรวจว่ารัน storage-setup.sql ใน Supabase แล้ว")})};
 // สำรอง / นำเข้า / รีเซ็ต
 
 // นำเข้ารูปอะไหล่หลายรูปพร้อมกัน: ตั้งชื่อไฟล์ = รหัสอะไหล่ (เช่น BRG-001.jpg, BRG-001_2.jpg ใช้รูปแรกเป็นรูปหลัก)
