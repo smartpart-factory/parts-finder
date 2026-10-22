@@ -55,6 +55,7 @@ function paint(){pgen++;clear(items);items.userData.blink=null;var PKM=packRack(
   if(sel&&sel.c===i.c){var mats=[];W.traverse(function(n){if(n.isMesh&&n.material&&n.material.emissive)mats.push(n.material)});
    var halo=(i.dw||i.wl)?null:new THREE.Mesh(new THREE.CircleGeometry(Math.max(.2,W.userData.w*.65),32),new THREE.MeshBasicMaterial({color:0xffd400,transparent:true,opacity:.5,depthWrite:false,depthTest:false}));if(halo){halo.rotation.x=-Math.PI/2;halo.position.set(W.position.x,W.userData.y0+.015,W.position.z);halo.renderOrder=7;items.add(halo)}
    items.userData.blink={g:W,s:W.userData.s,mats:mats,halo:halo}}});
+ if(ghostOn)ghost(true);
  // แสดงเฉพาะหมุดตำแหน่ง (ไม่มีโมเดลจำลองกล่อง/ชิ้นอะไหล่)
  SP_ITEMS.forEach(function(i){if(!(sel&&sel.c===i.c&&i.pos&&i.pos.length===3)||i.dw)return;var p=slotPos(i),isSel=true,col=0x2563eb;
   var st2=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.34,6),new THREE.MeshBasicMaterial({color:0x334155}));st2.position.set(p.x,p.y+p.bh/2+.2,p.z);items.add(st2);
@@ -120,7 +121,11 @@ function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelecto
  if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;delete i.dw;EDR=null;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
 // ---- โหมดวางอะไหล่ ----
 var placing=false,target=null,hit=null;
-function place(on,item){placing=!!on;target=item||null;hit=null;ring.visible=false;host.style.cursor=on?"crosshair":"";
+var ghostOn=false,GO=[],gb=null,tpb=null;
+function ghost(on){ghostOn=on;if(on){var pk=new Set(PICKS);[DEPT,items].forEach(function(root){root.traverse(function(m){if(!m.isMesh||pk.has(m))return;(Array.isArray(m.material)?m.material:[m.material]).forEach(function(mt){if(!mt)return;mt.userData=mt.userData||{};if(mt.userData.gh)return;mt.userData.gh=[mt.opacity,mt.transparent,mt.depthWrite];mt.transparent=true;mt.opacity=Math.min(mt.opacity,.2);mt.depthWrite=false;mt.needsUpdate=true;GO.push(mt)})})})}
+ else{GO.forEach(function(mt){var o=mt.userData&&mt.userData.gh;if(o){mt.opacity=o[0];mt.transparent=o[1];mt.depthWrite=o[2];mt.userData.gh=null;mt.needsUpdate=true}});GO=[]}
+ if(gb)gb.textContent=on?"👻 มองทะลุ: เปิด":"👻 มองทะลุ: ปิด"}
+function place(on,item){placing=!!on;if(gb){gb.style.display=on?"":"none";tpb.style.display=on?"":"none"}if(on&&!ghostOn&&!walk)ghost(true);else if(!on&&ghostOn)ghost(false);target=item||null;hit=null;ring.visible=false;host.style.cursor=on?"crosshair":"";
  if(on)infoEl.innerHTML='<b>📌 โหมดวางอะไหล่</b>'+(item?' — '+esc(item.n):'')+'<br>คลิกจุดที่ต้องการในโมเดล (พื้น · โต๊ะ · บนตู้ · ชั้นเชล) <button class="btn" id="pl-x" style="padding:4px 10px;margin-left:6px">ยกเลิก</button>';
  var x=document.getElementById("pl-x");if(x)x.onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
  if(plb){plb.classList.toggle("on",placing);plb.textContent=placing?"✖ ออกจากโหมดวางอะไหล่":"📌 วางอะไหล่ในโมเดล"}}
@@ -186,7 +191,7 @@ function pad(lab,key){var b=document.createElement("button");b.textContent=lab;b
 (function(){var r1=document.createElement("div"),r2=document.createElement("div");r1.style.cssText=r2.style.cssText="display:flex;gap:4px";
  r1.appendChild(pad("↶","tl"));r1.appendChild(pad("▲","f"));r1.appendChild(pad("↷","tr"));r2.appendChild(pad("◀","l"));r2.appendChild(pad("▼","b"));r2.appendChild(pad("▶","r"));wkp.appendChild(r1);wkp.appendChild(r2)})();
 function ob(txt,css,fn){var b=document.createElement("button");b.className="btn";b.style.cssText="position:absolute;z-index:3;padding:7px 12px;"+css;b.textContent=txt;b.onclick=fn;host.appendChild(b);return b}
-var plb=ob("📌 วางอะไหล่ในโมเดล","left:10px;top:52px",function(){if(!canEdit()){infoEl.innerHTML='<span style="color:#dc2626">การวางอะไหล่ทำได้เฉพาะบัญชี ผู้ดูแลระบบเท่านั้น</span>';return}if(walk)setWalk(false);place(!placing)});plb.id="plbtn";
+var plb=ob("📌 วางอะไหล่ในโมเดล","left:10px;top:52px",function(){if(!canEdit()){infoEl.innerHTML='<span style="color:#dc2626">การวางอะไหล่ทำได้เฉพาะบัญชี ผู้ดูแลระบบเท่านั้น</span>';return}if(walk)setWalk(false);place(!placing)});plb.id="plbtn";gb=ob("👻 มองทะลุ: เปิด","left:10px;top:94px",function(){ghost(!ghostOn)});gb.style.display="none";gb.title="ทำให้ตู้/โต๊ะ/โมเดลอื่นโปร่งใส จะได้คลิกวางบนชั้นหรือพื้นที่ถูกบังได้";tpb=ob("🛰️ มุมบน","left:10px;top:136px",function(){FOC=null;el=1.45});tpb.style.display="none";tpb.title="มองจากด้านบนลงมา";
 var vwb=ob("🔄 มุมมอง","right:56px;top:10px",function(){if(walk)setWalk(false);fitView(!horiz)});
 var fsb=ob("⛶","right:10px;top:10px;padding:7px 11px",function(){var el=host.parentNode;if(document.fullscreenElement){document.exitFullscreen()}else if(el.requestFullscreen){el.requestFullscreen()}else{el.classList.toggle("spfs")}});fsb.title="เต็มจอ";
 var stx=document.createElement("style");stx.textContent=".spfs{position:fixed!important;inset:0;z-index:999;background:#fff;overflow:auto}";document.head.appendChild(stx);
