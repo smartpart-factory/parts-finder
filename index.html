@@ -125,7 +125,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <script src="data.js"></script><script src="requests.js"></script>
 <script>
 /* ===== ภาพ: วางไฟล์รูปจริงในโฟลเดอร์ images/ ชื่อตามด้านล่าง ถ้าไม่มีไฟล์ จะแสดงภาพวาดแทนอัตโนมัติ ===== */
-function slot(el,file,svg){el.insertAdjacentHTML("afterbegin",svg+'<img src="'+(/^data:/.test(file)?file:"images/"+file)+'" alt="" onerror="this.remove()">')}
+function slot(el,file,svg){el.insertAdjacentHTML("afterbegin",svg+'<img src="'+(/^(data:|https?:\/\/)/.test(file)?file:"images/"+file)+'" alt="" onerror="this.remove()">')}
 function mSvg(a,b,t){var s='<svg viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice"><rect width="160" height="100" fill="#dfe7f3"/><rect y="82" width="160" height="18" fill="#b8c4d8"/>';
  if(t==1){s+='<rect x="20" y="18" width="38" height="66" rx="8" fill="'+a+'"/><rect x="66" y="10" width="38" height="74" rx="8" fill="'+b+'"/><rect x="112" y="22" width="30" height="62" rx="8" fill="'+a+'"/><rect x="14" y="60" width="132" height="6" fill="#8aa0c4"/>'}
  else{s+='<rect x="14" y="24" width="86" height="58" rx="4" fill="'+a+'"/><rect x="24" y="34" width="48" height="26" rx="3" fill="#cfe3ff" opacity=".85"/><rect x="104" y="40" width="42" height="42" rx="4" fill="'+b+'"/><rect x="30" y="10" width="22" height="16" fill="#8aa0c4"/>';
