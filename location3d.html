@@ -79,7 +79,7 @@ var CLR={stock:"#16a34a",low:"#d97706",out:"#dc2626",repair:"#7c3aed"};
 var filt="all",qs="",mach="",sort="new",sel=null;
 // ---- สรุป + ตัวกรอง ----
 function placed(i){return !!(i.pos||(i.r&&SP_RACKS[i.r]))}
-function counts(){var c={all:SP_ITEMS.length,on:0,off:0};SP_ITEMS.forEach(function(i){placed(i)?c.on++:c.off++});return c}
+function counts(){var c={all:0,on:0,off:0};SP_ITEMS.forEach(function(i){if(i.hid)return;c.all++;placed(i)?c.on++:c.off++});return c}
 function drawSum(){var c=counts(),h="";[["all","ทั้งหมด","#1e293b"],["on","วางหมุดแล้ว","#16a34a"],["off","ยังไม่วางหมุด","#dc2626"]].forEach(function(x){
  h+='<div class="sc'+(filt===x[0]?" on":"")+'" data-k="'+x[0]+'"><small>'+x[1]+'</small><b style="color:'+x[2]+'">'+c[x[0]]+'</b></div>'});
  var s=document.getElementById("sum");s.innerHTML=h;Array.prototype.forEach.call(s.children,function(e){e.onclick=function(){filt=e.dataset.k;draw()}})}
@@ -88,7 +88,7 @@ mc.onchange=function(){mach=mc.value;draw()};document.getElementById("so").oncha
 document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase();draw()};
 // ---- รายการ ----
 function draw(){drawSum();
- var a=SP_ITEMS.filter(function(i){return (filt==="all"||(filt==="on")===placed(i))&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
+ var a=SP_ITEMS.filter(function(i){return !i.hid&&(filt==="all"||(filt==="on")===placed(i))&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
  a.sort(function(x,y){return sort==="new"?SP_ITEMS.indexOf(y)-SP_ITEMS.indexOf(x):sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
  var l=document.getElementById("list");l.innerHTML="";
  if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มอะไหล่ที่หน้า “จัดการระบบ” ก่อน แล้วกลับมากำหนดตำแหน่งที่นี่')+'</div>';

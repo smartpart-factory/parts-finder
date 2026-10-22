@@ -301,6 +301,7 @@ D.drawers=function(g,f,surf,pick){
  bx(grp,w,h-.05,d,0,.05+(h-.05)/2,0,body,{roughness:.55,metalness:.15});
  bx(grp,w-.04,.05,d-.04,0,.025,0,0xcfd6de);
  var top=bx(grp,w+.02,.022,d+.02,0,h+.004,0,0xf1f4f7,{roughness:.5});surf(top,"บนตู้ลิ้นชัก");top.userData.dwf=f.id;
+ var tp=new THREE.Mesh(new THREE.BoxGeometry(w+.02,.3,d+.02),new THREE.MeshBasicMaterial({visible:false}));tp.position.set(0,h+.16,0);tp.visible=false;grp.add(tp);surf(tp,"บนตู้ลิ้นชัก",{dwf:f.id,dwtop:1});
  // ลิ้นชักใส
  for(var c=1;c<=f.cols;c++)for(var r=1;r<=f.rows;r++){var P=D.drawerPos({x:0,z:0,w:w,d:d,h:h,cols:f.cols,rows:f.rows,face:1},c,r);
   var fw=G.cw-.012,fh=G.ch-.01,m=new THREE.Mesh(new THREE.BoxGeometry(fw,fh,d*.78),new THREE.MeshStandardMaterial({color:0xdde7ee,roughness:.2,metalness:0,transparent:true,opacity:.55,depthWrite:false}));
@@ -308,9 +309,7 @@ D.drawers=function(g,f,surf,pick){
   var hd=new THREE.Mesh(new THREE.BoxGeometry(fw*.42,fh*.28,.012),new THREE.MeshStandardMaterial({color:0xf5f8fa,roughness:.3,transparent:true,opacity:.8}));hd.position.set(P.x,P.y+fh*.18,d/2+.008);grp.add(hd);
   // ของในลิ้นชัก (สุ่มแบบคงที่ เพื่อให้ดูเหมือนของจริง)
   var seed=(c*13+r*7)%11;if(seed<6){var col=[0xc0392b,0x1e4fa8,0xd9dde2,0x1f2937,0x2e8b57,0xb8860b][seed%6],it=new THREE.Mesh(new THREE.BoxGeometry(fw*(.3+seed%3*.12),fh*.45,d*.3),new THREE.MeshStandardMaterial({color:col,roughness:.6}));it.position.set(P.x+((seed%3)-1)*fw*.2,P.y-fh*.18,d/2-d*.4);grp.add(it)}}
- // กล่องพลาสติกวางบนตู้ (เขียว/น้ำเงิน/เทา)
- var bins=[[-.34,0x2e9d46,.2],[-.34,0x2e9d46,.2,1],[-.13,0x1d4fd6,.2],[.07,0x1d4fd6,.2],[.27,0x9aa0a8,.2],[.42,0x9aa0a8,.14]];
- bins.forEach(function(b){bx(grp,b[2],.1,d*.85,b[0],h+.015+(b[3]?.1:0)+.05,0,b[1],{roughness:.5})})};
+ };
 D.cab2=function(g,f,surf){
  var w=f.w,d=f.d,h=f.h,grp=new THREE.Group(),fc=f.face===-1?-1:1;grp.position.set(f.x,0,f.z);grp.rotation.y=fc===1?0:Math.PI;g.add(grp);
  var body=0xb4bfcc,door=0xcdd6e0,fy=.06;

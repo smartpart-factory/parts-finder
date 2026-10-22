@@ -63,7 +63,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <main>
  <h2>🧭 นำทาง 3D — ค้นหาอะไหล่แล้วไปตำแหน่งได้เลย</h2>
  <div class="sum" id="sum"></div>
- <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="n">เรียงตามชื่อ</option><option value="r">เรียงตามชั้นวาง</option></select></div>
+ <div class="bar"><input id="q" placeholder="ค้นหาชื่อ หรือรหัสอะไหล่..."><button class="cam" id="cam">📷 ค้นหาด้วยรูป</button><select id="mc"></select><select id="so"><option value="n">เรียงตามชื่อ</option><option value="r">เรียงตามชั้นวาง</option></select><button class="cam" id="np" style="display:none" title="แสดงเฉพาะอะไหล่ที่ยังไม่ได้วางตำแหน่งในโมเดล 3D (เฉพาะผู้มีสิทธิ์แก้ไข)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><line x1="3" y1="21" x2="21" y2="3" stroke="#ef4444"/></svg> ยังไม่ลงโมเดล <b id="npn">0</b></button></div>
  <div class="grid">
   <div class="card"><div class="hd"><span></span><span>อะไหล่</span><span>เครื่องจักร</span><span>สถานะ</span></div><div id="list"></div></div>
   <div class="card map"><h3>📍 แผนที่ 3D</h3><div class="hint" style="margin:0">ลากเพื่อหมุน · เลื่อนล้อเมาส์/บีบนิ้วเพื่อซูม · คลิกกล่องอะไหล่เพื่อดูรายละเอียด</div><div id="cv"></div>
@@ -76,7 +76,9 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <script>
 var ICON={"BRG":"⚙️","BEL":"⭕","SEN":"🔌","SEA":"🔘","FLT":"🧪","MTR":"🔧","VLV":"🚰","FUS":"⚡","CTR":"🔲","PMP":"💧"};
 var CLR={stock:"#16a34a",out:"#dc2626",ordering:"#0891b2",repair:"#7c3aed"};
-var filt="all",qs="",mach="",sort="n",sel=null;
+var filt="all",qs="",mach="",sort="n",sel=null,nopos=false;
+function placed(i){return !!(i.pos||(i.r&&SP_RACKS[i.r]))}
+var npb=document.getElementById("np");if(spCanEdit()){npb.style.display="";npb.onclick=function(){nopos=!nopos;draw()}}
 // ---- สรุป + ตัวกรอง ----
 function counts(){var c={all:SP_ITEMS.length,stock:0,out:0,ordering:0,repair:0};SP_ITEMS.forEach(function(i){c[spStatus(i)]++});return c}
 function drawSum(){var c=counts(),h="";[["all","ทั้งหมด"],["stock","มีของ"],["out","หมด"],["ordering","กำลังสั่ง"],["repair","กำลังซ่อม"]].forEach(function(x){
@@ -86,8 +88,8 @@ var mc=document.getElementById("mc");mc.innerHTML='<option value="">ทุกเ
 mc.onchange=function(){mach=mc.value;draw()};document.getElementById("so").onchange=function(e){sort=e.target.value;draw()};
 document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase();draw()};
 // ---- รายการ ----
-function draw(){drawSum();
- var a=SP_ITEMS.filter(function(i){return (filt==="all"||spStatus(i)===filt)&&(!mach||i.m.indexOf(mach)>-1)&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
+function draw(){drawSum();if(spCanEdit()){document.getElementById("npn").textContent=SP_ITEMS.filter(function(i){return !placed(i)}).length;npb.style.background=nopos?"#dc2626":"";npb.style.color=nopos?"#fff":""}
+ var a=SP_ITEMS.filter(function(i){return (filt==="all"||spStatus(i)===filt)&&(!mach||i.m.indexOf(mach)>-1)&&(!nopos||!placed(i))&&(i.n+i.c+i.k).toLowerCase().indexOf(qs)>-1});
  a.sort(function(x,y){return sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
  var l=document.getElementById("list");l.innerHTML="";
  if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มรายการในไฟล์ data.js แล้วรีเฟรชหน้านี้')+'</div>';
