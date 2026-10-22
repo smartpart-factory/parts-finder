@@ -202,6 +202,37 @@ D.model=function(t){
   var ca=new THREE.Mesh(new THREE.TorusGeometry(.12,.008,8,24,Math.PI),M(0x15171b,{roughness:.7}));ca.position.set(0,.02,0);ca.rotation.x=-Math.PI/2;ca.rotation.z=0;g.add(ca);
   var k1=cyl(.018,.018,.05,0xd0d4d9,{metalness:.9,roughness:.3},"x");k1.position.set(-.12,.02,0);cyl(.012,.012,.04,0x15171b,{},"x").position.set(-.15,.02,0);
   var bn=cyl(.02,.02,.025,0xc9a227,{metalness:.8,roughness:.3},"x");bn.position.set(.12,.02,0);var cb2=cyl(.024,.024,.09,0xd9e4cd,{roughness:.8},"x");cb2.position.set(.18,.024,0);cyl(.0245,.0245,.01,0xf0d419,{},"x").position.set(.225,.024,0)
+ }else if(t==="dinpsu"){
+  /* Mean Well DR-120-24 (DIN rail power supply): กล่องเทา ขั้วต่อเขียวสองปลาย ป้ายแดง MW */
+  box(.125,.06,.114,0,.03,0,0xe4e6e9,{metalness:.15,roughness:.5});box(.11,.006,.1,0,.063,0,0xe6e8ea,{metalness:.2});
+  box(.02,.034,.1,-.0575,.075,0,0x1f9d55,{roughness:.5});box(.02,.034,.1,.0575,.075,0,0x1f9d55,{roughness:.5});
+  for(var q1=0;q1<4;q1++){cyl(.006,.006,.01,0xc9a227,{metalness:.8},"x").position.set(-.0575,.095,-.04+q1*.027);cyl(.006,.006,.01,0xc9a227,{metalness:.8},"x").position.set(.0575,.095,-.04+q1*.027)}
+  box(.03,.002,.014,.012,.067,-.025,0xc0262d);box(.03,.002,.012,-.015,.067,-.03,0x111827);cyl(.004,.004,.003,0xd9a400,{},"y").position.set(.048,.066,.045);
+  box(.126,.004,.02,0,.002,0,0x9aa0a6,{metalness:.15})
+ }else if(t==="rackmod"){
+  /* โมดูลแร็ค Precitec M4 (ตลับอลูมิเนียม แผงหน้า + ฝาเจาะรู + มือจับ) หน้าแผงอยู่ด้าน +z */
+  box(.06,.13,.25,0,.075,-.01,0xdfe3e7,{metalness:.15,roughness:.4});box(.07,.15,.006,0,.075,.12,0xdadde0,{metalness:.15,roughness:.35});
+  box(.05,.06,.002,0,.1,.124,0xf1f2f4);box(.012,.012,.003,.016,.092,.126,0x111827);
+  for(var r1=0;r1<8;r1++)for(var r2=0;r2<3;r2++)cyl(.004,.004,.004,0x1f2937,{},"y").position.set(-.015+r2*.015,.141,-.1+r1*.022);
+  box(.016,.018,.014,.018,.07,.13,0xb7bcc2,{metalness:.15});box(.018,.02,.012,.012,.045,.13,0x62c370,{emissive:0x1f7a30,emissiveIntensity:.5});
+  box(.03,.012,.02,0,.015,.133,0xaeb4ba,{metalness:.15});
+  [[-.03,.005],[.03,.005],[-.03,.145],[.03,.145]].forEach(function(p){cyl(.006,.006,.012,0xd5d8dc,{metalness:.15,roughness:.25},"z").position.set(p[0]*.8,p[1]+.005,.128)})
+ }else if(t==="tcpmod"){
+  /* โมดูล TCP.I (แผงหน้ามีปุ่มหมุนสองลูก สวิตช์ ขั้วแดง/น้ำเงิน คอนเน็กเตอร์ ฝาตาข่าย) */
+  box(.2,.07,.3,0,.04,-.04,0xdfe3e7,{metalness:.15,roughness:.45});for(var t1=0;t1<9;t1++)for(var t2=0;t2<6;t2++)cyl(.004,.004,.003,0x1f2937,{},"y").position.set(-.08+t2*.032,.076,-.16+t1*.03);
+  box(.21,.075,.006,0,.04,.115,0xdadde0,{metalness:.15,roughness:.35});
+  [-.065,.065].forEach(function(x){cyl(.018,.018,.026,0x1a1a1a,{},"z").position.set(x,.04,.13);cyl(.022,.022,.012,0xc9ced3,{metalness:.15,roughness:.25},"z").position.set(x,.04,.122)});
+  [-.03,.03].forEach(function(x){cyl(.007,.007,.012,0x2563eb,{},"z").position.set(x,.06,.123);cyl(.007,.007,.012,0xdc2626,{},"z").position.set(x*.5,.06,.123);cyl(.005,.005,.02,0xcfd3d8,{metalness:.15},"z").position.set(x,.025,.125)});
+  [-.095,.095].forEach(function(x){cyl(.011,.011,.02,0x9aa0a6,{metalness:.8},"z").position.set(x,.04,.125)});
+  cyl(.01,.01,.07,0xc9ced3,{metalness:.15,roughness:.25},"z").position.set(-.085,.01,.15)
+ }else if(t==="rackcase"){
+  /* เครื่องควบคุมแบบแร็ค (WSIO) ห่อพลาสติกใส — ตัวเครื่องเทา แผงหน้าหลายโมดูล จอ ขั้วเขียว สวิตช์แดง ด้ามจับสองข้าง */
+  box(.46,.18,.4,0,.1,0,0xb4bac1,{metalness:.15,roughness:.5});box(.46,.14,.006,0,.1,.2,0xd9dbde,{metalness:.15});
+  box(.2,.1,.004,-.06,.105,.205,0x1b1f27,{roughness:.2,metalness:.15});box(.045,.13,.004,.07,.1,.205,0xc9ccd0);
+  box(.04,.1,.005,.12,.1,.206,0xcdd0d4);for(var w1=0;w1<8;w1++)box(.006,.005,.004,.108,.14-w1*.012,.209,0x1f9d55);box(.02,.02,.004,.125,.06,.21,0x1f9d55);
+  box(.05,.045,.006,.18,.12,.207,0x1a1a1a);box(.05,.04,.006,.18,.07,.207,0x1a1a1a);box(.05,.04,.006,.205,.1,.207,0xc0262d);
+  box(.02,.18,.05,-.24,.1,.17,0x2b2f36,{metalness:.4});box(.02,.18,.05,.24,.1,.17,0x2b2f36,{metalness:.4});box(.46,.012,.4,0,.016,0,0x3b3f46);
+  box(.5,.22,.44,0,.11,0,0xffffff,{transparent:true,opacity:.14,depthWrite:false,roughness:.1})
  }else{
   box(.32,.2,.26,0,.1,0,0xc8a26a,{roughness:.9});box(.07,.002,.26,0,.2,0,0xe7d6b0);box(.07,.1,.002,0,.15,.131,0xe7d6b0);
  }
