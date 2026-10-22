@@ -75,7 +75,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <script>
 var ALL=spReqLoad(),ME=SP_USER.name,ADM=spCanEdit(),REQ=ALL.filter(function(r){return spCanEdit()||r.byId===SP_USER.id}),filt="all",qs="";
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-function save(){spReqSave(ALL);draw()}
+function save(){spReqSave(ALL);(function(){var l=SP_ITEMS.slice(),ch=0;ALL.forEach(function(r){if(r.status!=="rejected"&&r.status!=="cancelled")return;var it=l.filter(function(i){return i.c===r.code})[0];if(it&&it.ord==="คำขอ "+r.id){delete it.ord;ch=1}});if(ch)try{spItemsSave(l)}catch(e){}})();draw()}
 function logIt(r,t){r.log.push({t:new Date().toISOString(),text:t})}
 function drawSum(){var c={all:REQ.length,pending:0,approved:0,rejected:0,cancelled:0,done:0};REQ.forEach(function(r){c[r.status]++});
  var h="";[["all","ทั้งหมด"],["pending","รออนุมัติ"],["approved","อนุมัติ"],["rejected","ปฏิเสธ"],["cancelled","ยกเลิก"],["done","เบิกแล้ว"]].forEach(function(x){h+='<div class="sc'+(filt===x[0]?" on":"")+'" data-k="'+x[0]+'"><small>'+x[1]+'</small><b>'+c[x[0]]+'</b></div>'});

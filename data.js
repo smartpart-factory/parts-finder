@@ -42,7 +42,7 @@ function spModelSave(o){SP_MODEL=o;localStorage.setItem("sp_model",JSON.stringif
  ถ้ามีเซิร์ฟเวอร์ที่ต่อ AI ไว้ ใส่ URL ตรงนี้ บอทจะส่งคำถามที่ตัวเองตอบไม่ได้ไปที่นั่น (POST JSON {message}) และรับ {reply}
  ห้ามใส่ API key ในไฟล์นี้ */
 var SP_AI_ENDPOINT="";
-var SP_TXT={stock:"มีของ",out:"หมด",repair:"กำลังซ่อม"};
+var SP_TXT={stock:"มีของ",out:"หมด",ordering:"กำลังสั่งของ",repair:"กำลังซ่อม"};
 var SP_ITEMS=[
   // ตัวอย่างการเพิ่มอะไหล่ 1 รายการ (ลบ // หน้าบรรทัดออก แล้วแก้เป็นของจริง คั่นแต่ละรายการด้วยจุลภาค)
   // {c:"BRG-6205",n:"Bearing 6205",k:"ลูกปืน แบริ่ง",m:["ISM","RENGER"],q:48,min:20,r:"A1",s:2,u:"ตัว"},
@@ -63,9 +63,15 @@ function spLocShort(i){if(i.dw)return "ลิ้นชัก "+i.dw[1]+"-"+i.dw[
 function spResize(file,cb){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.74))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(file)}
 function spImg(i){return i.img||("images/"+i.c+".jpg")}
 /* สถานะมี 3 แบบ: มีของ (q>0) / หมด (q<=0) / กำลังซ่อม (มี rep) — ไม่นับจำนวนแล้ว */
-function spStatus(i){return i.rep?"repair":(i.q>0?"stock":"out")}
+function spStatus(i){return i.rep?"repair":(i.q>0?"stock":(i.ord?"ordering":"out"))}
+/* ตั้งสถานะ "กำลังสั่งของ" (ของหมด + มีการสั่งอยู่) note = ข้อความ เช่น เลขคำขอ/วันที่คาดว่าของมา */
+function spSetOrder(code,note){var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===code})[0];if(!x||x.q>0||x.rep)return "";x.ord=note||"สั่งของแล้ว";try{spItemsSave(l)}catch(e){return "บันทึกไม่สำเร็จ"}return ""}
+/* เปลี่ยนสถานะทุกแบบ: st = stock|out|ordering|repair, note = หมายเหตุ (ใช้กับ ordering/repair) */
+function spSetStatus(code,st,note){var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===code})[0];if(!x)return "ไม่พบอะไหล่นี้";
+ delete x.rep;delete x.ord;x.q=st==="stock"?1:0;if(st==="repair")x.rep=note||"กำลังซ่อม";if(st==="ordering")x.ord=note||"สั่งของแล้ว";
+ try{spItemsSave(l)}catch(e){return "บันทึกไม่สำเร็จ"}return ""}
 /* ตั้งสถานะ มีของ/หมด (has=true/false) แล้วบันทึก */
-function spSetStock(code,has){var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===code})[0];if(!x)return "ไม่พบอะไหล่นี้";x.q=has?1:0;if(has)x.rep="";
+function spSetStock(code,has){var l=SP_ITEMS.slice(),x=l.filter(function(i){return i.c===code})[0];if(!x)return "ไม่พบอะไหล่นี้";x.q=has?1:0;if(has){x.rep="";delete x.ord}
  var u=window.SP_USER||{};x.slog=(x.slog||[]).concat([{t:new Date().toISOString(),by:u.name||"",h:has?1:0}]).slice(-10);
  try{spItemsSave(l)}catch(e){return "บันทึกไม่สำเร็จ"}return ""}
 /* ถ้า admin เคยแก้ข้อมูลในหน้า "จัดการระบบ" ข้อมูลจะถูกเก็บในเบราว์เซอร์และใช้แทนรายการด้านบน */

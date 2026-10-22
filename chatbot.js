@@ -7,7 +7,7 @@ var css='#cb-btn{position:fixed;right:20px;bottom:20px;width:58px;height:58px;bo
 +'#cb .ms{flex:1;overflow-y:auto;padding:12px;background:#f3f6fb;display:flex;flex-direction:column;gap:8px}'
 +'#cb .b{max-width:88%;padding:9px 12px;border-radius:12px;line-height:1.5;white-space:pre-line}#cb .bot{background:#fff;border:1px solid #e2e8f0;align-self:flex-start}#cb .me{background:#1565d8;color:#fff;align-self:flex-end}'
 +'#cb .bt{display:inline-block;margin:6px 6px 0 0;padding:5px 10px;border:1px solid #1565d8;color:#1565d8;background:#fff;border-radius:99px;font-size:12px;cursor:pointer}#cb .bt:hover{background:#eaf2ff}'
-+'#cb .tg{font-size:11px;padding:2px 8px;border-radius:99px;color:#fff;margin-left:4px}.cs-stock{background:#16a34a}.cs-out{background:#dc2626}.cs-repair{background:#7c3aed}'
++'#cb .tg{font-size:11px;padding:2px 8px;border-radius:99px;color:#fff;margin-left:4px}.cs-stock{background:#16a34a}.cs-out{background:#dc2626}.cs-ordering{background:#0891b2}.cs-repair{background:#7c3aed}'
 +'#cb .chips{padding:8px 12px 0;background:#fff;border-top:1px solid #e2e8f0}#cb .in{display:flex;gap:8px;padding:10px 12px;background:#fff}#cb .in input{flex:1;padding:9px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}#cb .in button{border:0;background:#1565d8;color:#fff;border-radius:8px;padding:0 14px;cursor:pointer;font:inherit}#cb .in button.cam{background:#fff;color:#1565d8;border:1px solid #1565d8;padding:0 10px;font-size:16px}#cb .bt.ok{background:#16a34a;border-color:#16a34a;color:#fff}#cb .bt.no{border-color:#94a3b8;color:#64748b}';
 var st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 var d=document.createElement("div");
@@ -51,7 +51,8 @@ function ask(raw,fromBtn){
   if(top.length===1)showOne(top[0]);else list(top,"พบอะไหล่ที่ใกล้เคียง");return}
  var f=null,title="";
   if(/ซ่อม/.test(x)){f=function(i){return spStatus(i)==="repair"};title="อะไหล่ที่กำลังซ่อม"}
- else if(/หมด/.test(x)){f=function(i){return spStatus(i)==="out"};title="อะไหล่ที่หมดสต็อก"}
+ else if(/กำลังสั่ง|สั่งของ|รอของ/.test(x)){f=function(i){return spStatus(i)==="ordering"};title="อะไหล่ที่กำลังสั่งของ"}
+ else if(/หมด/.test(x)){f=function(i){var s=spStatus(i);return s==="out"||s==="ordering"};title="อะไหล่ที่หมดสต็อก"}
  if(f){list(SP_ITEMS.filter(function(i){return f(i)&&mine(i)}),title+(mach.length?" ของ "+mach[0]:""));return}
  if(mach.length){list(SP_ITEMS.filter(mine),"อะไหล่ของ "+mach[0]);return}
  var miss=function(){add("ขอโทษครับ ยังหาไม่เจอ ลองพิมพ์ชื่อหรือรหัสอะไหล่ เช่น \"สายพาน\", \"BRG-6205\" หรือกดปุ่มด้านล่างครับ","bot")};

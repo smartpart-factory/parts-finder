@@ -14,5 +14,5 @@ function spBldVal(v){if(!v)return{};var p=v.split("|");return{bld:p[0],furn:p[1]
 function spReqBld(r){return r.bld?(r.bld==="-"?"อื่นๆ":"อาคาร "+r.bld+(r.furn?" · "+r.furn:"")):""}
 
 /* ไม่นับจำนวนคงเหลือแล้ว — การเบิกไม่ตัดสต็อก (คงฟังก์ชันไว้ให้โค้ดเดิมเรียกได้) */
-function spReqCut(r){return true}
+function spReqCut(r){if(!r.retro&&r.code)spSetStock(r.code,true);return true}
 function spReqUncut(r){}

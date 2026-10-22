@@ -20,7 +20,7 @@ label{display:block;font-size:13px;color:#475569;margin:12px 0 4px}input,select,
 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .btn{padding:12px 22px;border:0;border-radius:8px;background:#f59e0b;color:#fff;font:inherit;font-weight:600;font-size:15px;cursor:pointer;margin-top:16px}
 #pv{display:none;margin-top:10px;background:#eaf2ff;border:1px solid #cfe0ff;border-radius:8px;padding:10px 12px;line-height:1.7}
-.tg{font-size:12px;padding:2px 10px;border-radius:99px;color:#fff;white-space:nowrap}.s-stock{background:#16a34a}.s-low{background:#d97706}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
+.tg{font-size:12px;padding:2px 10px;border-radius:99px;color:#fff;white-space:nowrap}.s-stock{background:#16a34a}.s-low{background:#d97706}.s-out{background:#dc2626}.s-ordering{background:#0891b2}.s-repair{background:#7c3aed}
 #ok{display:none;background:#d9f7e4;border:1px solid #a7e6bf;color:#14663a;border-radius:8px;padding:12px 14px;margin-bottom:14px}#err{color:#dc2626;font-size:13px;min-height:18px;margin-top:8px}
 .rq{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;flex-wrap:wrap}.rq small{color:#64748b;display:block}
 .bd{font-size:12px;padding:3px 12px;border-radius:99px;font-weight:600;white-space:nowrap}.w{background:#fff0d6;color:#d97706}.o{background:#d9f7e4;color:#16a34a}.x{background:#fde2e2;color:#dc2626}.c{background:#e5e7eb;color:#6b7280}
@@ -103,6 +103,7 @@ $("go").onclick=function(){bad("");var ls=LINES.slice();if(fi.value.trim()){var 
  if(RETRO){r.retro=true;r.tookAt=took.toISOString()}
  all.push(r);ids.push(r.id)});
  if(!spReqSave(all)){bad("บันทึกไม่สำเร็จ (เบราว์เซอร์อาจไม่อนุญาตให้เก็บข้อมูล)");return}
+ if(!RETRO)all.slice(-ids.length).forEach(function(x){if(x.code)spSetOrder(x.code,"คำขอ "+x.id)});
  $("ok").style.display="block";$("ok").innerHTML=(RETRO?"✅ แจ้งเบิกย้อนหลัง <b>"+ids.join(", ")+"</b> เรียบร้อยแล้ว รอผู้ดูแลตรวจสอบและยืนยัน":"✅ ส่งคำขอ <b>"+ids.join(", ")+"</b> ("+ids.length+" รายการ) เรียบร้อยแล้ว สถานะ: รออนุมัติ");
  LINES=[];drawLines();fi.value="";$("f-qty").value=1;$("f-why").value="";$("f-urg").value="0";setMode(false);$("pv").style.display="none";mine();window.scrollTo({top:0,behavior:"smooth"})};
 var q=new URLSearchParams(location.search).get("item"),pre=q&&SP_ITEMS.filter(function(i){return i.c===q})[0];if(pre){fi.value=pre.n+" ("+pre.c+")";preview()}

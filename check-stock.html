@@ -31,7 +31,7 @@ h2{margin:0 0 12px;font-size:22px}
 .rw small{color:#64748b;display:block;font-size:12px}
 .qb{height:6px;background:#e2e8f0;border-radius:99px;margin-top:4px;overflow:hidden}.qb i{display:block;height:100%}
 .tg{font-size:12px;padding:3px 10px;border-radius:99px;color:#fff;white-space:nowrap;text-align:center}
-.s-stock{background:#16a34a}.s-out{background:#dc2626}.s-repair{background:#7c3aed}
+.s-stock{background:#16a34a}.s-out{background:#dc2626}.s-ordering{background:#0891b2}.s-repair{background:#7c3aed}
 .mt{display:flex;gap:4px;flex-wrap:wrap}.mt span{background:#e0ecff;color:#1565d8;font-size:11px;padding:2px 6px;border-radius:4px}
 .map{position:sticky;top:80px;padding:14px}.map h3{margin:0 0 4px;font-size:16px}
 #cv{height:300px;border-radius:8px;background:linear-gradient(#cfd9ea,#a9b9d3);overflow:hidden;margin:10px 0}#cv canvas{display:block;width:100%;height:100%;touch-action:none}
@@ -75,11 +75,11 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <script src="data.js"></script><script src="dept.js"></script><script src="scene3d.js"></script>
 <script>
 var ICON={"BRG":"⚙️","BEL":"⭕","SEN":"🔌","SEA":"🔘","FLT":"🧪","MTR":"🔧","VLV":"🚰","FUS":"⚡","CTR":"🔲","PMP":"💧"};
-var CLR={stock:"#16a34a",out:"#dc2626",repair:"#7c3aed"};
+var CLR={stock:"#16a34a",out:"#dc2626",ordering:"#0891b2",repair:"#7c3aed"};
 var filt="all",qs="",mach="",sort="n",sel=null;
 // ---- สรุป + ตัวกรอง ----
-function counts(){var c={all:SP_ITEMS.length,stock:0,out:0,repair:0};SP_ITEMS.forEach(function(i){c[spStatus(i)]++});return c}
-function drawSum(){var c=counts(),h="";[["all","ทั้งหมด"],["stock","มีของ"],["out","หมด"],["repair","กำลังซ่อม"]].forEach(function(x){
+function counts(){var c={all:SP_ITEMS.length,stock:0,out:0,ordering:0,repair:0};SP_ITEMS.forEach(function(i){c[spStatus(i)]++});return c}
+function drawSum(){var c=counts(),h="";[["all","ทั้งหมด"],["stock","มีของ"],["out","หมด"],["ordering","กำลังสั่ง"],["repair","กำลังซ่อม"]].forEach(function(x){
  h+='<div class="sc'+(filt===x[0]?" on":"")+'" data-k="'+x[0]+'"><small>'+x[1]+'</small><b style="color:'+(CLR[x[0]]||"#1e293b")+'">'+c[x[0]]+'</b></div>'});
  var s=document.getElementById("sum");s.innerHTML=h;Array.prototype.forEach.call(s.children,function(e){e.onclick=function(){filt=e.dataset.k;draw()}})}
 var mc=document.getElementById("mc");mc.innerHTML='<option value="">ทุกเครื่องจักร</option>'+SP_MACHINES.map(function(m){return '<option>'+m+'</option>'}).join("");

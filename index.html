@@ -168,7 +168,7 @@ draw();
 </script>
 <script>window.showOnMap=function(c){location.href="check-stock.html?item="+encodeURIComponent(c)}</script>
 <script>
-(function(){var c={all:SP_ITEMS.length,ok:0,out:0};SP_ITEMS.forEach(function(i){var t=spStatus(i);if(t==="stock")c.ok++;else if(t==="out")c.out++});
+(function(){var c={all:SP_ITEMS.length,ok:0,out:0};SP_ITEMS.forEach(function(i){var t=spStatus(i);if(t==="stock")c.ok++;else if(t==="out"||t==="ordering")c.out++});
  function f(n){return n.toLocaleString("en-US")+" รายการ"}
  document.getElementById("st-all").textContent=f(c.all);document.getElementById("st-ok").textContent=f(c.ok);document.getElementById("st-out").textContent=f(c.out);
  document.getElementById("upd").textContent=new Date().toLocaleString("th-TH",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"})+" น.";
