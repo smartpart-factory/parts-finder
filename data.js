@@ -81,6 +81,42 @@ try{var _sv=localStorage.getItem("sp_items");if(_sv)SP_ITEMS=JSON.parse(_sv)}cat
 function spHealMach(){var to=SP_MACHINES.filter(function(m){return /^MA?T[A-Z]*L$/i.test(m)&&m.toUpperCase()!=="METTAL"})[0];if(!to||SP_MACHINES.indexOf("METTAL")>-1)return false;var ch=false;
  SP_ITEMS.forEach(function(i){if(i.m&&i.m.indexOf("METTAL")>-1){i.m=i.m.map(function(x){return x==="METTAL"?to:x}).filter(function(x,k,a){return a.indexOf(x)===k});ch=true}});return ch}
 var SP_HEALED=spHealMach();
+/* ===== ช่วยคิดคำค้น/ชื่อเรียกอื่น (ไทย-อังกฤษ) จากชื่ออะไหล่ ===== */
+var SP_SYN=[
+[/halogen/,"ฮาโลเจน หลอดฮาโลเจน หลอดไฟ"],[/\blamp|bulb|osram|หลอดไฟ/,"หลอดไฟ หลอด lamp bulb"],[/\bled\b|flash/,"แอลอีดี ไฟled ไฟ"],
+[/bearing|ลูกปืน|\b6[0-9]{3}\b|\b3205\b/,"ลูกปืน แบริ่ง ตลับลูกปืน bearing"],
+[/timing belt|toothed belt|\bbelt\b|สายพาน/,"สายพาน ไทมิ่ง สายพานไทมิ่ง belt"],[/chain|โซ่/,"โซ่ โซ่ขับ chain"],
+[/sprocket|gear|teeth|wheel|เฟือง/,"เฟือง เฟืองโซ่ gear sprocket"],[/pulley|มู่เล่|พูลเลย์/,"มูเล่ย์ พูลเลย์ pulley"],
+[/motor|มอเตอร์/,"มอเตอร์ motor"],[/servo/,"เซอร์โว servo"],[/invert|inverter/,"อินเวอร์เตอร์ อินเวอร์เตอร์ไดรฟ์ ไดรฟ์ inverter"],
+[/\bdrive\b/,"ไดรฟ์ drive"],[/encoder/,"เอ็นโค้ดเดอร์ encoder"],
+[/sensor|proximity|reflector|cell\b|light barrier|เซนเซอร์|เซ็นเซอร์/,"เซนเซอร์ เซ็นเซอร์ หัววัด ตัวตรวจจับ sensor"],
+[/proximity/,"พร็อกซิมิตี้ พร็อกซ์ สวิตช์ตรวจจับ"],[/reflector/,"รีเฟลคเตอร์ แผ่นสะท้อน"],[/light barrier/,"ม่านแสง"],
+[/emitter|transmitter/,"ตัวส่งสัญญาณ ตัวส่ง emitter"],[/receiver/,"ตัวรับสัญญาณ ตัวรับ receiver"],
+[/limit switch/,"ลิมิตสวิตช์ limit"],[/switch|สวิตช์/,"สวิตช์ สวิทช์ switch"],[/relay|รีเลย์/,"รีเลย์ relay"],[/contactor/,"คอนแทคเตอร์ แมกเนติก"],
+[/cable|สายไฟ|wire/,"สายไฟ สายสัญญาณ สายเคเบิล cable"],[/optic|fiber/,"ไฟเบอร์ ออปติก ไฟเบอร์ออปติก"],[/tubing|air hose/,"สายลม ท่อลม"],
+[/\bplug\b/,"ปลั๊ก ปลั๊กเกจ หัววัดปากขวด plug"],[/ring gauge/,"ริงเกจ ring"],[/gauge|gauging/,"เกจ เกจวัด วัด gauge"],
+[/wear plate|plate|แผ่น/,"เพลท แผ่น แผ่นรอง แผ่นกันสึก plate"],[/roller|ลูกกลิ้ง/,"ลูกกลิ้ง โรลเลอร์ roller"],[/shaft|axle|แกน/,"แกน เพลา shaft"],
+[/oil seal|\bseal\b|ซีล/,"ซีล ซีลน้ำมัน ซีลกันน้ำมัน seal"],[/spring|สปริง/,"สปริง spring"],[/washer|แหวน/,"แหวน แหวนรอง washer"],
+[/screw|\bbolt\b|สกรู|น็อต/,"สกรู น็อต ตัวหนอน bolt screw"],[/\bnut\b/,"น็อต ตัวเมีย nut"],[/clamp|holder/,"แคลมป์ ตัวจับ ขายึด ตัวยึด holder clamp"],
+[/coupling/,"คัปปลิ้ง ข้อต่อ coupling"],[/rubber|foam|ยาง/,"ยาง ฟองน้ำ rubber"],[/disk|disc/,"จานยาง แผ่นกลม disk"],
+[/camera/,"กล้อง camera"],[/lens/,"เลนส์ lens"],
+[/power supply|supply|smps/,"พาวเวอร์ซัพพลาย แหล่งจ่ายไฟ ซัพพลาย power supply"],[/battery|sonnenschein|แบตเตอรี่/,"แบตเตอรี่ แบต battery"],[/\bups\b|interruptible/,"ยูพีเอส เครื่องสำรองไฟ ups"],
+[/\bcard\b|board|\bpcb\b|\bbord\b|circuit/,"การ์ด แผงวงจร บอร์ด เมนบอร์ด board card"],[/computer|\bcpu\b/,"คอมพิวเตอร์ คอม ซีพียู computer"],
+[/monitor|\blcd\b|screen|touch|display|จอ/,"จอ หน้าจอ จอทัชสกรีน จอแสดงผล display"],[/mouse|เมาส์/,"เมาส์ mouse"],[/keyboard|key board/,"คีย์บอร์ด แป้นพิมพ์"],[/ssd|hdd|\bnas\b/,"ฮาร์ดดิสก์ เอสเอสดี ssd"],
+[/\bfan\b|cooling|พัดลม/,"พัดลม ระบายความร้อน cooling fan"],[/air condition/,"แอร์ เครื่องปรับอากาศ ตู้แอร์"],[/filter|กรอง/,"ไส้กรอง กรอง filter"],[/regulator/,"เร็กกูเลเตอร์ ปรับแรงดันลม"],
+[/pump|ปั๊ม/,"ปั๊ม pump"],[/valve|วาล์ว/,"วาล์ว valve"],[/fitting|3 ทาง/,"ข้อต่อลม ฟิตติ้ง"],
+[/guide|ไกด์/,"ไกด์ รางนำ guide"],[/infeed/,"อินฟีด infeed"],[/outfeed/,"เอาท์ฟีด outfeed"],[/conveyor/,"สายพานลำเลียง คอนเวเยอร์ conveyor"],
+[/\bdip\b/,"ดิพ dip หัวดิพ"],[/drum|ดรัม/,"ดรัม drum"],[/rotation/,"โรเทชั่น หมุน rotation"],[/stripper/,"สตริปเปอร์ stripper"],[/\bcam\b/,"แคม cam"],
+[/\brod\b|crank/,"ก้าน ก้านต่อ rod"],[/brush|แปรง/,"แปรง brush"],[/lock|ล็อก/,"ล็อค ล็อก lock"],[/\bdoor\b|ประตู/,"ประตู door"],[/cover|ฝา/,"ฝาครอบ ฝา cover"],
+[/bracket|support/,"ขายึด ตัวรอง support"],[/\bpin\b/,"พิน สลัก pin"],[/\bkey\b/,"คีย์ ลิ่ม"],[/\bhead\b|หัว/,"หัว head"],[/\bneck\b/,"คอขวด neck"],
+[/mou?ld|แม่พิมพ์/,"แม่พิมพ์ โมลด์ mould"],[/thickness|wall/,"ความหนาผนัง ความหนา thickness"],[/safety|safty/,"เซฟตี้ ความปลอดภัย safety"],
+[/adapter|adaptor/,"อะแดปเตอร์ adapter"],[/overhaul|\bkit\b/,"ชุดซ่อม โอเวอร์ฮอล ชุดอะไหล่ kit"],[/spacer/,"สเปเซอร์ แหวนรอง"],
+[/torque|clutch/,"คลัทช์ เซฟตี้คลัทช์ ตัวจำกัดแรงบิด clutch"],[/worm/,"เกียร์ตัวหนอน worm"],[/gearbox|gear box|reducer/,"เกียร์บ็อกซ์ เกียร์ทด gearbox"],
+[/flange/,"หน้าแปลน flange"],[/tube|ท่อ/,"ท่อ tube"],[/sleeve/,"ปลอก sleeve"],[/magnet|magnetic/,"แม่เหล็ก"],[/thermocouple/,"เทอร์โมคัปเปิล"],
+[/power|กำลัง/,"ไฟ"],[/socket/,"ซ็อกเก็ต ซ็อกเก็ตรีเลย์ socket"],[/terminal/,"เทอร์มินัล ขั้วต่อ"],[/fuse/,"ฟิวส์"],[/breaker/,"เบรกเกอร์"]
+];
+function spAutoKeys(i){var t=((i.n||"")+" "+(i.k||"")).toLowerCase(),have={};t.split(/[\s,\/()]+/).forEach(function(w){if(w)have[w]=1});var out=[];
+ SP_SYN.forEach(function(p){if(p[0].test(t))p[1].split(" ").forEach(function(w){if(w&&!have[w.toLowerCase()]&&out.indexOf(w)<0&&t.indexOf(w.toLowerCase())<0)out.push(w)})});return out.slice(0,14)}
 function spItemsSave(a){var old=SP_ITEMS;SP_ITEMS=a;try{localStorage.setItem("sp_items",JSON.stringify(a))}catch(e){SP_ITEMS=old;throw e}}
 
 function spUsedKB(){var t=0;try{Object.keys(localStorage).forEach(function(k){t+=k.length+String(localStorage.getItem(k)||"").length})}catch(e){}return Math.round(t*2/1024)}

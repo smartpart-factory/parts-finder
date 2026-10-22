@@ -56,7 +56,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
 
  <div id="pg-p">
-  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><select id="pmc" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"></select><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
+  <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><select id="pmc" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"></select><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><button class="btn" id="p-kw">✨ เพิ่มคำค้นให้ทุกรายการ</button><button class="btn" id="p-allout" style="border-color:#dc2626;color:#dc2626">❌ ตั้งทุกรายการเป็น "หมด"</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><button class="btn" id="p-mrg">➕ เพิ่มอะไหล่จากไฟล์ (Excel / JSON)</button><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
   <div id="pcnt" style="margin:0 0 6px;color:#64748b;font-size:13px"></div>
   <div class="card"><table><thead><tr><th>รหัส / ชื่อ</th><th>เครื่องจักร</th><th>ตำแหน่ง</th><th>สถานะ</th><th></th></tr></thead><tbody id="pb"></tbody></table></div>
   <div class="note">• แก้ไขที่นี่แล้วทุกหน้า (นำทาง 3D ค้นหา บอท) เปลี่ยนตามทันที · ข้อมูลเก็บในระบบกลาง ทุกเครื่องเห็นชุดเดียวกัน (ผู้ดูแลระบบ ควรกด "สำรองข้อมูลทั้งระบบ" เก็บไว้เป็นระยะ)<br>• เมื่อเริ่มแก้ผ่านหน้านี้ ข้อมูลจะใช้แทนรายการใน data.js (กด "รีเซ็ตอะไหล่" เพื่อกลับไปใช้ data.js)</div>
@@ -89,7 +89,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 
 <div class="ov" id="ov-p"><div class="md"><h3 id="pm-t">เพิ่มอะไหล่</h3>
  <div class="two"><div><label>รหัสอะไหล่ <small style="font-weight:400;color:#64748b">(ไม่มีเลขก็เว้นว่างได้ ระบบสร้างรหัสภายใน NC-xxxx ให้)</small></label><input type="text" id="f-c" placeholder="เว้นว่างได้"></div><div><label>ชื่ออะไหล่ *</label><input type="text" id="f-n"></div></div>
- <label>คำค้นเพิ่ม (ชื่อเรียกอื่น คั่นด้วยเว้นวรรค เช่น ลูกปืน แบริ่ง)</label><input type="text" id="f-k">
+ <label>คำค้นเพิ่ม (ชื่อเรียกอื่น คั่นด้วยเว้นวรรค เช่น ลูกปืน แบริ่ง)</label><div style="display:flex;gap:6px"><input type="text" id="f-k" style="flex:1"><button type="button" class="btn" id="f-kg" title="ให้ระบบคิดชื่อเรียกอื่นจากชื่ออะไหล่">✨ แนะนำคำค้น</button></div><div id="f-ks" class="note" style="display:none;margin:4px 0"></div>
  <label>ใช้กับเครื่องจักร</label><div class="cb" id="f-m"></div>
  <label>🧩 โมเดล 3D (แสดงในแผนที่ 3D ตรงตำแหน่งที่เก็บ)</label><select id="f-mt"></select>
  <label>สถานะ</label><select id="f-st"><option value="1">✅ มีของ</option><option value="0">❌ หมด</option><option value="o">🛒 กำลังสั่งของ</option><option value="r">🔧 กำลังซ่อม</option></select><input type="text" id="f-rn" placeholder="หมายเหตุ เช่น คาดเสร็จ 2 วัน / สั่งแล้ว ของมาวันที่ 25" style="display:none">
@@ -148,6 +148,14 @@ function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
   tr.querySelector('[data-a="e"]').onclick=function(){openP(i)};
   tr.querySelector('[data-a="x"]').onclick=function(){if(!ISA)return;if(confirm('ลบ "'+i.n+'" ('+i.c+') ?')){spItemsSave(SP_ITEMS.filter(function(x){return x!==i}));pdraw()}};
   b.appendChild(tr)})}
+$("f-kg").onclick=function(){var tmp={n:$("f-n").value,k:$("f-k").value},a=spAutoKeys(tmp),b=$("f-ks");b.style.display="block";
+ if(!a.length){b.textContent="ไม่มีคำแนะนำเพิ่ม (ชื่อนี้มีคำค้นครบแล้ว หรือระบบยังไม่รู้จักคำ)";return}
+ $("f-k").value=(tmp.k.trim()+" "+a.join(" ")).trim();b.textContent="เพิ่มแล้ว: "+a.join(" ")+" — แก้/ลบคำที่ไม่ต้องการได้ในช่องด้านบน"};
+$("p-kw").onclick=function(){var n=0,w=0,l=SP_ITEMS.map(function(i){var o=Object.assign({},i),a=spAutoKeys(i);if(a.length){o.k=((i.k||"").trim()+" "+a.join(" ")).trim();n++;w+=a.length}return o});
+ if(!n){alert("ทุกรายการมีคำค้นครบแล้ว");return}if(!confirm("จะเพิ่มคำค้น (ชื่อเรียกอื่นไทย/อังกฤษ) ให้ "+n+" รายการ รวม "+w+" คำ\nคำเดิมไม่ถูกลบ ยืนยัน?"))return;
+ try{spItemsSave(l);alert("เพิ่มคำค้นให้ "+n+" รายการแล้ว");pdraw()}catch(e){alert("บันทึกไม่สำเร็จ")}};
+$("p-allout").onclick=function(){if(!SP_ITEMS.length)return;if(!confirm("ตั้งสถานะ \"หมด\" ให้อะไหล่ทั้งหมด "+SP_ITEMS.length+" รายการ?\n(รายการที่กำลังซ่อม/กำลังสั่งของ จะถูกรีเซ็ตเป็นหมดด้วย)\nแล้วค่อยไล่กด \"มีของ\" ทีละรายการ"))return;
+ var l=SP_ITEMS.map(function(i){var o=Object.assign({},i);o.q=0;delete o.rep;delete o.ord;return o});try{spItemsSave(l);pdraw();alert("ตั้งเป็น \"หมด\" ครบ "+l.length+" รายการแล้ว")}catch(e){alert("บันทึกไม่สำเร็จ")}};
 $("pq").oninput=pdraw;$("pmc").onchange=pdraw;fillPM();
 $("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("");
 function rkName(k){var n=(SP_RACKS[k]&&SP_RACKS[k].nm)||(window.SP_DEPT&&SP_DEPT.rackNames&&SP_DEPT.rackNames[k]);return n||"ชั้นวางที่เพิ่มเอง"}
