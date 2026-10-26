@@ -95,7 +95,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
  <label>สถานะ</label><select id="f-st"><option value="1">✅ มีของ</option><option value="0">❌ หมด</option><option value="o">🛒 กำลังสั่งของ</option><option value="r">🔧 กำลังซ่อม</option></select><label style="display:flex;gap:6px;align-items:center;margin-top:8px"><input type="checkbox" id="f-hid"> 🙈 ซ่อนรายการนี้ (ช่างไม่เห็นในหน้าค้นหา/นำทาง/บอท)</label><input type="text" id="f-rn" placeholder="หมายเหตุ เช่น คาดเสร็จ 2 วัน / สั่งแล้ว ของมาวันที่ 25" style="display:none">
  <label>ตำแหน่งจัดเก็บ (พิมพ์บอกคร่าวๆ)</label><input type="text" id="f-at" placeholder="เช่น ตู้เหล็กข้างประตู ชั้น 2 / บนชั้นเหล็กสีฟ้า">
  <div id="f-3d" class="note" style="margin:6px 0 10px">📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>"จัดวางโมเดล (3D)"</b> (ปุ่ม "วางตำแหน่ง") หลังบันทึกอะไหล่</div>
- <label>รูปอะไหล่ (เลือกรูปจากเครื่อง/ถ่ายรูป — ย่อให้อัตโนมัติ)</label><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><img id="f-imgp" alt="" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #cbd5e1;display:none"><input type="file" id="f-img" accept="image/*" style="flex:1;min-width:160px"><button type="button" class="btn" id="f-imgx" style="padding:5px 10px">ลบรูป</button></div>
+ <label>รูปอะไหล่ — เพิ่มได้สูงสุด 3 รูป (รูปหลัก + ด้านข้าง/ป้ายสเปก) ย่อให้อัตโนมัติ รองรับ .heic</label><div id="f-ims" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
  <label>ไฟล์โมเดล 3D ของอะไหล่ชิ้นนี้ (.glb ไม่บังคับ — เตรียมไว้ใช้ในอนาคต)</label><input type="text" id="f-glb" placeholder="models/bearing.glb">
  <div class="err" id="pe"></div><div class="mf"><button class="btn" id="pc">ยกเลิก</button><button class="btn p" id="ps">บันทึก</button></div></div></div>
 
@@ -168,9 +168,11 @@ $("pvb").onchange=function(){var v=this.value;this.value="";if(!v)return;bulkHid
 $("pq").oninput=pdraw;$("pmc").onchange=pdraw;fillPM();
 $("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("");
 function rkName(k){var n=(SP_RACKS[k]&&SP_RACKS[k].nm)||(window.SP_DEPT&&SP_DEPT.rackNames&&SP_DEPT.rackNames[k]);return n||"ชั้นวางที่เพิ่มเอง"}
-var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block":"none";if(curImg)p.src=curImg}
-$("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){if(d){curImg=d;showImg()}})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
-function openP(i){editing=i||null;edCode=i?String(i.c).toLowerCase():"";curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
+var CI=["","",""],SLN=["รูปหลัก","รูปที่ 2","รูปที่ 3"];
+function drawIms(){var w=$("f-ims");w.innerHTML="";CI.forEach(function(u,k){var d=document.createElement("div");d.style.cssText="border:1px dashed #cbd5e1;border-radius:10px;padding:6px;text-align:center;background:#f8fafc";
+ d.innerHTML='<div style="width:100%;aspect-ratio:1;border-radius:8px;background:#e2e8f0 center/cover no-repeat;'+(u?'background-image:url('+u+')':'')+';display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:12px">'+(u?'':'ยังไม่มีรูป')+'</div><small style="display:block;margin:4px 0">'+SLN[k]+'</small><label class="btn" style="padding:4px 8px;font-size:12px;display:inline-block;cursor:pointer">'+(u?'เปลี่ยน':'เลือกรูป')+'<input type="file" accept="image/*,.heic,.heif" style="display:none"></label>'+(u?' <button type="button" class="btn" style="padding:4px 8px;font-size:12px" data-x="1">ลบ</button>':'');
+ d.querySelector("input").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(r){if(r){CI[k]=r;drawIms()}})};var x=d.querySelector("[data-x]");if(x)x.onclick=function(){CI[k]="";drawIms()};w.appendChild(d)})}
+function openP(i){editing=i||null;edCode=i?String(i.c).toLowerCase():"";CI=[i&&i.img||"",i&&(i.ex||[])[0]||"",i&&(i.ex||[])[1]||""];drawIms();upTried="";$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
  $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-st").value=!i?"1":i.rep?"r":i.q>0?"1":i.ord?"o":"0";$("f-rn").value=i?(i.rep&&i.rep!=="กำลังซ่อม"?i.rep:i.ord&&i.ord!=="สั่งของแล้ว"?i.ord:""):"";$("f-hid").checked=!!(i&&i.hid);$("f-rn").style.display=/[ro]/.test($("f-st").value)?"block":"none";
  $("f-at").value=i&&i.tx?i.tx:"";$("f-mt").value=i&&i.mt||"";$("f-3d").innerHTML=i&&(i.r||i.pos||i.at)?"📍 ตำแหน่งในโมเดล 3D ตอนนี้: <b>"+esc(spLoc(i))+"</b> — ย้าย/แก้ที่หน้า <b>\"จัดวางโมเดล (3D)\"</b> (ปุ่ม \"ย้ายตำแหน่ง\")":"📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>\"จัดวางโมเดล (3D)\"</b> (ปุ่ม \"วางตำแหน่ง\") หลังบันทึกอะไหล่";$("f-glb").value=i&&i.glb?i.glb:"";
  Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(c){c.checked=!!(i&&i.m.indexOf(c.value)>-1)});$("ov-p").classList.add("on");$("f-c").focus()}
@@ -179,14 +181,14 @@ $("f-st").onchange=function(){$("f-rn").style.display=/[ro]/.test($("f-st").valu
 $("p-add").onclick=function(){openP()};$("pc").onclick=function(){$("ov-p").classList.remove("on")};
 var upTried="";
 $("ps").onclick=function(){var c=$("f-c").value.trim(),n=$("f-n").value.trim();
- if(curImg&&/^data:/.test(curImg)&&upTried!==curImg&&n){upTried=curImg;$("pe").textContent="กำลังอัปโหลดรูป...";spUploadImg(curImg,c||n,function(u){if(u)curImg=u;$("ps").onclick()});return}
+ for(var ui=0;ui<3;ui++){if(CI[ui]&&/^data:/.test(CI[ui])&&upTried.indexOf("|"+ui+":"+CI[ui].length)<0&&n){upTried+="|"+ui+":"+CI[ui].length;$("pe").textContent="กำลังอัปโหลดรูป "+(ui+1)+"...";(function(q){spUploadImg(CI[q],(c||n)+(q?"-"+(q+1):""),function(u){if(u)CI[q]=u;$("ps").onclick()})})(ui);return}}
  function spNextNC(extra){var mx=0;SP_ITEMS.concat(extra||[]).forEach(function(i){var m=/^NC-(\d+)$/i.exec(String(i.c));if(m)mx=Math.max(mx,+m[1])});return "NC-"+("000"+(mx+1)).slice(-4)}
 function bad(t){$("pe").textContent=t}
  if(!n)return bad("กรุณากรอกชื่ออะไหล่");if(/^[\s\-–—._]*$/.test(c))c=(editing&&/^NC-\d+$/i.test(editing.c))?editing.c:spNextNC();
  if(SP_ITEMS.some(function(x){return SP_ITEMS.indexOf(x)!==edIdx()&&x.c.toLowerCase()===c.toLowerCase()}))return bad("รหัสนี้มีอยู่แล้ว");
  var m=[];Array.prototype.forEach.call($("f-m").querySelectorAll("input"),function(x){if(x.checked)m.push(x.value)});
  var glb=$("f-glb").value.trim();if(glb&&!/^(https?:\/\/|[\w\-./]+)[^\s"'<>]*\.(glb|gltf)$/i.test(glb))return bad("ไฟล์โมเดลต้องลงท้ายด้วย .glb หรือ .gltf และไม่มีช่องว่าง");
- var ex=edIdx(),o=Object.assign({},(ex>=0?SP_ITEMS[ex]:editing)||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:$("f-st").value==="0"?0:1,min:0});delete o.rep;delete o.ord;delete o.glb;delete o.img;delete o.t;delete o.rp;delete o.rlog;delete o.u;if($("f-mt").value)o.mt=$("f-mt").value;else delete o.mt;if(curImg)o.img=curImg;
+ var ex=edIdx(),o=Object.assign({},(ex>=0?SP_ITEMS[ex]:editing)||{},{c:c,n:n,k:$("f-k").value.trim(),m:m,q:$("f-st").value==="0"?0:1,min:0});delete o.rep;delete o.ord;delete o.glb;delete o.img;delete o.t;delete o.rp;delete o.rlog;delete o.u;if($("f-mt").value)o.mt=$("f-mt").value;else delete o.mt;delete o.ex;var cim=CI.filter(Boolean);if(cim[0])o.img=cim[0];if(cim.length>1)o.ex=cim.slice(1);
  if(glb)o.glb=glb;
  if($("f-st").value==="r")o.rep=$("f-rn").value.trim()||"กำลังซ่อม";
  if($("f-st").value==="o")o.ord=$("f-rn").value.trim()||"สั่งของแล้ว";

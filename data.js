@@ -70,6 +70,26 @@ function spResize(file,cb,max){max=max||480;var done=false;function fin(d){if(do
  if(!heic)return run(file);
  spLoadHeic(function(ok){if(!ok)return run(file);window.heic2any({blob:file,toType:"image/jpeg",quality:.8}).then(function(r){run(Array.isArray(r)?r[0]:r)}).catch(function(){run(file)})})}
 function spImg(i){return i.img||("images/"+i.c+".jpg")}
+
+/* หลายรูปต่ออะไหล่: img = รูปหลัก, ex = รูปเพิ่ม (สูงสุดรวม 3 รูป) */
+function spImgs(i){var a=[];if(i.img)a.push(i.img);(i.ex||[]).forEach(function(u){if(u)a.push(u)});return a}
+function spGallery(c){var i=SP_ITEMS.filter(function(x){return String(x.c)===String(c)})[0];if(!i)return;var a=spImgs(i);if(!a.length)a=[spImg(i)];var k=0;
+ var o=document.createElement("div");o.style.cssText="position:fixed;inset:0;background:rgba(2,6,23,.88);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px";
+ var t=document.createElement("div");t.style.cssText="color:#fff;font:600 15px/1.3 sans-serif;text-align:center;max-width:92vw";t.textContent=i.n+" ("+i.c+")";
+ var im=document.createElement("img");im.style.cssText="max-width:92vw;max-height:70vh;border-radius:10px;background:#fff;object-fit:contain";
+ var th=document.createElement("div");th.style.cssText="display:flex;gap:8px";
+ var bar=document.createElement("div");bar.style.cssText="display:flex;gap:10px;align-items:center";
+ function bt(x,f){var b=document.createElement("button");b.textContent=x;b.style.cssText="padding:8px 16px;border:0;border-radius:8px;background:#1565d8;color:#fff;font:600 15px sans-serif;cursor:pointer";b.onclick=function(e){e.stopPropagation();f()};return b}
+ function show(n){k=(n+a.length)%a.length;im.src=a[k];Array.prototype.forEach.call(th.children,function(x,j){x.style.outline=j===k?"3px solid #38bdf8":"none";x.style.opacity=j===k?"1":".6"})}
+ a.forEach(function(u,j){var x=document.createElement("img");x.src=u;x.style.cssText="width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;background:#fff";x.onclick=function(e){e.stopPropagation();show(j)};th.appendChild(x)});
+ im.onerror=function(){im.alt="ไม่มีรูปของอะไหล่นี้"};
+ function close(){document.removeEventListener("keydown",kd);o.remove()}
+ function kd(e){if(e.key==="Escape")close();else if(e.key==="ArrowRight")show(k+1);else if(e.key==="ArrowLeft")show(k-1)}
+ document.addEventListener("keydown",kd);o.onclick=close;
+ if(a.length>1){bar.appendChild(bt("◀",function(){show(k-1)}));bar.appendChild(bt("▶",function(){show(k+1)}))}
+ bar.appendChild(bt("ปิด",close));
+ o.appendChild(t);o.appendChild(im);if(a.length>1)o.appendChild(th);o.appendChild(bar);document.body.appendChild(o);show(0)}
+document.addEventListener("click",function(e){var t=e.target&&e.target.closest&&e.target.closest("[data-gal]");if(t){e.preventDefault();e.stopPropagation();spGallery(t.getAttribute("data-gal"))}},true);
 /* สถานะมี 3 แบบ: มีของ (q>0) / หมด (q<=0) / กำลังซ่อม (มี rep) — ไม่นับจำนวนแล้ว */
 function spStatus(i){return i.rep?"repair":(i.q>0?"stock":(i.ord?"ordering":"out"))}
 /* ตั้งสถานะ "กำลังสั่งของ" (ของหมด + มีการสั่งอยู่) note = ข้อความ เช่น เลขคำขอ/วันที่คาดว่าของมา */
@@ -140,7 +160,7 @@ function spUploadImg(du,tag,cb){try{var C=window.SP_CLOUD,T=window.SPC&&SPC.toke
  var b=atob(du.split(",")[1]),a=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)a[i]=b.charCodeAt(i);var mime=du.slice(5,du.indexOf(";")),ext=mime.indexOf("png")>0?"png":"jpg",
  p="items/"+String(tag||"x").replace(/[^A-Za-z0-9_-]/g,"_").slice(0,40)+"-"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)+"."+ext;
  fetch(C.url+"/storage/v1/object/parts/"+p,{method:"POST",headers:{apikey:C.key,Authorization:"Bearer "+T,"Content-Type":mime,"x-upsert":"false"},body:a}).then(function(r){cb(r.ok?C.url+"/storage/v1/object/public/parts/"+p:"")},function(){cb("")})}catch(e){cb("")}}
-function spMigrateImgs(prog,cb){var L=[];SP_ITEMS.forEach(function(i){if(i.img&&String(i.img).indexOf("data:")===0)L.push({o:i,t:i.c})});SP_MACH.forEach(function(m){if(m.img&&String(m.img).indexOf("data:")===0)L.push({o:m,t:"mach-"+m.k})});
+function spMigrateImgs(prog,cb){var L=[];SP_ITEMS.forEach(function(i){if(i.img&&String(i.img).indexOf("data:")===0)L.push({o:i,t:i.c});(i.ex||[]).forEach(function(u,j){if(u&&String(u).indexOf("data:")===0)L.push({o:{get img(){return i.ex[j]},set img(v){i.ex[j]=v}},t:i.c+"-"+(j+2)})})});SP_MACH.forEach(function(m){if(m.img&&String(m.img).indexOf("data:")===0)L.push({o:m,t:"mach-"+m.k})});
  var n=L.length,done=0,ok=0,k=0;if(!n)return cb({n:0,ok:0});
  function next(){if(k>=L.length)return;var e=L[k++];spUploadImg(e.o.img,e.t,function(u){if(u){e.o.img=u;ok++}done++;prog&&prog(done,n);if(done===n){var er="";try{spItemsSave(SP_ITEMS);spMachSave(SP_MACH)}catch(x){er="save"}cb({n:n,ok:ok,err:er})}else next()})}
  for(var w=0;w<3&&w<n;w++)next()}
