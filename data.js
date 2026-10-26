@@ -60,11 +60,15 @@ function spModelGuess(n){var s=String(n||"").toLowerCase();
  if(/valve|วาล์ว|cylinder|กระบอก|solenoid|โซลินอยด์/.test(s))return "valve";if(/sensor|เซนเซอร์|เซ็นเซอร์|switch|สวิตช์|สวิทช์/.test(s))return "sensor";if(/pump|ปั๊ม/.test(s))return "pump";return ""}
 function spLocShort(i){if(i.dw)return "ลิ้นชัก "+i.dw[1]+"-"+i.dw[2];return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปักหมุด":"ยังไม่กำหนด"))}
 /* รูปอะไหล่: ย่อรูปที่เลือกเป็น JPEG ไม่เกิน 360px (เก็บเป็น data URL ในเบราว์เซอร์) */
-function spResize(file,cb,max){max=max||480;var done=false;function fin(d){if(done)return;done=true;if(!d)alert("เปิดรูปนี้ไม่ได้ — ถ้าเป็นรูปจากมือถือ Samsung ให้ปิด \"ภาพถ่ายคุณภาพสูง (HEIF)\" ในตั้งค่ากล้อง หรือเลือกรูปแบบ JPG แล้วลองใหม่");cb(d||"")}
+function spLoadHeic(cb){if(window.heic2any)return cb(true);var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";s.onload=function(){cb(!!window.heic2any)};s.onerror=function(){cb(false)};document.head.appendChild(s)}
+function spResize(file,cb,max){max=max||480;var done=false;function fin(d){if(done)return;done=true;if(!d)alert("เปิดรูปนี้ไม่ได้ — ถ้าเป็นรูป .heic ให้ต่ออินเทอร์เน็ตแล้วลองใหม่ หรือเปลี่ยนกล้องให้ถ่ายเป็น JPG (ตั้งค่ากล้อง > ปิด HEIF/ภาพถ่ายคุณภาพสูง)");cb(d||"")}
  function draw(src,w,h){try{var k=Math.min(1,max/Math.max(w,h)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(w*k));c.height=Math.max(1,Math.round(h*k));var x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(src,0,0,c.width,c.height);fin(c.toDataURL("image/jpeg",.74))}catch(e){fin("")}}
- function viaImg(){var u=null,im=new Image();im.onload=function(){draw(im,im.naturalWidth||im.width,im.naturalHeight||im.height);if(u)URL.revokeObjectURL(u)};im.onerror=function(){if(u)URL.revokeObjectURL(u);viaReader()};try{u=URL.createObjectURL(file);im.src=u}catch(e){viaReader()}}
- function viaReader(){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){draw(im,im.naturalWidth||im.width,im.naturalHeight||im.height)};im.onerror=function(){fin("")};im.src=r.result};r.onerror=function(){fin("")};r.readAsDataURL(file)}
- if(window.createImageBitmap){createImageBitmap(file,{imageOrientation:"from-image"}).then(function(bm){draw(bm,bm.width,bm.height);if(bm.close)bm.close()}).catch(function(){viaImg()})}else viaImg()}
+ function run(f){function viaImg(){var u=null,im=new Image();im.onload=function(){draw(im,im.naturalWidth||im.width,im.naturalHeight||im.height);if(u)URL.revokeObjectURL(u)};im.onerror=function(){if(u)URL.revokeObjectURL(u);viaReader()};try{u=URL.createObjectURL(f);im.src=u}catch(e){viaReader()}}
+  function viaReader(){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){draw(im,im.naturalWidth||im.width,im.naturalHeight||im.height)};im.onerror=function(){fin("")};im.src=r.result};r.onerror=function(){fin("")};r.readAsDataURL(f)}
+  if(window.createImageBitmap){createImageBitmap(f,{imageOrientation:"from-image"}).then(function(bm){draw(bm,bm.width,bm.height);if(bm.close)bm.close()}).catch(function(){viaImg()})}else viaImg()}
+ var heic=/heic|heif/i.test(file.type||"")||/\.(heic|heif)$/i.test(file.name||"");
+ if(!heic)return run(file);
+ spLoadHeic(function(ok){if(!ok)return run(file);window.heic2any({blob:file,toType:"image/jpeg",quality:.8}).then(function(r){run(Array.isArray(r)?r[0]:r)}).catch(function(){run(file)})})}
 function spImg(i){return i.img||("images/"+i.c+".jpg")}
 /* สถานะมี 3 แบบ: มีของ (q>0) / หมด (q<=0) / กำลังซ่อม (มี rep) — ไม่นับจำนวนแล้ว */
 function spStatus(i){return i.rep?"repair":(i.q>0?"stock":(i.ord?"ordering":"out"))}
