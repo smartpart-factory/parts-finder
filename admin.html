@@ -169,7 +169,7 @@ $("pq").oninput=pdraw;$("pmc").onchange=pdraw;fillPM();
 $("f-m").innerHTML=SP_MACHINES.map(function(m){return '<label><input type="checkbox" value="'+esc(m)+'"> '+esc(m)+'</label>'}).join("");
 function rkName(k){var n=(SP_RACKS[k]&&SP_RACKS[k].nm)||(window.SP_DEPT&&SP_DEPT.rackNames&&SP_DEPT.rackNames[k]);return n||"ชั้นวางที่เพิ่มเอง"}
 var curImg="";function showImg(){var p=$("f-imgp");p.style.display=curImg?"block":"none";if(curImg)p.src=curImg}
-$("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){curImg=d;showImg()})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
+$("f-img").onchange=function(e){var f=e.target.files[0];if(f)spResize(f,function(d){if(d){curImg=d;showImg()}})};$("f-imgx").onclick=function(){curImg="";$("f-img").value="";showImg()};
 function openP(i){editing=i||null;edCode=i?String(i.c).toLowerCase():"";curImg=i&&i.img||"";$("f-img").value="";showImg();$("pm-t").textContent=i?"แก้ไขอะไหล่":"เพิ่มอะไหล่";$("pe").textContent="";
  $("f-c").value=i?i.c:"";$("f-n").value=i?i.n:"";$("f-k").value=i&&i.k?i.k:"";$("f-st").value=!i?"1":i.rep?"r":i.q>0?"1":i.ord?"o":"0";$("f-rn").value=i?(i.rep&&i.rep!=="กำลังซ่อม"?i.rep:i.ord&&i.ord!=="สั่งของแล้ว"?i.ord:""):"";$("f-hid").checked=!!(i&&i.hid);$("f-rn").style.display=/[ro]/.test($("f-st").value)?"block":"none";
  $("f-at").value=i&&i.tx?i.tx:"";$("f-mt").value=i&&i.mt||"";$("f-3d").innerHTML=i&&(i.r||i.pos||i.at)?"📍 ตำแหน่งในโมเดล 3D ตอนนี้: <b>"+esc(spLoc(i))+"</b> — ย้าย/แก้ที่หน้า <b>\"จัดวางโมเดล (3D)\"</b> (ปุ่ม \"ย้ายตำแหน่ง\")":"📍 ตำแหน่งจริงในโมเดล 3D ให้ไปกำหนดที่หน้า <b>\"จัดวางโมเดล (3D)\"</b> (ปุ่ม \"วางตำแหน่ง\") หลังบันทึกอะไหล่";$("f-glb").value=i&&i.glb?i.glb:"";
