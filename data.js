@@ -48,9 +48,16 @@ var SP_ITEMS=[
   // {c:"BRG-6205",n:"Bearing 6205",k:"ลูกปืน แบริ่ง",m:["ISM","RENGER"],q:48,min:20,r:"A1",s:2,u:"ตัว"},
 ];
 /* ข้อความตำแหน่งของอะไหล่: อยู่บนชั้นวาง หรือปักหมุดในโมเดล 3D (เช่น บนโต๊ะ) */
-function spLoc(i){if(i.dw)return "ตู้ลิ้นชัก (หน้าโต๊ะ) แถว "+i.dw[1]+" ชั้น "+i.dw[2]+(i.tx?" · "+i.tx:"");var pin=!!(i.pos||i.at),b=i.r?("ชั้นวาง "+i.r+(i.s?" ชั้นที่ "+i.s:"")):(pin?(i.at||"จุดที่ปักหมุดใน 3D"):(i.tx||"ยังไม่ได้กำหนดตำแหน่ง"));return i.tx&&(i.r||pin)?b+" · "+i.tx:b}
+function spDeskLoc(w){var n=+w[0].slice(3),nw=n===9||n===10;return nw?(w[1]===1?"โต๊ะ — ลิ้นชักกลาง":"โต๊ะ — ตู้ลิ้นชักข้างขวา ชั้น "+w[2]):(w[1]===2?"โต๊ะ — ลิ้นชักกลาง":"โต๊ะ — ตู้ลิ้นชัก"+(w[1]===1?"ซ้าย":"ขวา")+" ชั้น "+w[2])}
+function spLoc(i){if(i.dw){var dk=/^DSK/.test(i.dw[0]);return (dk?spDeskLoc(i.dw):"ตู้ลิ้นชัก (หน้าโต๊ะ) แถว "+i.dw[1]+" ชั้น "+i.dw[2])+(i.tx?" · "+i.tx:"")}var pin=!!(i.pos||i.at),b=i.r?("ชั้นวาง "+i.r+(i.s?" ชั้นที่ "+i.s:"")):(pin?(i.at||"จุดที่ปักหมุดใน 3D"):(i.tx||"ยังไม่ได้กำหนดตำแหน่ง"));return i.tx&&(i.r||pin)?b+" · "+i.tx:b}
 /* โมเดล 3D ของอะไหล่ที่เลือกเองได้ (เก็บในฟิลด์ mt) — ไม่เลือก = ไม่แสดงโมเดล */
 var SP_MODELS=[["","— ไม่แสดงโมเดล 3D —"],["hbelt","🧲 สายพานแขวนผนัง (เสาสี่เหลี่ยม)"],["hbeltb","🧲 สายพานแขวนผนัง (ใหญ่/หลายเส้น)"],["hcoil","🧲 สายยาง/สายไฟแขวนผนัง"],["motor","⚙️ มอเตอร์"],["gear","🔩 เกียร์มอเตอร์"],["cable","🔌 สายไฟ (ม้วน)"],["cablebox","🧰 สายไฟในกล่อง"],["belt","🟤 สายพานมอเตอร์"],["bearing","⚪ ตลับลูกปืน"],["board","🟩 การ์ด / แผงวงจร (PLC)"],["valve","🔵 กระบอกลม / วาล์ว"],["sensor","📡 เซ็นเซอร์"],["pump","💧 ปั๊ม"],["bin","📥 กล่องพลาสติกอะไหล่ชิ้นเล็ก"],["box","📦 กล่องพัสดุ"],["fender","🛡️ แผ่นโค้ง / บังโคลน (ห่อพลาสติก)"],["gearbox","⚙️ ชุดเฟือง / เกียร์บ็อกซ์ (ห่อพลาสติก)"],["bracket","🟩 ขาจับ / ชุดใบมีด"],["beltbag","🛍️ สายพานในถุงซิป"],["fiber","🧵 สายไฟเบอร์ออปติกในถุง"],["dcmotor","🔋 มอเตอร์ DC (ห่อพลาสติก)"],["micro","🎚️ ชุดปรับไมโครมิเตอร์"],["roller","🟤 ลูกกลิ้ง / ดรัมพันผ้าทราย"],["vgear","🏭 เกียร์มอเตอร์แนวตั้ง (ห่อพลาสติก)"],["disc","⚪ แผ่นกลม / แหวนรอง"],["shaft","📏 เพลา / สไปล์ชาฟต์"],["sensorcable","🔌 สายเซ็นเซอร์ + หัวคอนเน็กเตอร์"],["dinpsu","🔋 พาวเวอร์ซัพพลาย DIN-rail (Mean Well DR-120-24)"],["rackmod","🗄️ โมดูลแร็ค Precitec M4 (ตลับอลูมิเนียม)"],["tcpmod","🎛️ โมดูล TCP.I (ปุ่มหมุน + สวิตช์)"],["rackcase","🖥️ เครื่องควบคุมแบบแร็ค WSIO (ห่อพลาสติก)"]];
+var SP_MNAMES={};try{SP_MNAMES=JSON.parse(localStorage.getItem("sp_mnames")||"{}")||{}}catch(e){}
+function spMIcon(m){return String(m[2]).split(" ")[0]}
+function spMDefName(m){return String(m[2]).slice(spMIcon(m).length+1)}
+function spMApply(){SP_MODELS.forEach(function(m){if(m[0]==="")return;if(m[2]==null)m[2]=m[1];var n=SP_MNAMES[m[0]];m[1]=n?spMIcon(m)+" "+n:m[2]})}
+function spMNamesSave(o){SP_MNAMES=o;try{localStorage.setItem("sp_mnames",JSON.stringify(o))}catch(e){}spMApply()}
+spMApply();
 var SP_WALLM=["hbelt","hbeltb","hcoil"];
 function spModelOpts(sel,wall){return SP_MODELS.filter(function(m){return !wall?true:(m[0]===""||SP_WALLM.indexOf(m[0])>=0)}).map(function(m){return '<option value="'+m[0]+'"'+(m[0]===sel?' selected':'')+'>'+m[1]+'</option>'}).join("")}
 function spModelGuess(n){var s=String(n||"").toLowerCase();
@@ -58,7 +65,7 @@ function spModelGuess(n){var s=String(n||"").toLowerCase();
  if(/สายพาน|belt/.test(s))return "belt";if(/เกียร์|gear/.test(s))return "gear";if(/มอเตอร์|motor/.test(s))return "motor";if(/สายไฟ|cable|wire|สาย/.test(s))return "cable";
  if(/bearing|ลูกปืน|แบริ่ง/.test(s))return "bearing";if(/card|board|plc|การ์ด|แผง|pcb|module|โมดูล|drive|ไดรฟ์/.test(s))return "board";
  if(/valve|วาล์ว|cylinder|กระบอก|solenoid|โซลินอยด์/.test(s))return "valve";if(/sensor|เซนเซอร์|เซ็นเซอร์|switch|สวิตช์|สวิทช์/.test(s))return "sensor";if(/pump|ปั๊ม/.test(s))return "pump";return ""}
-function spLocShort(i){if(i.dw)return "ลิ้นชัก "+i.dw[1]+"-"+i.dw[2];return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปักหมุด":"ยังไม่กำหนด"))}
+function spLocShort(i){if(i.dw)return /^DSK/.test(i.dw[0])?spDeskLoc(i.dw):"ลิ้นชัก "+i.dw[1]+"-"+i.dw[2];return i.r?(i.r+"-"+(i.s||1)):(i.at||i.tx||(i.pos?"ปักหมุด":"ยังไม่กำหนด"))}
 /* รูปอะไหล่: ย่อรูปที่เลือกเป็น JPEG ไม่เกิน 360px (เก็บเป็น data URL ในเบราว์เซอร์) */
 function spLoadHeic(cb){if(window.heic2any)return cb(true);var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js";s.onload=function(){cb(!!window.heic2any)};s.onerror=function(){cb(false)};document.head.appendChild(s)}
 function spResize(file,cb,max){max=max||480;var done=false;function fin(d){if(done)return;done=true;if(!d)alert("เปิดรูปนี้ไม่ได้ — ถ้าเป็นรูป .heic ให้ต่ออินเทอร์เน็ตแล้วลองใหม่ หรือเปลี่ยนกล้องให้ถ่ายเป็น JPG (ตั้งค่ากล้อง > ปิด HEIF/ภาพถ่ายคุณภาพสูง)");cb(d||"")}

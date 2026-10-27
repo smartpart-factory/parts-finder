@@ -13,6 +13,17 @@ var D=SP_DEPT;D.KP=KP;D.KD=KD;
  var c=F[13];F.splice(13,1,{t:"cabinet",n:"ตู้กระจกสีเทา",h:1.8,x:c.x-c.w/4,z:c.z,w:c.w/2-.02,d:c.d,col:"#8a8f98",glass:1},{t:"cabinet",n:"ตู้กระจกสีเทา",h:1.8,x:c.x+c.w/4,z:c.z,w:c.w/2-.02,d:c.d,col:"#8a8f98",glass:1});
  F.forEach(function(f){if(f.t==="fridge"){f.old=1}if(f.t==="bin"){f.col="#c0392b"}});
 })();
+/* ลิ้นชักของโต๊ะ: สร้าง "ลิ้นชักเสมือน" ต่อโต๊ะ 1 ชุด (แถว1 = ลิ้นชักกลาง, แถว2 = ลิ้นชัก 3 ชั้นด้านขวา) ให้วางอะไหล่ได้เหมือนตู้ลิ้นชัก */
+D.faceRot=function(f){return f.rot!=null?f.rot:(f.face===-1?Math.PI:0)};
+D.deskInfo=function(f){if(f._i)return f._i;
+ var L=Math.max(f.w,f.d),S=Math.min(f.w,f.d),h=f.h,best=1e9,tg=null,cx=(D.bounds[0]+D.bounds[2])/2,cz=(D.bounds[1]+D.bounds[3])/2,rot,sgn;
+ D.furn.forEach(function(q){if(q.t!=="stool")return;var d=Math.hypot(q.x-f.x,q.z-f.z);if(d<best){best=d;tg=q}});
+ if(f.w>=f.d){sgn=((tg?tg.z:cz)>=f.z)?1:-1;rot=sgn>0?0:Math.PI}else{sgn=((tg?tg.x:cx)>=f.x)?1:-1;rot=sgn>0?Math.PI/2:-Math.PI/2}
+ var legH=.1;return f._i={nw:!!f.nw,L:L,S:S,h:h,rot:rot,legH:legH,bodyH:h-.035-legH,pw:Math.min(.42,L*.3),off:f.z>26}};
+D.deskRows=function(I){var tot=I.bodyH-.08,fr=[.22,.3,.48],y=I.legH+I.bodyH-.03,out=[];fr.forEach(function(k){var hh=tot*k;out.push({y:y-hh/2,h:hh-.016});y-=hh+.01});return out};
+(function(){var k=0,add=[];D.furn.forEach(function(f){if(f.t!=="table")return;f.did="DSK"+(++k);if(k===9||k===10)f.nw=1;var I=D.deskInfo(f),rr=Math.abs(Math.sin(I.rot))>.5;
+ add.push({t:"deskdw",id:f.did,n:"โต๊ะ (ลิ้นชัก)",cols:I.nw?2:3,rows:3,x:f.x,z:f.z,h:f.h,w:rr?I.S:I.L,d:rr?I.L:I.S,rot:I.rot,I:I})});
+ add.forEach(function(a){D.furn.push(a)})})();
 /* เหลือกำแพงเฉพาะ ห้องเก็บอะไหล่ และ ห้องออฟฟิศ (ห้องโต๊ะทำงาน) */
 D.walls=[[1.905,0.075,8.7,0.075],[1.905,9.315,8.7,9.315],[1.905,0.075,1.905,9.315,[[7.545,9.3]]],[8.7,0.075,8.7,9.315],
  [1.755,41.025,8.7,41.025],[1.755,48.915,8.7,48.915],[1.755,41.025,1.755,48.915,[[41.985,43.68]]],[8.7,41.025,8.7,48.915]];
@@ -244,23 +255,59 @@ D.inkjet=function(g,f,surf){
  bx(g,.3,.1,.012,f.x,f.h+.12,f.z+.153,0xf2c500);
  for(var i=0;i<7;i++)bx(g,.3,.012,.3,f.x-.2,.18+i*.04,f.z-.45,0xc8a26a,{roughness:.9});
  bx(g,.3,.2,.3,f.x-.2,.09,f.z-.45,0xf2c500,{roughness:.8})};
-// ===== โต๊ะเหล็กทำงาน (ตู้ลิ้นชัก 2 ข้าง ลิ้นชักกลาง ขาเรียว) =====
-D.desk=function(g,f,surf){
- var L=Math.max(f.w,f.d),S=Math.min(f.w,f.d),h=f.h,grp=new THREE.Group(),best=1e9,tg=null,cx=(BND[0]+BND[2])/2,cz=(BND[1]+BND[3])/2;
- D.furn.forEach(function(q){if(q.t!=="stool")return;var d=Math.hypot(q.x-f.x,q.z-f.z);if(d<best){best=d;tg=q}});
- var sgn;if(f.w>=f.d){sgn=((tg?tg.z:cz)>=f.z)?1:-1;grp.rotation.y=sgn>0?0:Math.PI}else{sgn=((tg?tg.x:cx)>=f.x)?1:-1;grp.rotation.y=sgn>0?Math.PI/2:-Math.PI/2}
- grp.position.set(f.x,0,f.z);g.add(grp);
- var off=f.z>26,body=off?0x74787f:0xe9ecf0,dark=0x3b3a40,topC=off?0x7f8c78:0xf4f5f7,legH=.1,bodyH=h-.035-legH,pw=Math.min(.42,L*.3);
- var top=bx(grp,L,.035,S,0,h-.0175,0,topC,off?{roughness:.12,metalness:.1,transparent:true,opacity:.82}:{roughness:.5});surf(top,"บน"+f.n);
+// ===== โต๊ะเหล็กทำงาน (ตามรูปโต๊ะจริง: ท็อปกระจกขอบเขียวขี้ม้า · ลิ้นชักกลาง · ตู้ลิ้นชัก 3 ชั้นด้านขวา · ขาท่อเหล็กด้านซ้าย เปิดช่องวางเข่า) =====
+D.plate=function(txt,w,h,bg,fg){var c=document.createElement("canvas");c.width=256;c.height=Math.max(32,Math.round(256*h/w));var x=c.getContext("2d");x.fillStyle=bg||"#f1ede2";x.fillRect(0,0,c.width,c.height);x.strokeStyle="#8a8374";x.lineWidth=3;x.strokeRect(1.5,1.5,c.width-3,c.height-3);x.fillStyle=fg||"#2b2a28";x.font="700 "+Math.round(c.height*.62)+"px 'Noto Sans Thai','Segoe UI',sans-serif";x.textAlign="center";x.textBaseline="middle";x.fillText(txt,c.width/2,c.height/2+1);
+ var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c)}));return m};
+D.desk=function(g,f,surf){(D.deskInfo(f).nw?D.deskNew:D.deskOld)(g,f,surf)};
+D.deskNew=function(g,f,surf){
+ var I=D.deskInfo(f),L=I.L,S=I.S,h=f.h,grp=new THREE.Group(),off=I.off,pw=I.pw,legH=I.legH,bodyH=I.bodyH,
+  body=off?0xcdbfa8:0xe3e6ea,bodyD=off?0xb0a38c:0xc5cad1,rim=off?0x7f8c6a:0xcfd3d8,steel=off?0x8a8f96:0x9aa1ab,dark=0x2f2e33,silver=0xdfe3e8;
+ grp.rotation.y=I.rot;grp.position.set(f.x,0,f.z);g.add(grp);
+ var id=f.did,DW=function(c,r){return[id,c,r]};
+ /* ท็อป: แผ่นรองสีเขียวขี้ม้า + กระจกใส + ขอบมนสีเขียวขี้ม้า */
+ bx(grp,L,.02,S,0,h-.03-.005,0,off?0x9aa38a:0xf0f1f3,{roughness:.6});
+ var top=bx(grp,L-.03,.014,S-.03,0,h-.007,0,0xdfeee6,{roughness:.08,metalness:.1,transparent:true,opacity:.5});surf(top,"บน"+f.n,{dwf:id});
+ bx(grp,L,.034,.03,0,h-.017,S/2-.015,rim,{roughness:.45});bx(grp,L,.034,.03,0,h-.017,-S/2+.015,rim,{roughness:.45});
+ bx(grp,.03,.034,S-.06,L/2-.015,h-.017,0,rim,{roughness:.45});bx(grp,.03,.034,S-.06,-L/2+.015,h-.017,0,rim,{roughness:.45});
+ if(!off){bx(grp,L*.92,.5,.025,0,h+.25,-S/2+.02,0xffffff,{roughness:.3});bx(grp,L*.92+.03,.03,.03,0,h+.5,-S/2+.02,0x9aa1ab);bx(grp,L*.92+.03,.03,.03,0,h+.01,-S/2+.02,0x9aa1ab)}
+ /* ตู้ลิ้นชัก 3 ชั้น (ด้านขวา เมื่อนั่งหน้าโต๊ะ) */
+ var px=L/2-pw/2-.02,zf=S/2-.025;
+ bx(grp,pw,bodyH,S-.05,px,legH+bodyH/2,-.005,body,{roughness:.55,metalness:.25});
+ bx(grp,pw+.012,.016,S-.04,px,legH+.008,-.005,bodyD,{metalness:.2});
+ [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){var lg=new THREE.Mesh(new THREE.CylinderGeometry(.022,.016,legH,10),mat(0x6f6a73,{metalness:.3}));lg.position.set(px+q[0]*(pw/2-.04),legH/2,q[1]*(S/2-.06));lg.castShadow=true;grp.add(lg)});
+ var RW=D.deskRows(I),names=["เครื่องเขียน","เอกสาร","ของใช้ส่วนตัว"];
+ RW.forEach(function(R,i){var fr=bx(grp,pw-.03,R.h,.014,px,R.y,zf+.004,i===2?bodyD:body,{roughness:.5,metalness:.25});surf(fr,"ลิ้นชักโต๊ะ ชั้น "+(i+1),{dw:DW(2,i+1)});
+  bx(grp,pw*.45,.018,.016,px,R.y+R.h/2-.026,zf+.016,dark);
+  if(i===1){var lk=new THREE.Mesh(new THREE.CylinderGeometry(.011,.011,.01,12),mat(silver,{metalness:.85,roughness:.25}));lk.rotation.x=Math.PI/2;lk.position.set(px+pw*.3,R.y,zf+.014);grp.add(lk)}
+  var pl=D.plate(names[i],pw*.62,.035);pl.position.set(px,R.y-R.h/2+.032,zf+.0125);grp.add(pl)});
+ /* ลิ้นชักกลาง (ลิ้นชักดินสอ มีกุญแจ) */
+ var cl=-L/2+.1,cr=L/2-pw-.04,cwid=cr-cl,cx0=(cl+cr)/2;
+ if(cwid>.15){var cf=bx(grp,cwid-.02,.06,.014,cx0,h-.035-.04,zf+.004,body,{roughness:.5,metalness:.25});surf(cf,"ลิ้นชักกลางโต๊ะ",{dw:DW(1,1)});
+  bx(grp,cwid-.02,.035,S-.08,cx0,h-.035-.04,-.005,bodyD,{roughness:.6});
+  bx(grp,cwid*.34,.016,.016,cx0,h-.035-.052,zf+.016,dark);var lk2=new THREE.Mesh(new THREE.CylinderGeometry(.011,.011,.01,12),mat(silver,{metalness:.85,roughness:.25}));lk2.rotation.x=Math.PI/2;lk2.position.set(cx0+cwid*.36,h-.035-.032,zf+.014);grp.add(lk2);
+  var pl2=D.plate("ของใช้ส่วนตัว",Math.min(.2,cwid*.4),.03);pl2.position.set(cx0-cwid*.28,h-.035-.04,zf+.0125);grp.add(pl2);
+  /* แผงหลังโต๊ะ + รางวางเท้า */
+  bx(grp,cwid,bodyH-.2,.012,cx0,legH+(bodyH-.2)/2+.1,-S/2+.045,body,{roughness:.55,metalness:.2});
+  var fr2=new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,cwid,10),mat(steel,{metalness:.7,roughness:.3}));fr2.rotation.z=Math.PI/2;fr2.position.set(cx0,.16,S/2-.12);grp.add(fr2)}
+ /* ขาท่อเหล็กด้านซ้าย */
+ var lx=-L/2+.05;
+ [-1,1].forEach(function(q){var t=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,h-.035,12),mat(steel,{metalness:.75,roughness:.3}));t.position.set(lx,(h-.035)/2,q*(S/2-.06));t.castShadow=true;grp.add(t);
+  bx(grp,.05,.012,.07,lx,.006,q*(S/2-.06),0x3b3a40)});
+ var cb=new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,S-.12,10),mat(steel,{metalness:.75,roughness:.3}));cb.rotation.x=Math.PI/2;cb.position.set(lx,.14,0);grp.add(cb);
+ var cb2=cb.clone();cb2.position.set(lx,h-.06,0);grp.add(cb2)};
+D.deskOld=function(g,f,surf){
+ var I=D.deskInfo(f),L=I.L,S=I.S,h=f.h,grp=new THREE.Group(),off=I.off,body=off?0x74787f:0xe9ecf0,dark=0x3b3a40,topC=off?0x7f8c78:0xf4f5f7,legH=I.legH,bodyH=I.bodyH,pw=I.pw,id=f.did;
+ grp.rotation.y=I.rot;grp.position.set(f.x,0,f.z);g.add(grp);
+ var top=bx(grp,L,.035,S,0,h-.0175,0,topC,off?{roughness:.12,metalness:.1,transparent:true,opacity:.82}:{roughness:.5});surf(top,"บน"+f.n,{dwf:id});
  if(!off){bx(grp,L*.92,.5,.025,0,h+.25,-S/2+.02,0xffffff,{roughness:.3});bx(grp,L*.92+.03,.03,.03,0,h+.5,-S/2+.02,0x9aa1ab);bx(grp,L*.92+.03,.03,.03,0,h+.01,-S/2+.02,0x9aa1ab)}
  bx(grp,L+.014,.014,S+.014,0,h-.042,0,0x6f7467,{roughness:.5});
  [-1,1].forEach(function(sx){var x=sx*(L/2-pw/2-.02);
   bx(grp,pw,bodyH,S-.05,x,legH+bodyH/2,-.005,body,{roughness:.55,metalness:.25});
   var dh=(bodyH-.06)/3;for(var i=0;i<3;i++){var y=legH+bodyH-.03-dh*(i+.5);
-   bx(grp,pw-.03,dh-.02,.012,x,y,S/2-.02,i===2?0x978f99:0x9a929c,{roughness:.5,metalness:.25});
+   var fr=bx(grp,pw-.03,dh-.02,.012,x,y,S/2-.02,i===2?0x978f99:0x9a929c,{roughness:.5,metalness:.25});surf(fr,"ลิ้นชักโต๊ะ",{dw:[id,sx<0?1:3,i+1]});
    bx(grp,pw*.55,.022,.016,x,y+dh/2-.03,S/2-.012,dark);if(i===1)bx(grp,.014,.014,.014,x+pw*.28,y,S/2-.01,0xe5e7eb,{metalness:.8})}
   [[-1,-1],[1,-1],[-1,1],[1,1]].forEach(function(q){var lg=new THREE.Mesh(new THREE.CylinderGeometry(.022,.016,legH,10),mat(0x7c7480,{metalness:.3}));lg.position.set(x+q[0]*(pw/2-.04),legH/2,q[1]*(S/2-.06));lg.castShadow=true;grp.add(lg)})});
- var cw=L-2*pw-.08;if(cw>.1){bx(grp,cw,.07,S-.08,0,h-.035-.035,-.005,body,{roughness:.55,metalness:.25});bx(grp,cw-.04,.045,.012,0,h-.035-.035,S/2-.045,0x9a929c);bx(grp,.014,.014,.014,0,h-.035-.035,S/2-.036,0xe5e7eb,{metalness:.8});
+ var cw=L-2*pw-.08;if(cw>.1){bx(grp,cw,.07,S-.08,0,h-.035-.035,-.005,body,{roughness:.55,metalness:.25});var cf=bx(grp,cw-.04,.045,.012,0,h-.035-.035,S/2-.045,0x9a929c);surf(cf,"ลิ้นชักกลางโต๊ะ",{dw:[id,2,1]});bx(grp,.014,.014,.014,0,h-.035-.035,S/2-.036,0xe5e7eb,{metalness:.8});
   bx(grp,cw,bodyH-.07,.012,0,legH+(bodyH-.07)/2,-S/2+.045,0x7b7380);bx(grp,cw,.03,.03,0,.16,S/2-.12,dark)}};
 // ===== โต๊ะช่างเฟรมเหล็กสีเขียว ท็อปไม้ ชั้นล่าง ปากกาจับชิ้นงาน (ตามรูป) =====
 D.wbench=function(g,f,surf,woodM){
@@ -293,7 +340,15 @@ D.wbench=function(g,f,surf,woodM){
 // ===== ตู้ลิ้นชักพลาสติกใส 5 แถว × 10 ชั้น (ตามรูปตู้จริง) =====
 D.drawerGeom=function(f){var m=.035,iw=f.w-2*m,ih=f.h-.05-m,cw=iw/f.cols,ch=ih/f.rows;return{m:m,cw:cw,ch:ch,y0:f.h-m}};
 // ตำแหน่งหน้าลิ้นชัก (แถว c = ซ้าย→ขวา มองจากด้านหน้า, ชั้น r = บน→ล่าง) คืน {x,y,z,nz} nz=ทิศด้านหน้าตู้
-D.drawerPos=function(f,c,r){var G=D.drawerGeom(f),fc=f.face===-1?-1:1,lx=-f.w/2+G.m+(c-.5)*G.cw,y=G.y0-(r-.5)*G.ch;return{x:f.x+fc*lx,y:y,z:f.z+fc*f.d/2,nz:fc,cw:G.cw,ch:G.ch}};
+D.drawerPos=function(f,c,r){
+ if(f.t==="deskdw"){var I=f.I,th=f.rot,lx,y,cw,ch,zl=I.S/2+.025;
+  if(!I.nw){if(c===2){lx=0;y=I.h-.07;cw=I.L-2*I.pw-.12;ch=.045}else{var dh=(I.bodyH-.06)/3;lx=(c===1?-1:1)*(I.L/2-I.pw/2-.02);y=I.legH+I.bodyH-.03-dh*(r-.5);cw=I.pw-.03;ch=dh-.02}}
+  else if(c===2){var R=D.deskRows(I)[r-1]||D.deskRows(I)[0];lx=I.L/2-I.pw/2-.02;y=R.y;cw=I.pw-.03;ch=R.h}
+  else{lx=(.06-I.pw)/2;y=I.h-.035-.04;cw=I.L-I.pw-.14-.02;ch=.06}
+  var sn=Math.sin(th),co=Math.cos(th),q=function(v){return Math.round(v*1e6)/1e6};
+  return{x:q(f.x+lx*co+zl*sn),y:y,z:q(f.z-lx*sn+zl*co),nx:q(sn),nz:q(co),rot:th,cw:cw,ch:ch}}
+ var G=D.drawerGeom(f),fc=f.face===-1?-1:1,lx=-f.w/2+G.m+(c-.5)*G.cw,y=G.y0-(r-.5)*G.ch;return{x:f.x+fc*lx,y:y,z:f.z+fc*f.d/2,nx:0,nz:fc,rot:fc===1?0:Math.PI,cw:G.cw,ch:G.ch}};
+D.drawerValid=function(f,c,r){return f.t!=="deskdw"?true:(f.I.nw?(c===2||(c===1&&r===1)):(c!==2||r===1))};
 D.furnById=function(id){return(D.furn||[]).filter(function(f){return f.id===id})[0]};
 D.drawers=function(g,f,surf,pick){
  var w=f.w,d=f.d,h=f.h,G=D.drawerGeom(f),grp=new THREE.Group(),fc=f.face===-1?-1:1;grp.position.set(f.x,0,f.z);grp.rotation.y=fc===1?0:Math.PI;g.add(grp);
@@ -407,6 +462,7 @@ D.build=function(THREE_,sc,racks){
   else if(t==="wbench"){D.wbench(g,f,surf,woodM)}
   else if(t==="cab2"){D.cab2(g,f,surf)}
   else if(t==="drawers"){D.drawers(g,f,surf,pick)}
+  else if(t==="deskdw"){}
   else if(t==="inkjet"){D.inkjet(g,f,surf)}
   else if(t==="stool"){var grp=new THREE.Group();grp.position.set(f.x,0,f.z);g.add(grp);
    var seat=new THREE.Mesh(new THREE.CylinderGeometry(f.r*.62,f.r*.58,.07,24),mat(0x1f2937,{roughness:.9}));seat.position.y=f.h;seat.castShadow=true;grp.add(seat);
@@ -484,7 +540,7 @@ D.colliders=function(racks){var c=[];
  D.walls.forEach(function(w){var horiz=Math.abs(w[1]-w[3])<1e-6,a=horiz?w[0]:w[1],b=horiz?w[2]:w[3],fix=horiz?w[1]:w[0],cur=Math.min(a,b),end=Math.max(a,b),segs=[];
   (w[4]||[]).slice().sort(function(p,q){return p[0]-q[0]}).forEach(function(q){if(q[0]>cur)segs.push([cur,q[0]]);cur=q[1]});if(end>cur)segs.push([cur,end]);
   segs.forEach(function(s){c.push(horiz?[s[0],fix-.08,s[1],fix+.08]:[fix-.08,s[0],fix+.08,s[1]])})});
- D.furn.forEach(function(f){if(!f.w||!f.d||f.t==="belt")return;c.push([f.x-f.w/2,f.z-f.d/2,f.x+f.w/2,f.z+f.d/2])});
+ D.furn.forEach(function(f){if(!f.w||!f.d||f.t==="belt"||f.t==="deskdw")return;c.push([f.x-f.w/2,f.z-f.d/2,f.x+f.w/2,f.z+f.d/2])});
  D.stairs.forEach(function(st){c.push([st.x1,st.z1,st.x2,st.z2])});
  Object.keys(racks).forEach(function(k){var r=racks[k];c.push([r.x-r.w/2,r.z-r.d/2,r.x+r.w/2,r.z+r.d/2])});return c};
 window.spDept=D;

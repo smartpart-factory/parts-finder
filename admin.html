@@ -53,7 +53,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 <div class="side"><a href="index.html">🏠 หน้าหลัก</a><a href="check-stock.html">🧭 นำทาง 3D</a><a href="search.html">🔍 ค้นหาอะไหล่</a><a href="request-new.html">📝 ขอเบิกคลังใหญ่</a><a href="requests.html" data-editor>📋 จัดการคำขอ</a><a href="location3d.html" data-adminonly>📍 จัดวางโมเดล (3D)</a><a href="pm.html">🗓️ แผน PM / JOB</a><a href="reports.html">📊 รายงาน</a><a class="on" href="admin.html" data-admin>🛠️ จัดการระบบ</a></div>
 <main>
  <h2>🛠️ จัดการระบบ</h2>
- <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
+ <div class="tabs"><button id="t-p" class="on">📦 จัดการอะไหล่</button><button id="t-3">🗺️ ผังคลัง 3D</button><button id="t-m">⚙️ เครื่องจักร</button><button id="t-n">🧩 ชื่อโมเดล 3D</button><button id="t-u">👥 จัดการผู้ใช้</button></div>
 
  <div id="pg-p">
   <div class="tb"><input id="pq" placeholder="ค้นหาอะไหล่ในตาราง..."><select id="pmc" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"></select><select id="pvis" style="padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:#fff"><option value="">การมองเห็น: ทั้งหมด</option><option value="s">เฉพาะที่แสดง</option><option value="h">เฉพาะที่ซ่อน</option></select><button class="btn p" id="p-add">+ เพิ่มอะไหล่</button><select id="pvb" class="btn" title="จัดการการมองเห็น" style="font:inherit;cursor:pointer"><option value="">👁 จัดการการมองเห็น ▾</option><option value="hs">ซ่อนที่เลือก</option><option value="ss">แสดงที่เลือก</option><option value="ha">ซ่อนทั้งหมด</option><option value="sa">แสดงทั้งหมด</option></select><button class="btn" id="p-kw">✨ เพิ่มคำค้นให้ทุกรายการ</button><button class="btn" id="p-exp">⬇ สำรองข้อมูลทั้งระบบ</button><button class="btn" id="p-imp">⬆ นำเข้าข้อมูล</button><button class="btn" id="p-bimg">🖼️ นำเข้ารูปหลายรูป</button><input type="file" id="p-bfile" accept="image/*" multiple style="display:none"><input type="file" id="p-mfile" accept=".json,.xlsx,.xls" style="display:none"><button class="btn" id="p-mig">☁️ ย้ายรูปไปที่เก็บรูปกลาง</button><button class="btn d" id="p-rst">↺ รีเซ็ตอะไหล่</button><input type="file" id="p-file" accept=".json" style="display:none"></div>
@@ -75,6 +75,11 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
   <div class="note">• x = ซ้าย(−)/ขวา(+), z = ลึกเข้าไปในคลัง(−) / ใกล้ประตู(+) · ประตูอยู่ที่ x=0, z=8.7 · ชั้นที่ 1 อยู่ล่างสุด<br>• ชื่อชั้นวางที่มีอยู่แล้วเปลี่ยนไม่ได้ (เพื่อไม่ให้อะไหล่ที่อ้างถึงหลุด) ถ้าต้องการเปลี่ยน ให้เพิ่มชื่อใหม่แล้วย้ายอะไหล่ไป<br>• อนาคต: อะไหล่แต่ละชิ้นใส่ไฟล์โมเดล 3D ของตัวเองได้ (ช่อง "ไฟล์โมเดล 3D ของอะไหล่" ในฟอร์มแก้ไขอะไหล่) และระบุพิกัดเฉพาะได้ผ่านข้อมูล <b>pos:[x,y,z]</b></div>
  </div>
 
+ <div id="pg-n" style="display:none">
+  <div class="tb"><b style="align-self:center">🧩 ชื่อโมเดล 3D ของอะไหล่</b><button class="btn p" id="n-save">💾 บันทึกชื่อ</button><button class="btn" id="n-reset">↩ คืนชื่อเดิมทั้งหมด</button><span id="n-msg" style="align-self:center;font-size:13px"></span></div>
+  <div class="note" style="margin:0 0 8px">• ตั้งชื่อใหม่ให้โมเดลแต่ละแบบ (ดูรูปโมเดลประกอบ) · ชื่อจะเปลี่ยนในหน้าวางอะไหล่และหน้าแก้ไขโมเดลทุกหน้า · เว้นว่าง = ใช้ชื่อเดิม</div>
+  <div id="n-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px"></div>
+ </div>
  <div id="pg-m" style="display:none">
   <div class="tb"><button class="btn p" id="mx-add">+ เพิ่มเครื่องจักร</button><button class="btn p" id="mx-save">💾 บันทึก</button><button class="btn" id="mx-rst">↺ คืนค่าเริ่มต้น</button></div>
   <div class="card" id="mx-list" style="padding:12px;display:grid;gap:10px"></div>
@@ -110,7 +115,20 @@ if(!spCanEdit()){alert("หน้านี้สำหรับ ผู้ดู�
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function $(i){return document.getElementById(i)}
 // ---- แท็บ ----
-function tab(n){["p","3","m","u"].forEach(function(k){$("pg-"+k).style.display=k===n?"":"none";$("t-"+k).className=k===n?"on":""})}
+function tab(n){["p","3","m","u","n"].forEach(function(k){$("pg-"+k).style.display=k===n?"":"none";$("t-"+k).className=k===n?"on":""})}
+$("t-n").onclick=function(){tab("n");ndraw()};
+var NTHREE=null,NIMG={};
+function nthree(cb){if(window.THREE)return cb();if(NTHREE)return NTHREE.push(cb);NTHREE=[cb];var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";s.onload=function(){var q=NTHREE;NTHREE=null;q.forEach(function(f){f()})};s.onerror=function(){$("n-msg").textContent="โหลดตัวแสดงภาพ 3D ไม่ได้ (ต้องต่ออินเทอร์เน็ต)";$("n-msg").style.color="#dc2626"};document.head.appendChild(s)}
+function nshot(key){if(NIMG[key])return NIMG[key];var m;try{m=spDept.model(key)}catch(e){return""}if(!m)return"";
+ var R=nshot.r||(nshot.r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true}));R.setSize(200,200);R.setClearColor(0xeef2f7,1);
+ var sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(32,1,.01,50);sc.add(new THREE.HemisphereLight(0xffffff,0x8a94a6,.95));var dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(2,4,3);sc.add(dl);sc.add(m);
+ var b=new THREE.Box3().setFromObject(m),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3()),r=Math.max(sz.x,sz.y,sz.z)||.3,dd=r*2.3;cam.position.set(c.x+dd*.7,c.y+dd*.55,c.z+dd*.85);cam.lookAt(c);R.render(sc,cam);return NIMG[key]=R.domElement.toDataURL("image/png")}
+function ndraw(){nthree(function(){var g=$("n-grid");g.innerHTML=SP_MODELS.filter(function(m){return m[0]!==""}).map(function(m){var k=m[0],cur=SP_MNAMES[k]||"";
+  return '<div class="card" style="padding:10px;display:grid;gap:6px"><div style="height:150px;border-radius:8px;background:#eef2f7;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="'+nshot(k)+'" alt="" style="max-width:100%;max-height:100%"></div>'
+   +'<div style="font-size:11px;color:#64748b">รหัสโมเดล: '+esc(k)+' · ชื่อเดิม: '+esc(spMDefName(m))+'</div>'
+   +'<div style="display:flex;gap:4px;align-items:center"><span style="font-size:18px">'+esc(spMIcon(m))+'</span><input data-k="'+esc(k)+'" value="'+esc(cur)+'" placeholder="'+esc(spMDefName(m))+'" maxlength="60" style="flex:1;min-width:0;padding:7px 9px;border:1px solid #cbd5e1;border-radius:8px;font:inherit"></div></div>'}).join("")})}
+$("n-save").onclick=function(){var o={};[].forEach.call($("n-grid").querySelectorAll("input[data-k]"),function(i){var v=i.value.trim();if(v)o[i.dataset.k]=v});spMNamesSave(o);$("n-msg").textContent="✔ บันทึกแล้ว";$("n-msg").style.color="#15803d"};
+$("n-reset").onclick=function(){if(!confirm("คืนชื่อโมเดลทั้งหมดเป็นชื่อเดิม?"))return;spMNamesSave({});ndraw();$("n-msg").textContent="คืนชื่อเดิมแล้ว"};
 $("t-p").onclick=function(){tab("p")};$("t-3").onclick=function(){tab("3")};$("t-u").onclick=function(){tab("u")};$("t-m").onclick=function(){tab("m");mdraw()};
 // ---- เครื่องจักร ----
 var MM=[];function mload(){MM=SP_MACH.map(function(m){return{old:m.k,k:m.k,d:m.d||"",img:m.img||"",f:m.f||""}})}mload();
