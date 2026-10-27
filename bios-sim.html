@@ -1,0 +1,2272 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<script src="auth.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BIOS Setup Simulator</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+<style>
+/* ===== BIOS Setup Simulator — style.css (ธีมสีขาว) ===== */
+
+/* สี 16 สีของจอ VGA ใช้เฉพาะในหน้าจอ BIOS (f0–f15 = ตัวอักษร, b0–b15 = พื้นหลัง) */
+:root {
+  --c0: #000000;  --c1: #0000a8;  --c2: #00a800;  --c3: #00a8a8;
+  --c4: #a80000;  --c5: #a800a8;  --c6: #a85400;  --c7: #a8a8a8;
+  --c8: #545454;  --c9: #5454fc;  --c10: #54fc54; --c11: #54fcfc;
+  --c12: #fc5454; --c13: #fc54fc; --c14: #fcfc54; --c15: #fcfcfc;
+
+  /* สีของหน้าเว็บ */
+  --page-bg: #f2f3f1;
+  --card: #ffffff;
+  --line: #d9ddda;
+  --fg: #1c211f;
+  --muted: #5e6763;
+  --accent: #c47a00;          /* สีกรอบบอกจุดที่ต้องกด */
+  --ok: #23824a;
+  --bad: #c0392b;
+  --info: #2b65a8;
+
+  /* ตัวเครื่องสีครีมแบบคอมพิวเตอร์ยุค 2000 */
+  --plastic: #e9e5d9;
+  --plastic-dark: #cfc9b8;
+
+  --bios-font: "Lucida Console", Consolas, Menlo, "DejaVu Sans Mono", "Courier New", monospace;
+  --ui-font: "Segoe UI", Tahoma, "Noto Sans Thai", -apple-system, sans-serif;
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--page-bg);
+  color: var(--fg);
+  font-family: var(--ui-font);
+}
+
+.app {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  display: grid;
+  gap: 16px;
+}
+
+.topbar h1 { margin: 0; font-size: 1.35rem; }
+.topbar p  { margin: 4px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+
+/* ---------- จัดหน้า: คอมพิวเตอร์ = จอซ้าย, บทเรียน+ตัวเครื่องขวา / มือถือ = เรียงลงมา ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  grid-template-areas:
+    "mon coach"
+    "mon hw";
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.coach   { grid-area: coach; }
+.col-main { grid-area: mon; display: grid; gap: 12px; min-width: 0; }
+.hw      { grid-area: hw; }
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "coach" "mon" "hw";
+    grid-template-rows: auto;
+  }
+}
+
+/* ---------- จอมอนิเตอร์ CRT สีครีม ---------- */
+.monitor {
+  min-width: 0;
+  background: linear-gradient(180deg, #f1ede2, var(--plastic));
+  border: 1px solid var(--plastic-dark);
+  border-radius: 14px;
+  padding: 16px 16px 8px;
+  box-shadow: 0 6px 18px rgba(60, 50, 30, .12);
+}
+.bezel {
+  background: #2a2a28;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.6);
+}
+.crt {
+  position: relative;
+  width: 100%;
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, transparent 0 3px, rgba(0,0,0,.05) 3px 4px);
+  box-shadow: inset 0 0 30px rgba(0,0,0,.35);
+}
+/* หน้าจอ 80x25 วาดลง canvas แล้วยืดเป็น 4:3 แบบจอ CRT */
+.screen {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  outline: none;
+  image-rendering: auto;
+}
+
+.monitor-foot {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+  font: 11px var(--bios-font);
+  color: #8a846f;
+  letter-spacing: .08em;
+}
+.led {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: #2ec05a;
+  box-shadow: 0 0 6px #2ec05a;
+  vertical-align: middle;
+}
+.led.busy { background: #f2a516; box-shadow: 0 0 6px #f2a516; }
+
+.cur { box-shadow: inset 0 -3px 0 currentColor; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { box-shadow: none; } }
+
+/* ---------- แป้นพิมพ์บนจอ ---------- */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+  gap: 6px;
+}
+.keypad button {
+  font: 600 14px var(--bios-font);
+  padding: 11px 4px;
+  border: 1px solid #b9b4a4;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fbfaf6, #ebe7dc);
+  color: #222;
+  box-shadow: 0 3px 0 #b9b4a4;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.keypad button:active { transform: translateY(3px); box-shadow: none; }
+.keypad .wide { grid-column: span 2; }
+
+.typerow { display: flex; gap: 8px; align-items: center; }
+.typerow label { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+.typerow input {
+  flex: 1; min-width: 0;
+  font: 16px var(--bios-font);
+  padding: 9px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--fg);
+}
+
+.tools { display: flex; gap: 8px; flex-wrap: wrap; }
+.tools button {
+  font: 500 13px var(--ui-font);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--fg);
+  cursor: pointer;
+}
+
+/* กรอบสีส้มบอกปุ่มหรือชิ้นส่วนที่ต้องกด */
+.hint { outline: 3px solid var(--accent) !important; outline-offset: 2px; animation: hintpulse 1.1s ease-in-out infinite; }
+@keyframes hintpulse { 50% { outline-color: rgba(196, 122, 0, .2); } }
+
+/* ---------- กล่องบทเรียน ---------- */
+.coach, .hw {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+.coach select {
+  width: 100%;
+  font: 15px var(--ui-font);
+  padding: 9px 10px;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--line);
+}
+.coach .bar { display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: .8rem; color: var(--muted); }
+.coach .bar button {
+  font: 600 12.5px var(--ui-font);
+  border-radius: 6px; border: 1px solid var(--line);
+  background: var(--page-bg); color: var(--fg);
+  padding: 6px 10px; cursor: pointer;
+}
+.coach .next {
+  font: 600 13px var(--ui-font);
+  border-radius: 6px; border: 1px solid var(--accent);
+  background: var(--accent); color: #fff;
+  padding: 7px 14px; cursor: pointer;
+}
+.coach .intro { margin: 0; font-size: .9rem; color: var(--muted); line-height: 1.55; }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; counter-reset: st; max-height: 420px; overflow-y: auto; }
+@media (max-width: 900px) { .steps { max-height: 260px; } }
+.steps li {
+  counter-increment: st;
+  display: grid; grid-template-columns: 26px 1fr; gap: 6px;
+  font-size: .88rem; line-height: 1.45;
+  color: #8a928e;
+  padding: 6px; border-radius: 6px;
+}
+.steps li::before {
+  content: counter(st);
+  font: 600 11px var(--bios-font);
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid #c7ccc9;
+}
+.steps li.done { color: #5d8a6c; }
+.steps li.done::before { content: "✓"; background: var(--ok); border-color: var(--ok); color: #fff; }
+.steps li.cur { background: #fdf6e9; color: var(--fg); border: 1px solid #efd3a0; }
+.steps li.cur::before { background: var(--accent); border-color: var(--accent); color: #fff; }
+.steps .why { display: block; margin-top: 4px; font-size: .82rem; color: var(--muted); }
+.steps .act { display: block; margin-top: 6px; font-size: .8rem; color: var(--accent); font-weight: 600; }
+
+.flash { font-size: .86rem; padding: 8px 10px; border-radius: 6px; border-left: 4px solid; line-height: 1.5; }
+.flash.bad  { background: #fbe9e7; border-color: var(--bad); }
+.flash.info { background: #e8f0fa; border-color: var(--info); }
+.flash.ok   { background: #e5f4ea; border-color: var(--ok); }
+
+/* ---------- ตัวเครื่องจำลอง ---------- */
+.hw h2 { margin: 0; font-size: .95rem; }
+.hw-ctrl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.hw button {
+  font: 500 13px var(--ui-font);
+  text-align: left;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--page-bg);
+  color: var(--fg);
+  padding: 9px 10px;
+  cursor: pointer;
+  display: grid; gap: 2px;
+  min-width: 0;
+}
+.hw button small { color: var(--muted); font-size: .76rem; }
+.hw button.on small { color: var(--ok); }
+.hw button.warn small { color: var(--accent); }
+.hw button.off small { color: var(--bad); }
+
+.case {
+  border: 2px solid var(--plastic-dark);
+  border-radius: 10px;
+  background: #f7f5ef;
+  padding: 12px;
+  display: grid; gap: 10px;
+  min-height: 110px;
+}
+.case.closed {
+  place-items: center;
+  color: #8a846f; font-size: .85rem; text-align: center;
+  background: repeating-linear-gradient(135deg, var(--plastic) 0 10px, #e2ddcf 10px 20px);
+}
+.bay { display: grid; gap: 8px; }
+.drive { border-radius: 6px; padding: 10px; font: 12px var(--bios-font); display: grid; gap: 2px; text-align: left; }
+.hw .drive.hdd { background: #9aa1a5; color: #111; border-color: #7f878b; }
+.hw .drive.ssd { background: #26324d; color: #eef1f8; border-color: #1b2438; }
+.hw .drive.ssd small { color: #b9c3da; }
+.hw .drive.empty { background: transparent; border: 2px dashed #c3bdab; color: #8a846f; text-align: center; }
+.cables { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.table { border-top: 1px dashed var(--plastic-dark); padding-top: 10px; display: grid; gap: 8px; }
+.table .label { font-size: .75rem; color: var(--muted); }
+
+.howto { color: var(--muted); font-size: .9rem; }
+.howto h2 { font-size: 1rem; color: var(--fg); margin: 0 0 6px; }
+.howto ul { margin: 0; padding-left: 18px; line-height: 1.7; }
+.howto b { color: var(--fg); }
+
+@media (max-width: 520px) {
+  .app { padding: 12px 10px 32px; gap: 12px; }
+  .monitor { padding: 10px 10px 6px; border-radius: 12px; }
+  .bezel { padding: 6px; }
+  .keypad { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .keypad button { font-size: 13px; padding: 12px 2px; }
+}
+
+/* ---------- คลาสสีของหน้าจอ BIOS ---------- */
+.f0{color:var(--c0)}.f1{color:var(--c1)}.f2{color:var(--c2)}.f3{color:var(--c3)}
+.f4{color:var(--c4)}.f5{color:var(--c5)}.f6{color:var(--c6)}.f7{color:var(--c7)}
+.f8{color:var(--c8)}.f9{color:var(--c9)}.f10{color:var(--c10)}.f11{color:var(--c11)}
+.f12{color:var(--c12)}.f13{color:var(--c13)}.f14{color:var(--c14)}.f15{color:var(--c15)}
+.b0{background:var(--c0)}.b1{background:var(--c1)}.b2{background:var(--c2)}.b3{background:var(--c3)}
+.b4{background:var(--c4)}.b5{background:var(--c5)}.b6{background:var(--c6)}.b7{background:var(--c7)}
+.b8{background:var(--c8)}.b9{background:var(--c9)}.b10{background:var(--c10)}.b11{background:var(--c11)}
+.b12{background:var(--c12)}.b13{background:var(--c13)}.b14{background:var(--c14)}.b15{background:var(--c15)}
+
+@media (prefers-reduced-motion: reduce) {
+  .cur, .hint { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<a href="knowledge.html" style="position:fixed;top:8px;right:8px;z-index:9999;background:#fff;border:1px solid #d9ddda;border-radius:8px;padding:6px 12px;font:13px 'Segoe UI',Tahoma,sans-serif;color:#2b65a8;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.15)">← ความรู้เพิ่มเติม</a>
+
+  <main class="app">
+    <header class="topbar">
+      <h1>BIOS Setup Simulator</h1>
+      <p>ฝึก BIOS, แก้ปัญหาฮาร์ดดิสก์/SSD และ Ghost (แบ็คอัพ โคลน กู้คืน) บนหน้าจอยุค 2000–2010 · ทุกอย่างเป็นการจำลอง ไม่แตะเครื่องจริง</p>
+    </header>
+
+    <div class="layout">
+      <!-- บทเรียน (มือถืออยู่บนสุด) -->
+      <section class="coach" id="coach" aria-live="polite"></section>
+
+      <!-- จอ + แป้นพิมพ์ -->
+      <div class="col-main">
+        <section class="monitor" aria-label="หน้าจอจำลอง">
+          <div class="bezel">
+            <div class="crt" id="crt">
+              <canvas class="screen" id="screen" width="1440" height="800" role="application" aria-label="BIOS screen" tabindex="0"></canvas>
+            </div>
+          </div>
+          <div class="monitor-foot">
+            <span><span class="led" id="led"></span>POWER</span>
+            <span id="modeLabel">POST</span>
+          </div>
+        </section>
+
+        <!-- แป้นพิมพ์บนจอ สำหรับมือถือหรือแท็บเล็ต -->
+        <section class="keypad" id="keypad" aria-label="แป้นพิมพ์จำลอง">
+          <button data-key="Esc">Esc</button>
+          <button data-key="F1">F1</button>
+          <button data-key="F2">F2</button>
+          <button data-key="F9">F9</button>
+          <button data-key="F10">F10</button>
+          <button data-key="Tab">Tab</button>
+          <button data-key="Minus">−</button>
+          <button data-key="Plus">+</button>
+          <button data-key="Left">←</button>
+          <button data-key="Up">↑</button>
+          <button data-key="Down">↓</button>
+          <button data-key="Right">→</button>
+          <button data-key="Backspace">⌫</button>
+          <button data-key="Enter" class="wide">Enter</button>
+        </section>
+        <div class="typerow">
+          <label for="typebox">พิมพ์</label>
+          <input id="typebox" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="แตะเพื่อพิมพ์ตัวเลข / รหัสผ่าน / ตัว R">
+        </div>
+
+        <section class="tools">
+          <button id="btnRestart" data-hw="restart">รีสตาร์ทเครื่อง</button>
+          <button id="btnClearCmos">ล้าง CMOS (คืนค่าเริ่มต้น)</button>
+        </section>
+      </div>
+
+      <!-- ตัวเครื่องจำลอง -->
+      <section class="hw" id="hw" aria-label="ตัวเครื่องคอมพิวเตอร์จำลอง"></section>
+    </div>
+
+    <section class="howto">
+      <h2>ปุ่มที่ใช้ใน BIOS</h2>
+      <ul>
+        <li><b>F2</b> ตอนเปิดเครื่อง = เข้า Setup</li>
+        <li><b>← →</b> เลือกเมนู · <b>↑ ↓</b> เลือกรายการ</li>
+        <li><b>+ / −</b> หรือ <b>Space</b> เปลี่ยนค่า · <b>Enter</b> เปิดรายการค่า / เมนูย่อย</li>
+        <li><b>Tab</b> เลื่อนช่องในเวลาและวันที่ (พิมพ์ตัวเลขได้)</li>
+        <li><b>Esc</b> ย้อนกลับ / ไปเมนู Exit · <b>F1</b> ช่วยเหลือ · <b>F9</b> ค่าเริ่มต้น · <b>F10</b> บันทึกและออก</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+/* =====================================================================
+   BIOS Setup Simulator — script.js
+   จำลองหน้าจอ BIOS แบบตัวอักษร 80x25 สไตล์ปี 2000–2010
+   ทุกอย่างเป็นการจำลอง ค่าที่ "บันทึก" เก็บแค่ใน localStorage ของเบราว์เซอร์
+   ===================================================================== */
+'use strict';
+
+/* ---------- ตั้งค่าทั่วไป (แก้ได้) ---------- */
+const TITLE = 'BIOS Setup Utility';       // ข้อความหัวจอ
+const GHOST_TITLE = 'ImageCopy';   // ชื่อโปรแกรมโคลนดิสก์ที่แสดงบนจอ
+const BIOS_VERSION = 'Release 6.0  Version 4.00';
+const STORE_KEY = 'bios-sim-cmos-v1';
+const POST_WAIT = 7;                       // วินาทีที่รอให้กด F2 ตอนเปิดเครื่อง
+
+const COLS = 80, ROWS = 25;
+// สีตามตาราง VGA: 0 ดำ 1 น้ำเงิน 3 ฟ้าอมเขียว 7 เทา 8 เทาเข้ม 11 ฟ้าอ่อน 14 เหลือง 15 ขาว
+const C = { BLACK: 0, BLUE: 1, CYAN: 3, RED: 4, GRAY: 7, DGRAY: 8, LCYAN: 11, YELLOW: 14, WHITE: 15 };
+
+/* =====================================================================
+   1) บัฟเฟอร์หน้าจอตัวอักษร
+   ===================================================================== */
+class Screen {
+  constructor() { this.clear(C.GRAY, C.BLACK); }
+  clear(fg, bg) {
+    this.cells = Array.from({ length: COLS * ROWS }, () => ({ ch: ' ', fg, bg }));
+    this.cursor = null;
+  }
+  put(x, y, ch, fg, bg) {
+    if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return;
+    const c = this.cells[y * COLS + x];
+    if (ch != null) c.ch = ch;
+    if (fg != null) c.fg = fg;
+    if (bg != null) c.bg = bg;
+  }
+  text(x, y, s, fg, bg) { s = String(s); for (let i = 0; i < s.length; i++) this.put(x + i, y, s[i], fg, bg); }
+  fill(x, y, w, h, ch, fg, bg) { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) this.put(x + i, y + j, ch, fg, bg); }
+  center(y, s, fg, bg, x0 = 0, w = COLS) { this.text(x0 + Math.floor((w - s.length) / 2), y, s, fg, bg); }
+  box(x, y, w, h, double, fg, bg) {
+    const [H, V, TL, TR, BL, BR] = double ? '═║╔╗╚╝' : '─│┌┐└┘';
+    this.fill(x, y, w, h, ' ', fg, bg);
+    for (let i = 1; i < w - 1; i++) { this.put(x + i, y, H); this.put(x + i, y + h - 1, H); }
+    for (let j = 1; j < h - 1; j++) { this.put(x, y + j, V); this.put(x + w - 1, y + j, V); }
+    this.put(x, y, TL); this.put(x + w - 1, y, TR); this.put(x, y + h - 1, BL); this.put(x + w - 1, y + h - 1, BR);
+  }
+  shadow(x, y, w, h) {
+    const dark = (a, b) => { if (a < COLS && b < ROWS) { const c = this.cells[b * COLS + a]; c.fg = C.DGRAY; c.bg = C.BLACK; } };
+    for (let j = 1; j <= h; j++) { dark(x + w, y + j); dark(x + w + 1, y + j); }
+    for (let i = 2; i < w + 2; i++) dark(x + i, y + h);
+  }
+  toHTML() {
+    const esc = ch => ch === '<' ? '&lt;' : ch === '>' ? '&gt;' : ch === '&' ? '&amp;' : ch;
+    let html = '';
+    for (let y = 0; y < ROWS; y++) {
+      html += '<div class="row">';
+      let run = '', fg = -1, bg = -1;
+      const flush = () => { if (run) html += `<span class="f${fg} b${bg}">${run}</span>`; run = ''; };
+      for (let x = 0; x < COLS; x++) {
+        const c = this.cells[y * COLS + x];
+        if (this.cursor && this.cursor.x === x && this.cursor.y === y) {
+          flush(); fg = -1;
+          html += `<span class="f${c.fg} b${c.bg} cur">${esc(c.ch)}</span>`;
+          continue;
+        }
+        if (c.fg !== fg || c.bg !== bg) { flush(); fg = c.fg; bg = c.bg; }
+        run += esc(c.ch);
+      }
+      flush();
+      html += '</div>';
+    }
+    return html;
+  }
+}
+
+/* =====================================================================
+   2) ค่า CMOS จำลอง
+   ===================================================================== */
+const DEFAULTS = {
+  legacyA: 'Disabled', legacyB: 'Disabled', diag: 'Disabled',
+  pm: { type: 'Auto', multi: '16 Sectors', lba: 'Enabled', io32: 'Disabled', xfer: 'FPIO 4 / DMA 2', udma: 'Mode 5' },
+  ps: { type: 'Auto' },
+  sm: { type: 'Auto', xfer: 'FPIO 4 / DMA 2', udma: 'Mode 2' },
+  ss: { type: 'Auto' },
+  numlock: 'On', keyclick: 'Disabled', repRate: '30/sec', repDelay: '1/2 sec',
+  mps: '1.4', os: 'Other', resetCfg: 'No', largeDisk: 'DOS', ideAdapter: 'Both', usbLegacy: 'Enabled',
+  memCache: 'Enabled', cacheSys: 'Write Protect', cacheVid: 'Write Protect',
+  serialA: 'Auto', serialB: 'Auto', parallel: 'Auto', parMode: 'Bi-directional', fdc: 'Enabled',
+  supPw: '', userPw: '', pwBoot: 'Disabled', bootSector: 'Normal', diskAccess: 'Supervisor',
+  bootOrder: ['removable', 'hdd', 'cdrom', 'network'],
+};
+const clone = o => JSON.parse(JSON.stringify(o));
+function loadCmos() {
+  try { const s = JSON.parse(localStorage.getItem(STORE_KEY)); if (s && s.cfg) return s; } catch (e) { /* ใช้ค่าเริ่มต้น */ }
+  return { cfg: clone(DEFAULTS), rtcOffset: 0 };
+}
+function storeCmos() {
+  if (typeof L !== 'undefined' && L.id) return;   // ระหว่างบทเรียนไม่บันทึกทับค่าจริง
+  try { localStorage.setItem(STORE_KEY, JSON.stringify({ cfg: saved, rtcOffset })); } catch (e) { /* เบราว์เซอร์ไม่ให้เก็บ ไม่เป็นไร */ }
+}
+let { cfg: saved, rtcOffset } = loadCmos();   // ค่าที่บันทึกแล้ว + เวลานาฬิกา
+saved = Object.assign(clone(DEFAULTS), saved);
+let cfg = clone(saved);                          // ค่าที่กำลังแก้ใน Setup
+const isChanged = () => JSON.stringify(cfg) !== JSON.stringify(saved);
+
+const getP = path => path.split('.').reduce((o, k) => o[k], cfg);
+const setP = (path, v) => { const ks = path.split('.'); const last = ks.pop(); ks.reduce((o, k) => o[k], cfg)[last] = v; };
+
+/* ฮาร์ดแวร์จำลองที่ต่ออยู่ */
+/* ตัวเครื่องจำลอง: สายข้อมูล/สายไฟ 'ok' | 'loose' | 'off' */
+const HW = { power: true, plug: true, strap: false, cover: false, data: 'ok', sataPower: 'ok', drive: 'hdd', spare: null, slave: null, usb: false, ext: false, extFiles: [] };
+const DISK_MODELS = {
+  hdd: { name: 'ST380011A', tag: 'PM', kind: 'hdd', sectors: 156301488, cap: '80GB', os: true, label: 'HDD 3.5" 80 GB (Seagate ST380011A)' },
+  ssd: { name: 'KINGSTON SA400S37120G', tag: 'PM', kind: 'hdd', sectors: 234441648, cap: '120GB', os: false, label: 'SSD 2.5" 120 GB (Kingston A400)' },
+};
+const DRIVES = {
+  get pm() { return HW.drive && HW.drive !== 'none' && HW.data === 'ok' && HW.sataPower === 'ok' ? DISK_MODELS[HW.drive] : null; },
+  get ps() { return HW.slave ? DISK_MODELS[HW.slave] : null; },
+  sm: { name: 'DVD-ROM GDR8164B', tag: 'SM', kind: 'cd' },
+  ss: null,
+};
+const DRIVE_TITLE = { pm: 'Primary Master', ps: 'Primary Slave', sm: 'Secondary Master', ss: 'Secondary Slave' };
+const EXT_MEMORY_KB = 2096128;  // RAM 2 GB (เท่ากับภาพต้นแบบ)
+
+/* =====================================================================
+   3) รายการในแต่ละเมนู
+   ===================================================================== */
+const opt = (label, key, options, help) => ({ kind: 'opt', label, key, options, help });
+const sub = (label, page, help, value) => ({ kind: 'sub', label, page, help, value });
+const info = (label, value) => ({ kind: 'info', label, value });
+const head = label => ({ kind: 'head', label });
+const act = (label, action, help) => ({ kind: 'act', label, action, help });
+const GAP = { kind: 'gap' };
+
+function driveValue(id) {
+  const d = DRIVES[id];
+  if (!d || cfg[id].type === 'None') return '[None]';
+  return `[${d.name.slice(0, 14)}-(${id.toUpperCase()})]`;
+}
+
+const TABS = [
+  { id: 'main', label: 'Main', x: 2 },
+  { id: 'advanced', label: 'Advanced', x: 10 },
+  { id: 'security', label: 'Security', x: 22 },
+  { id: 'boot', label: 'Boot', x: 34 },
+  { id: 'exit', label: 'Exit', x: 42 },
+];
+
+const HELP_FIELD = '<Tab>, <Shift-Tab>, or <Enter> selects field.  <+>/<-> or digits change the value.';
+const ON_OFF = ['Disabled', 'Enabled'];
+
+function pageItems(id) {
+  switch (id) {
+    case 'main': return [
+      { kind: 'time', label: 'System Time:', help: HELP_FIELD },
+      { kind: 'date', label: 'System Date:', help: HELP_FIELD },
+      GAP,
+      opt('Legacy Diskette A:', 'legacyA', ['Disabled', '360 Kb  5¼"', '1.2 MB  5¼"', '720 Kb  3½"', '1.44/1.25 MB  3½"', '2.88 MB  3½"'], 'Selects floppy type. Note that 1.25 MB 3½" references a 1024 byte/sector Japanese media format.'),
+      opt('Legacy Diskette B:', 'legacyB', ['Disabled', '360 Kb  5¼"', '1.2 MB  5¼"', '720 Kb  3½"', '1.44/1.25 MB  3½"', '2.88 MB  3½"'], 'Selects floppy type.'),
+      GAP,
+      sub('Primary Master', 'drive:pm', 'Press <Enter> to view or change the settings of the drive on the primary IDE channel (master).', () => driveValue('pm')),
+      sub('Primary Slave', 'drive:ps', 'Press <Enter> to view or change the settings of the primary IDE slave device.', () => driveValue('ps')),
+      sub('Secondary Master', 'drive:sm', 'Press <Enter> to view or change the settings of the secondary IDE master device.', () => driveValue('sm')),
+      sub('Secondary Slave', 'drive:ss', 'Press <Enter> to view or change the settings of the secondary IDE slave device.', () => driveValue('ss')),
+      GAP,
+      sub('Keyboard Features', 'keyboard', 'Configure NumLock state and keyboard repeat settings.'),
+      GAP,
+      info('System Memory:', '640 KB'),
+      info('Extended Memory:', `${EXT_MEMORY_KB} KB`),
+      opt('Boot-time Diagnostic Screen:', 'diag', ON_OFF, 'Display the diagnostic screen during boot instead of the logo.'),
+    ];
+    case 'keyboard': return [
+      opt('NumLock:', 'numlock', ['Auto', 'On', 'Off'], 'Selects power-on state for NumLock.'),
+      opt('Key Click:', 'keyclick', ON_OFF, 'Enables or disables key click.'),
+      opt('Keyboard auto-repeat rate:', 'repRate', ['2/sec', '6/sec', '10/sec', '13.3/sec', '18.5/sec', '21.8/sec', '26.7/sec', '30/sec'], 'Selects key repeat rate.'),
+      opt('Keyboard auto-repeat delay:', 'repDelay', ['1/4 sec', '1/2 sec', '3/4 sec', '1 sec'], 'Selects delay before key repeat.'),
+    ];
+    case 'advanced': return [
+      opt('Multiprocessor Specification:', 'mps', ['1.1', '1.4'], 'Configures the multiprocessor (MP) specification revision level. Some operating systems require 1.1 for compatibility.'),
+      opt('Installed O/S:', 'os', ['Other', 'Win95', 'Win98', 'WinMe', 'Win2000', 'WinXP'], 'Select the operating system installed on your system which you will use most commonly.'),
+      opt('Reset Configuration Data:', 'resetCfg', ['No', 'Yes'], 'Select \'Yes\' if you want to clear the Extended System Configuration Data (ESCD) area.'),
+      GAP,
+      sub('Cache Memory', 'cache', 'Additional setup menus to configure cache memory.'),
+      sub('I/O Device Configuration', 'io', 'Peripheral configuration: serial, parallel and floppy controller.'),
+      GAP,
+      opt('Large Disk Access Mode:', 'largeDisk', ['DOS', 'Other'], 'UNIX, Novell NetWare, or other operating systems, select \'Other\'. If you are installing new software and the drive fails, change this selection and try again.'),
+      opt('Local Bus IDE adapter:', 'ideAdapter', ['Disabled', 'Primary', 'Secondary', 'Both'], 'Enables the integrated local bus IDE adapter.'),
+      opt('USB Legacy Support:', 'usbLegacy', ON_OFF, 'Enables support for USB keyboards and storage devices under DOS.'),
+    ];
+    case 'cache': return [
+      opt('Memory Cache:', 'memCache', ON_OFF, 'Sets the state of the memory cache.'),
+      opt('Cache System BIOS area:', 'cacheSys', ['Uncached', 'Write Protect'], 'Controls caching of the system BIOS area.'),
+      opt('Cache Video BIOS area:', 'cacheVid', ['Uncached', 'Write Protect'], 'Controls caching of the video BIOS area.'),
+    ];
+    case 'io': return [
+      opt('Serial port A:', 'serialA', ['Disabled', 'Enabled', 'Auto'], 'Configure serial port A using options: Disabled, Enabled (user configuration), Auto (BIOS or OS chooses).'),
+      opt('Serial port B:', 'serialB', ['Disabled', 'Enabled', 'Auto'], 'Configure serial port B.'),
+      GAP,
+      opt('Parallel port:', 'parallel', ['Disabled', 'Enabled', 'Auto'], 'Configure the parallel port.'),
+      opt('Mode:', 'parMode', ['Output only', 'Bi-directional', 'EPP', 'ECP'], 'Set the mode for the parallel port.'),
+      GAP,
+      opt('Floppy disk controller:', 'fdc', ['Disabled', 'Enabled'], 'Configure the floppy disk controller.'),
+    ];
+    case 'security': return [
+      info('Supervisor Password Is:', cfg.supPw ? 'Set' : 'Clear'),
+      info('User Password Is:', cfg.userPw ? 'Set' : 'Clear'),
+      GAP,
+      act('Set User Password', () => openPassword('userPw'), 'User Password controls access to the system at boot.'),
+      act('Set Supervisor Password', () => openPassword('supPw'), 'Supervisor Password controls access to the setup utility.'),
+      GAP,
+      opt('Password on boot:', 'pwBoot', ON_OFF, 'Enables password entry on boot.'),
+      opt('Fixed disk boot sector:', 'bootSector', ['Normal', 'Write Protect'], 'Write protects boot sector on hard disk to protect against viruses.'),
+      opt('Diskette access:', 'diskAccess', ['User', 'Supervisor'], 'Control access to diskette drives.'),
+    ];
+    case 'boot': return bootItems();
+    case 'exit': return [
+      act('Exit Saving Changes', () => confirmSaveExit(), 'Exit System Setup and save your changes to CMOS.'),
+      act('Exit Discarding Changes', () => confirmDiscardExit(), 'Exit utility without saving Setup data to CMOS.'),
+      act('Load Setup Defaults', () => confirmDefaults(), 'Load default values for all SETUP items.'),
+      act('Discard Changes', () => confirmDiscard(), 'Load previous values from CMOS for all SETUP items.'),
+      act('Save Changes', () => confirmSave(), 'Save Setup Data to CMOS.'),
+    ];
+  }
+  if (id.startsWith('drive:')) return driveItems(id.slice(6));
+  return [];
+}
+
+function driveItems(id) {
+  const d = DRIVES[id], c = cfg[id];
+  const items = [opt('Type:', `${id}.type`, ['Auto', 'User', 'None', 'CD-ROM', 'ATAPI Removable', 'IDE Removable', 'Other ATAPI'],
+    'User = you enter parameters of hard-disk drive installed at this connection. Auto = autotypes hard-disk drive installed here. None = no device.')];
+  if (!d) { items.push(GAP, info('Device:', 'Not detected')); return items; }
+  if (c.type === 'None') { items.push(GAP, info('Device:', 'Disabled by Type')); return items; }
+  if (d.kind === 'hdd') {
+    items.push(GAP, head('LBA Format'), info('Total Sectors:', d.sectors.toLocaleString('en').replace(/,/g, '')), info('Maximum Capacity:', d.cap), GAP,
+      opt('Multi-Sector Transfers:', `${id}.multi`, ['Disabled', '2 Sectors', '4 Sectors', '8 Sectors', '16 Sectors'], 'Specify the number of sectors per block for multiple sector transfers.'),
+      opt('LBA Mode Control:', `${id}.lba`, ON_OFF, 'Enabling LBA causes Logical Block Addressing to be used in place of Cylinders, Heads & Sectors.'),
+      opt('32 Bit I/O:', `${id}.io32`, ON_OFF, 'This setting enables or disables 32 bit IDE data transfers.'));
+  } else {
+    items.push(GAP, info('Device:', 'ATAPI CD/DVD-ROM'), GAP);
+  }
+  items.push(
+    opt('Transfer Mode:', `${id}.xfer`, ['Standard', 'Fast PIO 1', 'Fast PIO 2', 'Fast PIO 3', 'Fast PIO 4', 'FPIO 3 / DMA 1', 'FPIO 4 / DMA 2'], 'Selects the method for transferring data between the hard disk and system memory.'),
+    opt('Ultra DMA Mode:', `${id}.udma`, ['Disabled', 'Mode 0', 'Mode 1', 'Mode 2', 'Mode 3', 'Mode 4', 'Mode 5'], 'Selects the Ultra DMA mode used for moving data to/from the drive.'));
+  return items;
+}
+
+const BOOT_NAMES = {
+  removable: 'Removable Devices', hdd: 'Hard Drive', cdrom: 'CD-ROM Drive', network: 'Network boot from Realtek RTL8139',
+};
+const BOOT_CHILDREN = {
+  removable: ['Legacy Floppy Drives', 'USB Flash Drive'],
+  get hdd() { return [DRIVES.pm ? `${DRIVES.pm.name.slice(0, 14)}-(PM)` : '(no drive)', 'Bootable Add-in Cards']; },
+};
+const expanded = { removable: false, hdd: false };
+const BOOT_HELP = 'Keys used to view or configure devices: <Enter> expands or collapses devices with a + or -. <+> and <-> moves the device up or down. <Shift+1> enables or disables a device.';
+function bootItems() {
+  const items = [];
+  cfg.bootOrder.forEach(dev => {
+    const kids = BOOT_CHILDREN[dev];
+    items.push({ kind: 'bootdev', dev, label: (kids ? (expanded[dev] ? '-' : '+') : ' ') + BOOT_NAMES[dev], help: BOOT_HELP });
+    if (kids && expanded[dev]) kids.forEach(k => items.push({ kind: 'bootchild', label: '  ' + k, help: BOOT_HELP }));
+  });
+  return items;
+}
+
+/* =====================================================================
+   4) สถานะโปรแกรม
+   ===================================================================== */
+const S = {
+  mode: 'post',          // post | password | setup | os | halt
+  tab: 0,
+  stack: [],             // เมนูย่อยที่เปิดอยู่ [{ id, title }]
+  sel: {},               // ตำแหน่งที่เลือกในแต่ละหน้า
+  field: 0,              // ช่องที่เลือกใน time/date
+  entry: '',             // ตัวเลขที่กำลังพิมพ์ใน time/date
+  popup: null,           // รายการค่าที่เปิดอยู่
+  dialog: null,          // กล่องยืนยัน / แจ้งเตือน
+  pw: null,              // กล่องตั้งรหัสผ่าน
+  postStart: 0,
+  pwPrompt: null,        // ช่องกรอกรหัสตอนบูต
+  bootLog: [],
+};
+const screen = new Screen();
+const pageId = () => (S.stack.length ? S.stack[S.stack.length - 1].id : TABS[S.tab].id);
+const selectable = it => !['gap', 'info', 'head'].includes(it.kind);
+function curItems() { return pageItems(pageId()); }
+function curIndex() {
+  const items = curItems(), id = pageId();
+  let i = S.sel[id] ?? items.findIndex(selectable);
+  if (i >= items.length || !selectable(items[i])) i = items.findIndex(selectable);
+  S.sel[id] = i;
+  return i;
+}
+function moveSel(dir) {
+  const items = curItems(); let i = curIndex();
+  for (let n = 0; n < items.length; n++) {
+    i += dir;
+    if (i < 0 || i >= items.length) return;
+    if (selectable(items[i])) { S.sel[pageId()] = i; S.field = 0; S.entry = ''; return; }
+  }
+}
+
+/* ---------- นาฬิกา ---------- */
+const now = () => new Date(Date.now() + rtcOffset);
+const p2 = n => String(n).padStart(2, '0');
+function setClock(fn) { const d = now(); fn(d); rtcOffset = d.getTime() - Date.now(); storeCmos(); }
+function adjustField(kind, delta) {
+  setClock(d => {
+    if (kind === 'time') {
+      if (S.field === 0) d.setHours((d.getHours() + delta + 24) % 24);
+      if (S.field === 1) d.setMinutes((d.getMinutes() + delta + 60) % 60);
+      if (S.field === 2) d.setSeconds((d.getSeconds() + delta + 60) % 60);
+    } else {
+      if (S.field === 0) d.setMonth((d.getMonth() + delta + 12) % 12);
+      if (S.field === 1) { const max = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate(); d.setDate(((d.getDate() - 1 + delta + max) % max) + 1); }
+      if (S.field === 2) d.setFullYear(Math.min(2099, Math.max(1981, d.getFullYear() + delta)));
+    }
+  });
+}
+function typeDigit(kind, ch) {
+  const len = kind === 'date' && S.field === 2 ? 4 : 2;
+  S.entry += ch;
+  if (S.entry.length < len) return;
+  const v = parseInt(S.entry, 10); S.entry = '';
+  setClock(d => {
+    if (kind === 'time') {
+      if (S.field === 0 && v < 24) d.setHours(v);
+      if (S.field === 1 && v < 60) d.setMinutes(v);
+      if (S.field === 2 && v < 60) d.setSeconds(v);
+    } else {
+      if (S.field === 0 && v >= 1 && v <= 12) d.setMonth(v - 1);
+      if (S.field === 1 && v >= 1 && v <= 31) d.setDate(v);
+      if (S.field === 2 && v >= 1981 && v <= 2099) d.setFullYear(v);
+    }
+  });
+  S.field = (S.field + 1) % 3;
+}
+
+/* =====================================================================
+   5) กล่องข้อความ
+   ===================================================================== */
+function ask(title, lines, onYes, onNo) {
+  S.dialog = { title, lines, buttons: ['Yes', 'No'], sel: 0, onSelect: b => (b === 0 ? onYes && onYes() : onNo && onNo()) };
+}
+function notice(title, lines, after) {
+  S.dialog = { title, lines, buttons: ['Continue'], sel: 0, onSelect: () => after && after() };
+}
+function confirmSaveExit() { ask('Setup Confirmation', ['Save configuration changes and exit now?'], () => { saveCmos(); reboot(); }); }
+function confirmDiscardExit() {
+  if (!isChanged()) { cfg = clone(saved); reboot(); return; }
+  ask('Setup Warning', ['Configuration has not been saved!', '', 'Save before exiting?'], () => { saveCmos(); reboot(); }, () => { cfg = clone(saved); reboot(); });
+}
+function confirmDefaults() { ask('Setup Confirmation', ['Load default configuration now?'], () => { const pw = { supPw: cfg.supPw, userPw: cfg.userPw }; cfg = Object.assign(clone(DEFAULTS), pw); }); }
+function confirmDiscard() { ask('Setup Confirmation', ['Load previous configuration now?'], () => { cfg = clone(saved); }); }
+function confirmSave() { ask('Setup Confirmation', ['Save configuration changes now?'], () => { saveCmos(); }); }
+function saveCmos() { saved = clone(cfg); storeCmos(); }
+
+function openPassword(target) {
+  if (target === 'userPw' && !cfg.supPw) { notice('Setup Notice', ['Set the Supervisor Password first.']); return; }
+  S.pw = { target, step: 0, a: '', b: '' };
+}
+function openPopup(item) {
+  const cur = getP(item.key);
+  S.popup = { item, sel: Math.max(0, item.options.indexOf(cur)) };
+}
+function generalHelp() {
+  notice('General Help', [
+    '<Up>/<Down>      Select Item',
+    '<Left>/<Right>   Select Menu',
+    '<Tab>            Select Field',
+    '<+>/<->/<Space>  Change Values',
+    '<Enter>          Select ► Sub-Menu',
+    '<Esc>            Exit / Previous menu',
+    '<F9>             Setup Defaults',
+    '<F10>            Save and Exit',
+  ]);
+}
+
+/* =====================================================================
+   6) วาดหน้าจอ Setup
+   ===================================================================== */
+const LABEL_X = 3, VALUE_X = 33, LEFT_W = 57, HELP_X = 60, HELP_W = 18;
+
+function wrap(text, width) {
+  const out = []; let line = '';
+  for (const word of String(text).split(/\s+/)) {
+    if (!word) continue;
+    if ((line + ' ' + word).trim().length > width) { if (line) out.push(line); line = word; } else line = (line + ' ' + word).trim();
+  }
+  if (line) out.push(line);
+  return out;
+}
+
+function drawSetup() {
+  const s = screen; s.clear(C.BLUE, C.GRAY);
+  // หัวจอและแถบเมนู
+  s.fill(0, 0, COLS, 2, ' ', C.WHITE, C.BLUE);
+  s.center(0, TITLE, C.WHITE, C.BLUE);
+  TABS.forEach((t, i) => {
+    const on = i === S.tab;
+    s.text(t.x - 1, 1, ` ${t.label} `, on ? C.BLUE : C.WHITE, on ? C.WHITE : C.BLUE);
+  });
+  // กรอบหลัก
+  s.box(0, 2, COLS, 21, false, C.WHITE, C.GRAY);
+  s.put(58, 2, '┬'); for (let y = 3; y < 22; y++) s.put(58, y, '│'); s.put(58, 22, '┴');
+  s.center(3, 'Item Specific Help', C.BLUE, C.GRAY, 59, 20);
+  s.put(58, 4, '├'); for (let x = 59; x < 79; x++) s.put(x, 4, '─'); s.put(79, 4, '┤');
+
+  // รายการ
+  const items = curItems(), sel = curIndex();
+  let y = 4;
+  if (S.stack.length) {
+    const top = S.stack[S.stack.length - 1];
+    s.fill(1, 3, LEFT_W, 1, ' ', C.BLUE, C.GRAY);
+    s.center(3, top.title, C.BLUE, C.GRAY, 1, LEFT_W);
+    s.put(0, 4, '├'); for (let x = 1; x < 58; x++) s.put(x, 4, '─', C.WHITE); s.put(58, 4, '┼');
+    y = 6;
+  }
+  items.forEach((it, i) => {
+    if (y > 21) return;
+    const on = i === sel;
+    switch (it.kind) {
+      case 'gap': break;
+      case 'head': s.text(LABEL_X, y, it.label, C.BLUE, C.GRAY); break;
+      case 'info': s.text(LABEL_X, y, it.label, C.BLUE, C.GRAY); s.text(VALUE_X + 1, y, it.value, C.BLUE, C.GRAY); break;
+      case 'time': case 'date': {
+        s.text(LABEL_X, y, it.label, on ? C.WHITE : C.BLUE, C.GRAY);
+        const d = now();
+        const parts = it.kind === 'time' ? [p2(d.getHours()), p2(d.getMinutes()), p2(d.getSeconds())] : [p2(d.getMonth() + 1), p2(d.getDate()), String(d.getFullYear())];
+        const sep = it.kind === 'time' ? ':' : '/';
+        let x = VALUE_X; s.text(x++, y, '[', C.BLACK, C.GRAY);
+        parts.forEach((p, k) => {
+          const hl = on && k === S.field;
+          const shown = hl && S.entry ? (S.entry + '_'.repeat(p.length)).slice(0, p.length) : p;
+          s.text(x, y, shown, hl ? C.BLACK : C.BLACK, hl ? C.WHITE : C.GRAY); x += p.length;
+          if (k < 2) s.text(x++, y, sep, C.BLACK, C.GRAY);
+        });
+        s.text(x, y, ']', C.BLACK, C.GRAY);
+        break;
+      }
+      case 'opt': {
+        s.text(LABEL_X, y, it.label, on ? C.WHITE : C.BLUE, C.GRAY);
+        const v = `[${getP(it.key)}]`;
+        s.text(VALUE_X, y, v, C.BLACK, C.GRAY);
+        if (on) s.text(VALUE_X + 1, y, v.slice(1, -1), C.BLACK, C.WHITE);
+        break;
+      }
+      case 'sub': {
+        s.put(1, y, '►', C.BLUE, C.GRAY);
+        s.text(LABEL_X, y, it.label, on ? C.WHITE : C.BLUE, C.GRAY);
+        if (it.value) s.text(VALUE_X, y, it.value(), C.BLACK, C.GRAY);
+        break;
+      }
+      case 'act': case 'bootdev': case 'bootchild':
+        s.text(LABEL_X + (it.kind === 'act' ? 0 : 1), y, it.label, on ? C.WHITE : (it.kind === 'bootchild' ? C.BLACK : C.BLUE), C.GRAY);
+        break;
+    }
+    y++;
+  });
+
+  // Item Specific Help
+  const cur = items[sel];
+  const help = cur && cur.help ? cur.help : '';
+  wrap(help, HELP_W).forEach((line, i) => { if (6 + i < 22) s.text(HELP_X, 6 + i, line, C.BLUE, C.GRAY); });
+
+  // แถบล่าง
+  s.fill(0, 23, COLS, 2, ' ', C.WHITE, C.BLUE);
+  [[1, 23, 'F1', 'Help'], [11, 23, '↑↓', 'Select Item'], [29, 23, '-/+', 'Change Values'], [54, 23, 'F9', 'Setup Defaults'],
+   [1, 24, 'Esc', 'Exit'], [11, 24, '←→', 'Select Menu'], [29, 24, 'Enter', 'Select ► Sub-Menu'], [54, 24, 'F10', 'Save and Exit']]
+    .forEach(([x, yy, k, t]) => { s.text(x, yy, k, C.WHITE, C.BLUE); s.text(x + k.length + 1, yy, t, C.WHITE, C.BLUE); });
+
+  // ชั้นบน: popup / password / dialog
+  if (S.popup) drawPopup();
+  if (S.pw) drawPassword();
+  if (S.dialog) drawDialog();
+}
+
+function drawPopup() {
+  const s = screen, { item, sel } = S.popup;
+  const w = Math.max(item.label.replace(':', '').length, ...item.options.map(o => o.length)) + 6;
+  const h = item.options.length + 2, x = Math.min(COLS - w - 3, 40 - Math.floor(w / 2)), y = Math.max(3, Math.min(20 - h, 8));
+  s.shadow(x, y, w, h); s.box(x, y, w, h, true, C.WHITE, C.BLUE);
+  s.center(y, ` ${item.label.replace(':', '')} `, C.WHITE, C.BLUE, x, w);
+  item.options.forEach((o, i) => {
+    const on = i === sel;
+    s.fill(x + 1, y + 1 + i, w - 2, 1, ' ', C.WHITE, on ? C.WHITE : C.BLUE);
+    s.text(x + 3, y + 1 + i, o, on ? C.BLUE : C.WHITE, on ? C.WHITE : C.BLUE);
+  });
+}
+
+function drawDialog() {
+  const s = screen, d = S.dialog;
+  const w = Math.max(34, ...d.lines.map(l => l.length + 6)), h = d.lines.length + 6;
+  const x = Math.floor((COLS - w) / 2), y = Math.floor((ROWS - h) / 2) - 1;
+  s.shadow(x, y, w, h); s.box(x, y, w, h, true, C.WHITE, C.BLUE);
+  s.center(y, ` ${d.title} `, C.WHITE, C.BLUE, x, w);
+  d.lines.forEach((l, i) => s.text(x + 3, y + 2 + i, l, C.WHITE, C.BLUE));
+  const labels = d.buttons.map(b => `[${b}]`), total = labels.join('   ').length;
+  let bx = x + Math.floor((w - total) / 2);
+  labels.forEach((b, i) => { const on = i === d.sel; s.text(bx, y + h - 2, b, on ? C.BLUE : C.WHITE, on ? C.WHITE : C.BLUE); bx += b.length + 3; });
+}
+
+function drawPassword() {
+  const s = screen, p = S.pw, x = 18, y = 8, w = 44, h = 8;
+  s.shadow(x, y, w, h); s.box(x, y, w, h, true, C.WHITE, C.BLUE);
+  s.center(y, ` ${p.target === 'supPw' ? 'Set Supervisor Password' : 'Set User Password'} `, C.WHITE, C.BLUE, x, w);
+  const field = (yy, label, val, active) => {
+    s.text(x + 3, yy, label, C.WHITE, C.BLUE);
+    s.text(x + 26, yy, '[' + ' '.repeat(12) + ']', C.WHITE, C.BLUE);
+    s.text(x + 27, yy, '*'.repeat(val.length), C.YELLOW, C.BLUE);
+    if (active) screen.cursor = { x: x + 27 + val.length, y: yy };
+  };
+  field(y + 2, 'Enter New Password', p.a, p.step === 0);
+  field(y + 4, 'Confirm New Password', p.b, p.step === 1);
+  s.center(y + 6, 'Leave blank to clear the password', C.LCYAN, C.BLUE, x, w);
+}
+
+/* =====================================================================
+   7) หน้าจอเปิดเครื่อง (POST) / รหัสผ่าน / ระบบปฏิบัติการ
+   ===================================================================== */
+function drawPost() {
+  const s = screen; s.clear(C.GRAY, C.BLACK);
+  const t = (Date.now() - S.postStart) / 1000;
+  s.text(1, 1, 'BIOS ' + BIOS_VERSION, C.WHITE, C.BLACK);
+  s.text(1, 2, 'Copyright 1985-2006 Simulated BIOS. All Rights Reserved', C.GRAY, C.BLACK);
+  if (t > 0.4) s.text(1, 4, 'CPU = Intel(R) Pentium(R) 4 CPU 3.00GHz', C.GRAY, C.BLACK);
+  if (t > 0.6) {
+    const mem = Math.min(640, Math.floor(t * 1600));
+    s.text(1, 5, `${String(mem).padStart(4)}K System RAM Passed`, C.GRAY, C.BLACK);
+  }
+  if (t > 1.0) {
+    const ext = Math.min(EXT_MEMORY_KB, Math.floor((t - 1) * 600000));
+    s.text(1, 6, `${String(ext).padStart(6)}K Extended RAM Passed`, C.GRAY, C.BLACK);
+  }
+  if (t > 1.8) s.text(1, 7, '512K Cache SRAM Passed', C.GRAY, C.BLACK);
+  if (t > 2.1) s.text(1, 8, 'System BIOS shadowed', C.GRAY, C.BLACK);
+  if (t > 2.3) s.text(1, 9, 'Video BIOS shadowed', C.GRAY, C.BLACK);
+  if (t > 2.6) s.text(1, 10, 'Mouse initialized', C.GRAY, C.BLACK);
+  let y = 12;
+  if (t > 2.9) {
+    for (const id of ['pm', 'ps', 'sm', 'ss']) {
+      const d = DRIVES[id];
+      s.text(1, y++, `${pad(DRIVE_TITLE[id], 18)}: ${!d || cfg[id].type === 'None' ? 'None' : d.name}`, C.GRAY, C.BLACK);
+    }
+    if (cfg.legacyA !== 'Disabled') s.text(1, y++, `Fixed Disk / Diskette A : ${cfg.legacyA.replace(/\s+/g, ' ')}`, C.GRAY, C.BLACK);
+  }
+  s.text(1, 23, 'Press <F2> to enter SETUP', C.WHITE, C.BLACK);
+  if (S.bootMenu) { drawBootMenu(); return; }
+  const left = Math.max(0, Math.ceil(POST_WAIT - t));
+  s.text(1, 24, `Booting in ${left} s ...`, C.DGRAY, C.BLACK);
+  s.cursor = { x: 1, y: Math.min(22, y + 1) };
+}
+const pad = (str, n) => String(str).padEnd(n);
+
+function drawPasswordPrompt() {
+  const s = screen; s.clear(C.GRAY, C.BLACK);
+  const p = S.pwPrompt;
+  s.text(1, 1, BIOS_VERSION, C.WHITE, C.BLACK);
+  s.text(1, 10, p.reason === 'setup' ? 'Enter Supervisor Password to run Setup' : 'Enter Password to boot', C.GRAY, C.BLACK);
+  s.text(1, 12, 'Enter Password: ' + '*'.repeat(p.val.length), C.WHITE, C.BLACK);
+  s.cursor = { x: 17 + p.val.length, y: 12 };
+  if (p.tries) s.text(1, 14, `Invalid password (${p.tries}/3)`, C.YELLOW, C.BLACK);
+}
+
+function drawOs() {
+  const s = screen; s.clear(C.GRAY, C.BLACK);
+  S.bootLog.forEach((l, i) => s.text(1, 1 + i, l, C.GRAY, C.BLACK));
+  s.text(1, 23, '[Simulation] Press <R> or the Restart button to restart the computer.', C.DGRAY, C.BLACK);
+  s.cursor = { x: 1, y: 2 + S.bootLog.length };
+}
+
+function drawHalt() {
+  const s = screen; s.clear(C.GRAY, C.BLACK);
+  s.text(1, 10, 'System Disabled', C.WHITE, C.BLACK);
+  s.text(1, 23, '[Simulation] Press <R> or the Restart button to restart the computer.', C.DGRAY, C.BLACK);
+}
+
+function bootSystem(order = saved.bootOrder) {
+  S.mode = 'os'; S.bootTarget = null;
+  const log = ['Searching for boot device ...', ''];
+  let found = null;
+  for (const dev of order) {
+    if (dev === 'removable') {
+      if (HW.usb && saved.usbLegacy === 'Enabled') {
+        S.bootTarget = 'ghost';
+        S.bootLog = [...log, 'Booting from USB Flash Drive (SanDisk Cruzer) ...', '', 'Loading boot menu ...'];
+        const t0 = S.postStart;
+        setTimeout(() => { if (S.mode === 'os' && S.bootTarget === 'ghost' && S.postStart === t0) { S.mode = 'toolkit'; S.tk = { sel: 0, t: 0 }; render(); } }, 1400);
+        render(); return;
+      }
+      log.push(HW.usb ? 'Removable Devices : USB Legacy Support is disabled' : 'Removable Devices : no bootable media');
+    }
+    if (dev === 'cdrom') log.push(cfg.sm.type === 'None' ? 'CD-ROM Drive : not present' : 'CD-ROM Drive : no disc');
+    if (dev === 'network') log.push('Network boot : PXE-E61: Media test failure, check cable');
+    if (dev === 'hdd') {
+      const d = DRIVES.pm;
+      if (!d || cfg.pm.type === 'None') log.push('Hard Drive : not present');
+      else if (!d.os) log.push(`Hard Drive (${d.name}) : no operating system on disk`);
+      else { found = `Hard Drive (${d.name})`; break; }
+    }
+  }
+  log.push('');
+  if (found) log.push(`Booting from ${found} ...`, '', 'Starting operating system ...');
+  else log.push('Operating System not found');
+  S.bootLog = log;
+  render();
+}
+
+function reboot() {
+  if (!HW.power) return;
+  if (typeof lessonEv === 'function') lessonEv('reboot');
+  S.bootMenu = null; S.ic = null; S.bootTarget = null;
+  S.dialog = null; S.popup = null; S.pw = null; S.stack = []; S.tab = 0;
+  cfg = clone(saved);
+  S.mode = 'post'; S.postStart = Date.now();
+  render();
+}
+
+function enterSetupFromPost() {
+  if (saved.supPw) { S.mode = 'password'; S.pwPrompt = { reason: 'setup', val: '', tries: 0 }; }
+  else { S.mode = 'setup'; cfg = clone(saved); }
+  render();
+}
+
+function postTimeout() {
+  if (saved.pwBoot === 'Enabled' && (saved.userPw || saved.supPw)) { S.mode = 'password'; S.pwPrompt = { reason: 'boot', val: '', tries: 0 }; render(); return; }
+  bootSystem();
+}
+
+/* =====================================================================
+   8) การกดปุ่ม
+   ===================================================================== */
+function handleKey(k) {
+  if (S.mode === 'off') { if (typeof lessonNote === 'function') lessonNote('info', 'เครื่องปิดอยู่ กดปุ่ม Power ที่ตัวเครื่องก่อน'); return; }
+  if (S.mode === 'post') {
+    if (S.bootMenu) return bootMenuKey(k);
+    if (k === 'F2') enterSetupFromPost();
+    else if (k === 'F12') lessonNote('info', 'เครื่องรุ่นนี้ตั้งลำดับบูตใน BIOS Setup: กด F2 แล้วไปที่เมนู Boot');
+    return;
+  }
+  if (S.mode === 'toolkit') return toolkitKey(k);
+  if (S.mode === 'desktop') return desktopKey(k);
+  if (S.mode === 'winload') return;
+  if (S.mode === 'ghost') {
+    const m = { Plus: '+', Minus: '-', Space: ' ' }[k] || (k.startsWith('char:') ? k.slice(5) : k);
+    ghostKey(S.ic, m); render(); return;
+  }
+  if (S.mode === 'os' || S.mode === 'halt') {
+    if (k === 'char:r' || k === 'char:R') reboot();
+    else if (k === 'F2') lessonNote('info', 'เลยเวลากด F2 แล้ว เครื่องบูตไปแล้ว กดปุ่ม "รีสตาร์ทเครื่อง" แล้วกด F2 ตอนจอขึ้น Press <F2> to enter SETUP');
+    return;
+  }
+  if (S.mode === 'password') return passwordPromptKey(k);
+  if (S.mode !== 'setup') return;
+
+  if (S.dialog) return dialogKey(k);
+  if (S.pw) return passwordSetKey(k);
+  if (S.popup) return popupKey(k);
+
+  const items = curItems(), it = items[curIndex()];
+  switch (k) {
+    case 'Up': moveSel(-1); break;
+    case 'Down': moveSel(1); break;
+    case 'Left': case 'Right':
+      if (S.stack.length) break;            // ในเมนูย่อยเปลี่ยนแท็บไม่ได้
+      S.tab = (S.tab + (k === 'Right' ? 1 : TABS.length - 1)) % TABS.length; S.field = 0; S.entry = '';
+      break;
+    case 'Esc':
+      if (S.stack.length) { S.stack.pop(); break; }
+      if (S.tab !== 4) S.tab = 4; else confirmDiscardExit();
+      break;
+    case 'F1': generalHelp(); break;
+    case 'F9': confirmDefaults(); break;
+    case 'F10': confirmSaveExit(); break;
+    case 'Tab': case 'ShiftTab':
+      if (it.kind === 'time' || it.kind === 'date') { S.field = (S.field + (k === 'Tab' ? 1 : 2)) % 3; S.entry = ''; }
+      break;
+    case 'Enter':
+      if (it.kind === 'time' || it.kind === 'date') { S.field = (S.field + 1) % 3; S.entry = ''; }
+      else if (it.kind === 'opt') openPopup(it);
+      else if (it.kind === 'sub') S.stack.push({ id: it.page, title: it.page.startsWith('drive:') ? `${it.label}  ${it.value()}` : it.label });
+      else if (it.kind === 'act') it.action();
+      else if (it.kind === 'bootdev' && BOOT_CHILDREN[it.dev]) expanded[it.dev] = !expanded[it.dev];
+      break;
+    case 'Plus': case 'Minus': case 'Space': {
+      const dir = k === 'Minus' ? -1 : 1;
+      if (it.kind === 'time' || it.kind === 'date') adjustField(it.kind, dir);
+      else if (it.kind === 'opt') {
+        const i = it.options.indexOf(getP(it.key));
+        setP(it.key, it.options[(i + dir + it.options.length) % it.options.length]);
+      } else if (it.kind === 'bootdev' && k !== 'Space') moveBootDevice(it.dev, k === 'Plus' ? -1 : 1);
+      break;
+    }
+    default:
+      if (k.startsWith('char:') && /\d/.test(k[5]) && (it.kind === 'time' || it.kind === 'date')) typeDigit(it.kind, k[5]);
+      else if (k === 'char:!' && it.kind === 'bootdev') notice('Setup Notice', ['Device cannot be excluded in this simulation.']);
+  }
+  render();
+}
+
+function moveBootDevice(dev, dir) {
+  const o = cfg.bootOrder, i = o.indexOf(dev), j = i + dir;
+  if (j < 0 || j >= o.length) return;
+  [o[i], o[j]] = [o[j], o[i]];
+  const idx = bootItems().findIndex(r => r.kind === 'bootdev' && r.dev === dev);
+  S.sel.boot = idx;
+}
+
+function dialogKey(k) {
+  const d = S.dialog;
+  if (k === 'Left' || k === 'Right' || k === 'Tab') d.sel = (d.sel + 1) % d.buttons.length;
+  else if (k === 'char:y' || k === 'char:Y') { if (d.buttons.length > 1) d.sel = 0; finishDialog(); return; }
+  else if (k === 'char:n' || k === 'char:N') { if (d.buttons.length > 1) { d.sel = 1; finishDialog(); } return; }
+  else if (k === 'Enter') { finishDialog(); return; }
+  else if (k === 'Esc') { S.dialog = null; }
+  render();
+}
+function finishDialog() { const d = S.dialog; S.dialog = null; d.onSelect(d.sel); render(); }
+
+function popupKey(k) {
+  const p = S.popup, n = p.item.options.length;
+  if (k === 'Up') p.sel = (p.sel + n - 1) % n;
+  else if (k === 'Down') p.sel = (p.sel + 1) % n;
+  else if (k === 'Enter') { setP(p.item.key, p.item.options[p.sel]); S.popup = null; }
+  else if (k === 'Esc') S.popup = null;
+  render();
+}
+
+function passwordSetKey(k) {
+  const p = S.pw;
+  if (k === 'Esc') { S.pw = null; render(); return; }
+  if (k === 'Enter') {
+    if (p.step === 0) { p.step = 1; render(); return; }
+    S.pw = null;
+    if (p.a !== p.b) { notice('Setup Warning', ['Passwords do not match!']); }
+    else {
+      cfg[p.target] = p.a;
+      if (p.target === 'supPw' && !p.a) cfg.userPw = '';
+      notice('Setup Notice', [p.a ? 'Changes have been saved.' : 'Password has been cleared.']);
+    }
+    render(); return;
+  }
+  const key = p.step === 0 ? 'a' : 'b';
+  if (k === 'Backspace') p[key] = p[key].slice(0, -1);
+  else if (k.startsWith('char:') && p[key].length < 12) p[key] += k.slice(5);
+  render();
+}
+
+function passwordPromptKey(k) {
+  const p = S.pwPrompt;
+  if (k === 'Backspace') p.val = p.val.slice(0, -1);
+  else if (k === 'Enter') {
+    const ok = p.reason === 'setup' ? p.val === saved.supPw : (p.val === saved.userPw || p.val === saved.supPw);
+    if (ok) { if (p.reason === 'setup') { S.mode = 'setup'; cfg = clone(saved); } else bootSystem(); return render(); }
+    p.tries++; p.val = '';
+    if (p.tries >= 3) S.mode = 'halt';
+  } else if (k.startsWith('char:') && p.val.length < 12) p.val += k.slice(5);
+  render();
+}
+
+/* =====================================================================
+   9) แสดงผลและย่อขนาดจอให้พอดี
+   ===================================================================== */
+const $screen = document.getElementById('screen');
+const $crt = document.getElementById('crt');
+function render() {
+  screen.cursor = null;
+  if (S.mode === 'post') drawPost();
+  else if (S.mode === 'password') drawPasswordPrompt();
+  else if (S.mode === 'setup') drawSetup();
+  else if (S.mode === 'os') drawOs();
+  else if (S.mode === 'off') screen.clear(C.BLACK, C.BLACK);
+  else if (GUI_MODES.includes(S.mode)) { /* วาดแบบกราฟิกใน paint() */ }
+  else drawHalt();
+  paint();
+  document.getElementById('modeLabel').textContent = { post: 'POST · กำลังเปิดเครื่อง', password: 'PASSWORD', setup: 'BIOS SETUP UTILITY', os: 'BOOT', halt: 'HALT', off: 'OFF', ghost: 'โปรแกรม IMAGECOPY 32 ใน MINI WINDOWS (ไม่ใช่ BIOS)', toolkit: 'เมนูแฟลชไดรฟ์บูต (ไม่ใช่ BIOS)', winload: 'กำลังโหลด MINI WINDOWS 7', desktop: 'MINI WINDOWS 7 (จากแฟลชไดรฟ์)' }[S.mode];
+  const led = document.getElementById('led');
+  led.classList.toggle('busy', S.mode === 'post');
+  led.style.opacity = S.mode === 'off' ? '.15' : '1';
+  if (typeof lessonAfterRender === 'function') lessonAfterRender();
+}
+/* ---------- วาดหน้าจอลง canvas: ช่องละ 9x16 จุด เหมือนโหมดตัวอักษร VGA ---------- */
+const PAL = ['#000000', '#0000a8', '#00a800', '#00a8a8', '#a80000', '#a800a8', '#a85400', '#a8a8a8',
+             '#545454', '#5454fc', '#54fc54', '#54fcfc', '#fc5454', '#fc54fc', '#fcfc54', '#fcfcfc'];
+// เส้นกรอบวาดเองทุกเส้น ไม่พึ่งฟอนต์ จึงต่อกันสนิทบนทุกเครื่อง  [บน, ขวา, ล่าง, ซ้าย, เส้นเดี่ยว=1/คู่=2]
+const SEG = { '─': [0,1,0,1,1], '│': [1,0,1,0,1], '┌': [0,1,1,0,1], '┐': [0,0,1,1,1], '└': [1,1,0,0,1], '┘': [1,0,0,1,1],
+  '├': [1,1,1,0,1], '┤': [1,0,1,1,1], '┬': [0,1,1,1,1], '┴': [1,1,0,1,1], '┼': [1,1,1,1,1],
+  '═': [0,1,0,1,2], '║': [1,0,1,0,2], '╔': [0,1,1,0,2], '╗': [0,0,1,1,2], '╚': [1,1,0,0,2], '╝': [1,0,0,1,2] };
+function drawSeg(c, x, y, ch) {
+  const s = SEG[ch], cx = x + 4, cy = y + 8, R = (a, b, w, h) => c.fillRect(a, b, w, h);
+  if (s[4] === 1) { if (s[0]) R(cx, y, 1, 9); if (s[2]) R(cx, cy, 1, 8); if (s[3]) R(x, cy, 5, 1); if (s[1]) R(cx, cy, 5, 1); return; }
+  const o = 2;
+  if (ch === '═') { R(x, cy - o, 9, 1); R(x, cy + o, 9, 1); return; }
+  if (ch === '║') { R(cx - o, y, 1, 16); R(cx + o, y, 1, 16); return; }
+  if (ch === '╔') { R(cx - o, cy - o, x + 9 - (cx - o), 1); R(cx - o, cy - o, 1, y + 16 - (cy - o)); R(cx + o, cy + o, x + 9 - (cx + o), 1); R(cx + o, cy + o, 1, y + 16 - (cy + o)); return; }
+  if (ch === '╗') { R(x, cy - o, cx + o - x + 1, 1); R(cx + o, cy - o, 1, y + 16 - (cy - o)); R(x, cy + o, cx - o - x + 1, 1); R(cx - o, cy + o, 1, y + 16 - (cy + o)); return; }
+  if (ch === '╚') { R(cx - o, cy + o, x + 9 - (cx - o), 1); R(cx - o, y, 1, cy + o - y + 1); R(cx + o, cy - o, x + 9 - (cx + o), 1); R(cx + o, y, 1, cy - o - y + 1); return; }
+  if (ch === '╝') { R(x, cy + o, cx + o - x + 1, 1); R(cx + o, y, 1, cy + o - y + 1); R(x, cy - o, cx - o - x + 1, 1); R(cx - o, y, 1, cy - o - y + 1); }
+}
+const SHADE = { '░': .22, '▒': .45, '▓': .7 };
+const ctx2d = $screen.getContext && $screen.getContext('2d');
+const GUI_MODES = ['toolkit', 'winload', 'desktop', 'ghost'];
+function paint() {
+  const c = ctx2d; if (!c) return;
+  if (GUI_MODES.includes(S.mode)) return paintGui();
+  c.setTransform(2, 0, 0, 2, 0, 0);
+  c.font = '16px VT323, "Lucida Console", Consolas, Menlo, monospace';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) {
+    const o = screen.cells[y * COLS + x], px = x * 9, py = y * 16;
+    c.fillStyle = PAL[o.bg]; c.fillRect(px, py, 9, 16);
+    const ch = o.ch; if (ch === ' ') continue;
+    c.fillStyle = PAL[o.fg];
+    if (SEG[ch]) drawSeg(c, px, py, ch);
+    else if (ch === '█') c.fillRect(px, py, 9, 16);
+    else if (ch === '▀') c.fillRect(px, py, 9, 8);
+    else if (ch === '▄') c.fillRect(px, py + 8, 9, 8);
+    else if (SHADE[ch]) { c.globalAlpha = SHADE[ch]; c.fillRect(px, py, 9, 16); c.globalAlpha = 1; }
+    else c.fillText(ch, px + 4.5, py + 9);
+  }
+  if (screen.cursor && Math.floor(Date.now() / 400) % 2 === 0) {
+    const o = screen.cells[screen.cursor.y * COLS + screen.cursor.x];
+    c.fillStyle = PAL[o ? o.fg : 7]; c.fillRect(screen.cursor.x * 9, screen.cursor.y * 16 + 13, 9, 2);
+  }
+}
+setInterval(paint, 200);                     // ให้เคอร์เซอร์กระพริบ
+if (document.fonts && document.fonts.load) document.fonts.load('16px VT323').then(paint).catch(() => {});
+
+/* ---------- แป้นพิมพ์จริง ---------- */
+const KEYMAP = { ArrowUp: 'Up', ArrowDown: 'Down', ArrowLeft: 'Left', ArrowRight: 'Right', Enter: 'Enter', Escape: 'Esc', Backspace: 'Backspace',
+  F1: 'F1', F2: 'F2', F9: 'F9', F10: 'F10', F12: 'F12', '+': 'Plus', '=': 'Plus', '-': 'Minus', ' ': 'Space' };
+document.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (e.target && e.target.tagName === 'SELECT') { if (!/^F\d+$/.test(e.key)) return; e.target.blur(); }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  let k = KEYMAP[e.key];
+  if (e.key === 'Tab') k = e.shiftKey ? 'ShiftTab' : 'Tab';
+  const typingMode = S.pw || S.mode === 'password';
+  if (typingMode && e.key.length === 1) k = 'char:' + e.key;       // ช่องรหัสผ่านรับทุกตัวอักษร
+  else if (!k && e.key.length === 1) k = 'char:' + e.key;
+  if (!k) return;
+  e.preventDefault();
+  handleKey(k);
+});
+
+/* ---------- แป้นพิมพ์บนจอ ---------- */
+document.getElementById('keypad').addEventListener('click', e => {
+  const b = e.target.closest('[data-key]');
+  if (!b) return;
+  handleKey(b.dataset.key);
+  $screen.focus({ preventScroll: true });
+});
+document.getElementById('btnRestart').addEventListener('click', () => { if (!HW.power) return lessonNote('info', 'เครื่องปิดอยู่ กดปุ่ม Power ที่ตัวเครื่อง'); reboot(); });
+
+/* ---------- ช่องพิมพ์สำหรับมือถือ ---------- */
+const $type = document.getElementById('typebox');
+$type.addEventListener('input', () => { const v = $type.value; $type.value = ''; for (const ch of v) handleKey('char:' + ch); });
+$type.addEventListener('keydown', e => {
+  const m = { Enter: 'Enter', Backspace: 'Backspace', Escape: 'Esc', ArrowUp: 'Up', ArrowDown: 'Down', ArrowLeft: 'Left', ArrowRight: 'Right', Tab: 'Tab' }[e.key];
+  if (m && !(m === 'Backspace' && $type.value)) { e.preventDefault(); e.stopPropagation(); handleKey(m); }
+});
+document.getElementById('btnClearCmos').addEventListener('click', () => {
+  saved = clone(DEFAULTS); rtcOffset = 0; storeCmos(); cfg = clone(saved); reboot();
+});
+
+/* ---------- นาฬิกาและตัวจับเวลา POST ---------- */
+setInterval(() => {
+  if (S.mode === 'post') {
+    if (S.bootMenu) S.postStart = Date.now() - 1000;          // หยุดนับถอยหลังระหว่างเปิด Boot Menu
+    { const st = typeof lessonStep === 'function' && lessonStep(); if (st && (st.hw || st.key === 'F2')) S.postStart = Math.max(S.postStart, Date.now() - 2000); }  // รอให้ทำขั้นที่ตัวเครื่องก่อน
+    if ((Date.now() - S.postStart) / 1000 >= POST_WAIT) postTimeout(); else render();
+  } else if (S.mode === 'toolkit') {
+    S.tk.t += 0.2; if (S.tk.t >= 30) { S.tk.sel = 0; toolkitBoot(); } render();
+  } else if (S.mode === 'winload') {
+    S.wl.t += 0.2; if (S.wl.t >= 3.2) { S.mode = 'desktop'; S.dk = { sel: 0 }; } render();
+  } else if (S.mode === 'ghost' && S.ic && S.ic.running) {
+    ghostTick(S.ic, 0.2); render();
+  } else if (S.mode === 'setup' && !S.dialog && !S.popup && !S.pw && pageId() === 'main') render();
+}, 200);
+
+
+/* =====================================================================
+   10) ตัวเครื่องจำลอง (ปุ่ม Power, ปลั๊ก, ฝา, สาย SATA, ดิสก์)
+   ===================================================================== */
+const $hw = document.getElementById('hw');
+const CABLE_TXT = { ok: 'เสียบแน่น', loose: 'หลวม / ขยับได้', off: 'ถอดออกแล้ว' };
+let hwSig = '';
+function renderHW() {
+  const sig = JSON.stringify(HW) + '|' + ((lessonStep() || {}).hw || '');
+  if (sig === hwSig) return;
+  hwSig = sig;
+  const b = (id, title, state, cls) => `<button data-hw="${id}" class="${cls}"><span>${title}</span><small>${state}</small></button>`;
+  let h = `<h2>ตัวเครื่องคอมพิวเตอร์ (จำลอง)</h2><div class="hw-ctrl">
+    ${b('power', 'ปุ่ม Power', HW.power ? 'เครื่องเปิดอยู่' : 'เครื่องปิดอยู่', HW.power ? 'on' : 'off')}
+    ${b('plug', 'ปลั๊กไฟ AC', HW.plug ? 'เสียบอยู่' : 'ถอดแล้ว', HW.plug ? 'on' : 'off')}
+    ${b('strap', 'สายรัดข้อมือกันไฟฟ้าสถิต', HW.strap ? 'ใส่แล้ว ต่อกับโครงเครื่อง' : 'ยังไม่ได้ใส่', HW.strap ? 'on' : 'warn')}
+    ${b('cover', 'ฝาข้างเครื่อง', HW.cover ? 'เปิดอยู่' : 'ปิดอยู่', HW.cover ? 'warn' : 'on')}
+    ${b('usb', 'แฟลชไดรฟ์บูต ImageCopy', HW.usb ? 'เสียบอยู่ที่พอร์ต USB' : 'ยังไม่ได้เสียบ', HW.usb ? 'on' : '')}
+    ${b('ext', 'HDD แบ็คอัพภายนอก (USB)', HW.ext ? 'เสียบอยู่ · WD Elements 500GB' : 'ยังไม่ได้เสียบ', HW.ext ? 'on' : '')}
+  </div>`;
+  if (!HW.cover) h += `<div class="case closed">ฝาเครื่องปิดอยู่ · เปิดฝาก่อนจึงจะเห็นอุปกรณ์ข้างใน</div>`;
+  else {
+    const d = HW.drive && HW.drive !== 'none' ? DISK_MODELS[HW.drive] : null;
+    h += `<div class="case"><div class="bay">
+      ${d ? `<button data-hw="drive" class="drive ${HW.drive}"><b>${d.label}</b><small>แตะเพื่อถอดออกจากช่อง</small></button>`
+          : `<button data-hw="drive" class="drive empty">ช่องใส่ดิสก์ว่าง<small>${HW.spare ? 'แตะเพื่อใส่ดิสก์จากโต๊ะ' : ''}</small></button>`}
+      <div class="cables">
+        ${b('data', 'สายข้อมูล SATA (สีแดง)', CABLE_TXT[HW.data], HW.data === 'ok' ? 'on' : HW.data === 'loose' ? 'warn' : 'off')}
+        ${b('sataPower', 'สายไฟ SATA (15 pin)', CABLE_TXT[HW.sataPower], HW.sataPower === 'ok' ? 'on' : HW.sataPower === 'loose' ? 'warn' : 'off')}
+      </div>
+      ${b('slave', 'ช่อง SATA 2 (ดิสก์ลูกที่สอง)', HW.slave ? `${DISK_MODELS[HW.slave].label} ต่ออยู่ · แตะเพื่อถอด` : HW.spare ? 'ว่าง · แตะเพื่อต่อดิสก์จากโต๊ะ' : 'ว่าง', HW.slave ? 'on' : '')}
+      </div>
+      ${HW.spare || HW.removed ? `<div class="table"><span class="label">บนโต๊ะ</span>
+        ${HW.spare ? `<button data-hw="spare" class="drive ${HW.spare}"><b>${DISK_MODELS[HW.spare].label}</b><small>${HW.drive === 'none' ? 'แตะเพื่อใส่ลงช่องหลัก' : 'วางรอไว้ (ต่อที่ช่อง SATA 2 หรือถอดดิสก์เดิมออกก่อน)'}</small></button>` : ''}
+        ${HW.removed ? `<div class="drive ${HW.removed}" style="opacity:.6"><b>${DISK_MODELS[HW.removed].label}</b><small>ถอดออกแล้ว ติดป้าย "เสีย" แยกเก็บ</small></div>` : ''}
+      </div>` : ''}
+    </div>`;
+  }
+  $hw.innerHTML = h;
+  const want = lessonStep() && lessonStep().hw;
+  $hw.querySelectorAll('[data-hw]').forEach(el => el.classList.toggle('hint', el.dataset.hw === want));
+  document.getElementById('btnRestart').classList.toggle('hint', want === 'restart');
+}
+$hw.addEventListener('click', e => { const el = e.target.closest('[data-hw]'); if (el) hwAction(el.dataset.hw); });
+
+function hwAction(id) {
+  const inside = ['data', 'sataPower', 'drive', 'spare', 'slave'].includes(id);
+  if (inside) {
+    if (!HW.cover) return lessonNote('info', 'ต้องเปิดฝาเครื่องก่อน');
+    if (HW.power || HW.plug) return lessonMistake('ห้ามจับอุปกรณ์ข้างในตอนยังมีไฟเข้า ต้องปิดเครื่องและถอดปลั๊กก่อน แม้ปิดเครื่องแล้วเมนบอร์ดยังมีไฟเลี้ยงอยู่');
+    if (!HW.strap) lessonMistake('ยังไม่ได้ใส่สายรัดข้อมือ ไฟฟ้าสถิตจากตัวเราทำให้แผงวงจรของดิสก์เสียได้ (ระบบจำลองยอมให้ทำต่อ)');
+  }
+  switch (id) {
+    case 'power':
+      if (HW.power) { HW.power = false; S.mode = 'off'; S.dialog = S.popup = S.pw = null; S.stack = []; }
+      else {
+        if (!HW.plug) return lessonNote('info', 'กดแล้วไม่มีอะไรเกิดขึ้น เพราะยังไม่ได้เสียบปลั๊ก');
+        if (HW.cover) return lessonMistake('ปิดฝาเครื่องก่อนเปิดเครื่อง ฝาช่วยระบายอากาศและกันมือโดนพัดลมหรือไฟ');
+        HW.power = true; reboot();
+      }
+      break;
+    case 'plug':
+      if (HW.plug && HW.power) return lessonMistake('อย่าถอดปลั๊กตอนเครื่องทำงาน ให้กดปิดเครื่องก่อน ไม่งั้นข้อมูลในดิสก์เสียได้');
+      HW.plug = !HW.plug; break;
+    case 'strap': HW.strap = !HW.strap; break;
+    case 'cover':
+      if (!HW.cover && HW.power) return lessonMistake('ปิดเครื่องก่อนเปิดฝา');
+      HW.cover = !HW.cover; break;
+    case 'data': case 'sataPower':
+      HW[id] = HW[id] === 'ok' ? 'off' : 'ok'; break;
+    case 'drive':
+      if (HW.drive && HW.drive !== 'none') {
+        if (HW.data !== 'off' || HW.sataPower !== 'off') return lessonNote('info', 'ถอดสายข้อมูลและสายไฟออกจากดิสก์ก่อน แล้วค่อยคลายน็อตถอดดิสก์');
+        HW.removed = HW.drive; HW.drive = 'none';
+      } else if (HW.spare) { HW.drive = HW.spare; HW.spare = null; }
+      break;
+    case 'spare':
+      if (HW.drive && HW.drive !== 'none') return lessonNote('info', 'ช่องยังมีดิสก์เดิมอยู่ ถอดออกก่อน');
+      HW.drive = HW.spare; HW.spare = null; break;
+    case 'restart': reboot(); break;
+    case 'usb':
+      if (HW.usb && ['winload', 'desktop', 'ghost'].includes(S.mode)) return lessonMistake('Mini Windows และโปรแกรมทำงานจากแฟลชไดรฟ์ ห้ามถอดจนกว่าจะกด Reset Computer ไม่งั้นระบบค้างและงานเสียหาย');
+      HW.usb = !HW.usb; break;
+    case 'ext':
+      if (HW.ext && S.mode === 'ghost' && S.ic && S.ic.running) return lessonMistake('ห้ามถอด HDD แบ็คอัพระหว่างโปรแกรมทำงาน ไฟล์อิมเมจจะเสีย');
+      HW.ext = !HW.ext; break;
+    case 'slave':
+      if (HW.slave) { HW.spare = HW.slave; HW.slave = null; }
+      else if (HW.spare) { HW.slave = HW.spare; HW.spare = null; }
+      else return lessonNote('info', 'ไม่มีดิสก์บนโต๊ะให้ต่อ');
+      break;
+  }
+  render();
+}
+
+/* =====================================================================
+   11) บทเรียนแก้ปัญหา HDD / SSD
+   ===================================================================== */
+const inSetup = () => S.mode === 'setup';
+const onTab = id => inSetup() && !S.stack.length && TABS[S.tab].id === id;
+const selected = () => { const it = curItems()[curIndex()]; return it || {}; };
+// คืนปุ่มที่ต้องกดเพื่อไปยังรายการ label แล้วกด final
+function toward(label, final = 'Enter') {
+  if (!inSetup()) return null;
+  const items = curItems(), i = curIndex(), t = items.findIndex(x => x.label === label);
+  if (t < 0) return null;
+  return i < t ? 'Down' : i > t ? 'Up' : final;
+}
+const leftSetup = () => S.mode !== 'setup';
+const saveStep = (why) => ({ say: 'กด F10 แล้วกด Enter (Yes) เพื่อบันทึกและรีสตาร์ท', key: () => (S.dialog ? 'Enter' : 'F10'), done: leftSetup, why });
+const F2 = (why) => ({ say: 'ตอนจอขึ้น "Press <F2> to enter SETUP" ให้กด F2 (ปุ่ม F2 บนแป้นจำลองใต้จอ หรือบนคีย์บอร์ด โน้ตบุ๊กบางรุ่นต้องกด Fn+F2)', key: 'F2', done: inSetup, why: why || 'ระหว่างบทเรียน หน้าจอเปิดเครื่องจะรอจนกว่าจะกด F2' });
+const PREP_OFF = [
+  { say: 'กดปุ่ม Power ที่ตัวเครื่องเพื่อปิดเครื่อง', hw: 'power', done: () => !HW.power, why: 'ใน Windows ให้สั่ง Shut down ก่อน อย่ากดตัดไฟทันทีถ้าไม่จำเป็น' },
+  { say: 'ถอดปลั๊กไฟ AC ออกจากเครื่อง', hw: 'plug', done: () => !HW.plug, why: 'แม้ปิดเครื่องแล้ว เมนบอร์ดยังมีไฟ 5V Standby อยู่ ถอดปลั๊กแล้วกดปุ่ม Power ค้างสัก 3 วินาทีเพื่อปล่อยไฟค้าง' },
+  { say: 'ใส่สายรัดข้อมือกันไฟฟ้าสถิต แล้วหนีบกับโครงเหล็กเครื่อง', hw: 'strap', done: () => HW.strap, why: 'ไฟฟ้าสถิตมองไม่เห็นแต่ทำให้ชิปเสียได้ ถ้าไม่มีสายรัด ให้แตะโครงเหล็กเครื่องก่อนจับอุปกรณ์ทุกครั้ง' },
+  { say: 'เปิดฝาข้างเครื่อง', hw: 'cover', done: () => HW.cover },
+];
+const CLOSE_ON = [
+  { say: 'ปิดฝาข้างเครื่อง', hw: 'cover', done: () => !HW.cover },
+  { say: 'เสียบปลั๊กไฟ AC', hw: 'plug', done: () => HW.plug },
+  { say: 'กดปุ่ม Power เปิดเครื่อง', hw: 'power', done: () => HW.power },
+];
+
+const E = (name, n = 1) => () => (L.evc[name] || 0) >= n;
+const gs = () => (S.mode === 'ghost' ? S.ic : null);
+const gk = fn => () => { const g = gs(); return g ? fn(g) : null; };
+// ปุ่มที่ต้องกดเพื่อไปเมนู Local ► (i) ► (j) จากสถานะไหนก็ได้ (เข้าหน้าผิดจะบอกให้กด Esc ย้อนกลับ)
+const toMenu = (i, j) => gk(g => {
+  if (g.err) return 'Enter';
+  if (g.scr !== 'main') return 'Esc';
+  const m = g.menu;
+  if (!m.open) return g.mb === 0 ? 'Enter' : 'Up';
+  if (m.sub < 0) return m.i === i ? (j == null ? 'Enter' : 'Enter') : m.i < i ? 'Down' : 'Up';
+  if (m.sub !== i) return 'Left';
+  if (j == null) return null;
+  return m.j === j ? 'Enter' : m.j < j ? 'Down' : 'Up';
+});
+// ปุ่มในหน้าที่กำหนด ถ้าอยู่ผิดหน้าให้กด Esc กลับเมนูหลัก
+const onScr = (scr, fn) => gk(g => (g.err ? 'Enter' : g.scr === scr ? fn(g) : g.scr === 'main' ? null : 'Esc'));
+const listTo = (scr, idx) => onScr(scr, g => (g.list === idx ? 'Enter' : g.list < idx ? 'Down' : 'Up'));
+// ตั้งลำดับบูตใน BIOS Setup (หน้าจอเดียวกับภาพต้นแบบ) ใช้ในทุกหลักสูตร
+const bootSel = dev => () => {
+  if (!inSetup()) return null;
+  if (S.stack.length) return 'Esc';
+  if (TABS[S.tab].id !== 'boot') return 'Right';
+  const items = curItems(), t = items.findIndex(x => x.dev === dev), i = curIndex();
+  return i < t ? 'Down' : i > t ? 'Up' : null;
+};
+const BIOS_BOOT_FIRST = (dev, name, why) => [
+  F2('ตอนเปิดเครื่องจอจะขึ้น "Press <F2> to enter SETUP" ถ้าเลยเวลา กดปุ่ม "รีสตาร์ทเครื่อง" แล้วลองใหม่'),
+  { say: 'หน้า BIOS Setup เปิดขึ้นมา กด → จนถึงเมนู <b>Boot</b>', key: () => (inSetup() && !S.stack.length && TABS[S.tab].id !== 'boot' ? 'Right' : S.stack.length ? 'Esc' : null), done: () => onTab('boot'), why: 'เมนูด้านบนมี Main, Advanced, Security, Boot และ Exit ใช้ ← → เลื่อน' },
+  { say: `กด ↑ ↓ เลือก <b>${name}</b>`, key: bootSel(dev), done: () => onTab('boot') && selected().dev === dev },
+  { say: `กด + จน ${name} ขึ้นไปอยู่บนสุด`, key: () => (inSetup() && cfg.bootOrder[0] !== dev ? (selected().dev === dev ? 'Plus' : bootSel(dev)()) : null), done: () => cfg.bootOrder[0] === dev, why },
+  saveStep(),
+];
+const BOOT_USB = [
+  ...BIOS_BOOT_FIRST('removable', 'Removable Devices', 'เครื่องจะลองบูตจากแฟลชไดรฟ์ก่อนฮาร์ดดิสก์ จึงเข้าโปรแกรม ImageCopy ได้'),
+  { say: 'รอเครื่องบูตจากแฟลชไดรฟ์ (ไม่ต้องกด F2)', done: () => GUI_MODES.includes(S.mode), why: 'POST นับถอยหลังครบแล้วเครื่องจะบูตตามลำดับใหม่' },
+  { say: 'ขึ้นเมนูของแฟลชไดรฟ์บูต กด ↓ เลือก <b>Mini Windows 7</b> แล้วกด Enter', key: () => (S.mode === 'toolkit' ? (S.tk.sel === 1 ? 'Enter' : S.tk.sel < 1 ? 'Down' : 'Up') : null), done: E('toolkit-win7'), why: 'แฟลชไดรฟ์ช่างมีหลายเครื่องมือ Mini Windows 7 คือ Windows ขนาดเล็กที่รันจากแฟลชไดรฟ์ ใช้เปิดโปรแกรมโคลนได้ ถ้าไม่เลือกภายในเวลา เครื่องจะบูตเข้าฮาร์ดดิสก์เอง' },
+  { say: 'รอ Mini Windows 7 โหลดจนขึ้นหน้าเดสก์ท็อป', done: () => S.mode === 'desktop' || S.mode === 'ghost', why: 'ช่วงนี้ห้ามถอดแฟลชไดรฟ์ เพราะ Mini Windows ทำงานจากแฟลชไดรฟ์ทั้งหมด' },
+  { say: `ที่เดสก์ท็อป เลือกไอคอน <b>${GHOST_TITLE} 32</b> แล้วกด Enter (หรือแตะไอคอนสองครั้ง)`, key: () => (S.mode === 'desktop' ? (S.dk.sel === 1 ? 'Enter' : S.dk.sel < 1 ? 'Down' : 'Up') : null), done: E('open-ghost') },
+  { say: 'หน้าต่าง About ขึ้นมา กด Enter หรือแตะ OK', key: () => (S.mode === 'ghost' ? 'Enter' : null), done: E('splash-ok'), why: 'หน้านี้บอกจำนวนดิสก์ที่โปรแกรมเห็น ถ้าไม่ตรงกับที่ต่อไว้ ให้ปิดเครื่องตรวจสายก่อน' },
+  { say: 'เมนูอยู่มุมซ้ายล่าง แถบอยู่ที่ <b>Local</b> กด Enter (หรือแตะ Local)', key: toMenu(0, null), done: E('menu-local'), why: 'ใช้ได้ทั้งแป้นพิมพ์และเมาส์ บนมือถือแตะที่เมนูบนจอได้เลย' },
+  { say: 'แถบอยู่ที่ <b>Disk</b> กด Enter', key: toMenu(0, null), done: E('menu-disk'), why: 'Disk ทำงานกับดิสก์ทั้งลูก' },
+];
+// หลังใช้แฟลชไดรฟ์เสร็จ ต้องตั้ง Hard Drive กลับขึ้นบนสุด
+const HDD_BACK = BIOS_BOOT_FIRST('hdd', 'Hard Drive', 'ถ้าไม่ตั้งกลับ วันหลังมีคนลืมเสียบแฟลชไดรฟ์ไว้ เครื่องจะบูตเข้าแฟลชไดรฟ์แทน Windows');
+const LOOK_BACKUP = () => ({ say: 'ช่อง Look in: กด ↓ จนเป็น <b>D: BACKUP</b> (WD Elements)', key: onScr('file', g => (ghostLoc(g).p.label.startsWith('D:') ? null : ghostFields(g)[g.focus] === 'look' ? 'Down' : 'Tab')), done: () => { const g = gs(); return !!g && g.scr === 'file' && ghostLoc(g).p.label.startsWith('D:'); }, why: 'ไฟล์อิมเมจเก็บใน HDD แบ็คอัพภายนอกเท่านั้น' });
+const CONFIRM_YES = why => ({ say: 'ปุ่มที่เลือกอยู่คือ No กด ← ไปที่ <b>Yes</b> แล้วกด Enter', key: gk(g => (g.btn === 0 ? 'Enter' : 'Left')), done: E('confirm-yes'), why });
+const USB_OUT = { say: 'เครื่องกำลังรีสตาร์ท ถอดแฟลชไดรฟ์บูตออกตอนนี้', hw: 'usb', done: () => !HW.usb, why: 'ห้ามถอดระหว่างที่ Mini Windows ยังเปิดอยู่ ถอดได้หลังกด Reset Computer แล้วเท่านั้น ถ้าไม่ถอด เครื่องจะบูตเข้าแฟลชไดรฟ์อีก' };
+const RESET_PC = { say: 'กด → ไปที่ <b>Reset Computer</b> แล้วกด Enter', key: gk(g => (g.btn === 1 ? 'Enter' : 'Right')), done: E('reset') };
+const BOOT_OK = why => ({ say: 'รอเครื่องบูต: ขึ้น "Starting operating system" แปลว่าสำเร็จ', done: () => S.mode === 'os' && S.bootLog.some(l => l.includes('Starting operating')), why });
+
+const LESSONS = [
+  {
+    id: 'free', title: 'ใช้งานอิสระ (ไม่มีบทเรียน)',
+    intro: 'ลองกดทุกเมนูได้ตามใจ ค่าที่บันทึกจะเก็บไว้ในเบราว์เซอร์นี้',
+    setup() {}, steps: [],
+  },
+  {
+    id: 'loose', title: '1. ฮาร์ดดิสก์ไม่ขึ้นใน BIOS (สายหลวม)',
+    intro: 'เครื่อง HMI เปิดแล้วไม่เข้า Windows ช่างต้องตรวจก่อนว่า BIOS มองเห็นฮาร์ดดิสก์หรือไม่ ถ้าไม่เห็น ปัญหาอยู่ที่ฮาร์ดแวร์',
+    setup() { HW.data = 'loose'; },
+    steps: [
+      F2('ถ้าเลยเวลานับถอยหลัง เครื่องจะพยายามบูตเอง กดปุ่ม "รีสตาร์ทเครื่อง" เพื่อลองใหม่'),
+      { say: 'ดูหน้า Main: Primary Master ขึ้น [None] และ POST ก็ไม่เห็นดิสก์ แปลว่า BIOS มองไม่เห็นฮาร์ดดิสก์', info: true, why: 'ปัญหานี้แก้ด้วยการลง Windows ใหม่ไม่ได้ ต้องตรวจสายและตัวดิสก์ก่อน' },
+      ...PREP_OFF,
+      { say: 'สายข้อมูล SATA หลวม แตะที่สายเพื่อเสียบให้แน่น (ถ้าแตะแล้วขึ้น "ถอดออกแล้ว" แตะอีกครั้งเพื่อเสียบ)', hw: 'data', done: () => HW.data === 'ok', why: 'การสั่นสะเทือนในโรงงานทำให้สายหลวมได้บ่อย ถ้าหัวสายไม่มีตัวล็อก ให้เปลี่ยนเป็นสายที่มีตัวล็อก' },
+      { say: 'ตรวจสายไฟ SATA ว่าแน่นดี (ในบทนี้สายไฟปกติ)', info: true, why: 'ถ้ามีหลายหัว ลองย้ายไปหัวอื่นเพื่อตัดปัญหาหัวจ่ายไฟเสีย' },
+      ...CLOSE_ON,
+      F2(),
+      { say: 'ดูหน้า Main: Primary Master ขึ้นชื่อดิสก์ [ST380011A-(PM)] แล้ว แปลว่า BIOS มองเห็นดิสก์', info: true, why: 'ถ้ายังขึ้น [None] ให้ลองเปลี่ยนสาย เปลี่ยนช่อง SATA หรือนำดิสก์ไปลองกับเครื่องอื่น' },
+      saveStep('ไม่ได้เปลี่ยนค่าอะไร จะกด Esc แล้วเลือก Exit Discarding Changes ก็ได้'),
+      { say: 'รอเครื่องบูต: ขึ้น "Starting operating system" แปลว่าแก้สำเร็จ', done: () => S.mode === 'os' && S.bootLog.some(l => l.includes('Starting')) },
+    ],
+  },
+  {
+    id: 'typenone', title: '2. บูตไม่ขึ้น "Operating System not found"',
+    intro: 'เครื่องขึ้นข้อความ Operating System not found ทั้งที่ดิสก์ต่ออยู่ มีคนเข้า BIOS แล้วตั้งค่า Primary Master เป็น None',
+    setup() { saved.pm.type = 'None'; },
+    steps: [
+      { say: 'รอให้เครื่องบูตเอง (ไม่ต้องกดอะไร) แล้วอ่านข้อความบนจอ', done: () => S.mode === 'os', why: 'อ่านข้อความเต็มทุกครั้ง ข้อความบอกว่าเครื่องลองอุปกรณ์ไหนและติดตรงไหน' },
+      { say: 'จอขึ้น Hard Drive : not present และ Operating System not found กดปุ่ม "รีสตาร์ทเครื่อง"', hw: 'restart', done: () => S.mode === 'post' || inSetup() },
+      F2(),
+      { say: 'Primary Master ขึ้น [None] เลื่อนไปที่ Primary Master แล้วกด Enter', key: () => toward('Primary Master'), done: () => S.stack.some(p => p.id === 'drive:pm'), why: 'เข้าไปดูว่าตั้ง Type ไว้อย่างไร' },
+      { say: 'Type ถูกตั้งเป็น None กด Enter เปิดรายการ แล้วเลือก Auto', key: () => (!S.popup ? 'Enter' : S.popup.sel === 0 ? 'Enter' : 'Up'), done: () => cfg.pm.type === 'Auto', why: 'Auto ให้ BIOS ตรวจหาดิสก์เองทุกครั้งที่เปิดเครื่อง ใช้ได้กับดิสก์ทั่วไปเกือบทั้งหมด' },
+      { say: 'BIOS เห็นดิสก์แล้ว (LBA Format, 80GB) กด Esc กลับหน้า Main', key: 'Esc', done: () => onTab('main') },
+      saveStep(),
+      { say: 'รอเครื่องบูต: ขึ้น "Booting from Hard Drive" แปลว่าแก้สำเร็จ', done: () => S.mode === 'os' && S.bootLog.some(l => l.includes('Starting')) },
+    ],
+  },
+  {
+    id: 'bootorder', title: '3. เครื่องบูตช้า ลอง Network ก่อน (ลำดับบูตผิด)',
+    intro: 'เครื่องบูตช้าและขึ้น PXE error ก่อนทุกครั้ง เพราะลำดับบูตเอา Network ไว้บนสุด ต้องย้าย Hard Drive ขึ้นก่อน',
+    setup() { saved.bootOrder = ['network', 'cdrom', 'removable', 'hdd']; },
+    steps: [
+      { say: 'รอเครื่องบูตรอบแรก ดูว่าเครื่องลองอุปกรณ์ไหนก่อน', done: () => S.mode === 'os', why: 'จะเห็น PXE-E61 ของ Network ขึ้นก่อน เครื่องจริงจะเสียเวลาหลายวินาทีตรงนี้' },
+      { say: 'กดปุ่ม "รีสตาร์ทเครื่อง"', hw: 'restart', done: () => S.mode === 'post' || inSetup() },
+      F2(),
+      { say: 'กด → จนถึงเมนู Boot', key: 'Right', done: () => onTab('boot') },
+      { say: 'กด ↓ เลือก Hard Drive', key: () => (selected().dev === 'hdd' ? null : 'Down'), done: () => onTab('boot') && selected().dev === 'hdd' },
+      { say: 'กด + จน Hard Drive ขึ้นไปอยู่บนสุด', key: 'Plus', done: () => cfg.bootOrder[0] === 'hdd', why: 'อ่านวิธีใช้ได้ในกล่อง Item Specific Help ด้านขวาของจอ' },
+      saveStep(),
+      { say: 'รอเครื่องบูต: คราวนี้ลอง Hard Drive เป็นอย่างแรก', done: () => S.mode === 'os' && (S.bootLog.slice(1).find(Boolean) || '').includes('Booting from Hard Drive'), why: 'ถ้าต้องบูตจาก USB ชั่วคราว ใช้ Boot Menu ตอนเปิดเครื่องแทนการแก้ลำดับถาวร' },
+    ],
+  },
+  {
+    id: 'swapssd', title: '4. เปลี่ยน HDD เก่าเป็น SSD ใหม่',
+    intro: 'HDD ของเครื่องเริ่มเสียงดังและช้า เปลี่ยนเป็น SSD 120 GB ก่อนเริ่มต้องมีไฟล์แบ็คอัพ (อิมเมจ) ของเครื่องนี้แล้ว',
+    setup() { HW.spare = 'ssd'; },
+    steps: [
+      { say: 'ตรวจว่ามีอิมเมจแบ็คอัพของเครื่องนี้แล้ว และ SSD ใหม่ความจุมากกว่าข้อมูลที่ใช้จริง', info: true, why: 'SSD ใหม่ไม่มีระบบอยู่ หลังเปลี่ยนต้องกู้คืนอิมเมจหรือโคลนข้อมูลเข้าไป' },
+      ...PREP_OFF,
+      { say: 'ถอดสายข้อมูล SATA ออกจาก HDD', hw: 'data', done: () => HW.data === 'off', why: 'จับที่หัวสาย ไม่ดึงที่ตัวสาย ถ้ามีตัวล็อกให้กดค้างก่อนดึง' },
+      { say: 'ถอดสายไฟ SATA ออกจาก HDD', hw: 'sataPower', done: () => HW.sataPower === 'off' },
+      { say: 'คลายน็อตแล้วถอด HDD เก่าออกจากช่อง', hw: 'drive', done: () => HW.drive === 'none', why: 'ติดป้ายดิสก์เก่าว่าเสียหรือรอตรวจ เก็บไว้จนกว่าเครื่องใหม่จะใช้งานได้ปกติ' },
+      { say: 'ใส่ SSD ใหม่ลงช่อง (SSD 2.5 นิ้ว ต้องใส่ถาดแปลงเป็น 3.5 นิ้ว)', hw: 'spare', done: () => HW.drive === 'ssd' },
+      { say: 'เสียบสายไฟ SATA เข้า SSD', hw: 'sataPower', done: () => HW.sataPower === 'ok' },
+      { say: 'เสียบสายข้อมูล SATA เข้า SSD', hw: 'data', done: () => HW.data === 'ok', why: 'หัว SATA เป็นรูปตัว L เสียบได้ทางเดียว ถ้าเสียบไม่เข้าให้กลับด้าน ห้ามฝืน' },
+      ...CLOSE_ON,
+      F2(),
+      { say: 'ดูหน้า Main: Primary Master เปลี่ยนเป็น KINGSTON SA400 (SSD) แล้ว และหน้า POST ก็แสดงชื่อนี้', info: true },
+      { say: 'กด Enter ที่ Primary Master เพื่อดูความจุ', key: () => toward('Primary Master'), done: () => S.stack.some(p => p.id === 'drive:pm'), why: 'Maximum Capacity ต้องขึ้น 120GB ตรงกับฉลาก ถ้าขึ้นไม่ตรง SSD อาจเป็นของปลอมหรือเสีย' },
+      { say: 'กด Esc กลับหน้า Main', key: 'Esc', done: () => onTab('main') },
+      saveStep(),
+      { say: 'รอเครื่องบูต: จะขึ้น "no operating system" เพราะ SSD ยังว่าง เป็นเรื่องปกติ', done: () => S.mode === 'os', why: 'ขั้นต่อไปคือบูตจาก USB แล้วกู้คืนอิมเมจลง SSD (ฝึกได้ในบท "กู้คืนจากไฟล์แบ็คอัพ" ของ SimLab)' },
+    ],
+  },
+  {
+    id: 'udma', title: '5. ดิสก์ช้ามาก (Ultra DMA ถูกปิด)',
+    intro: 'เครื่องช้ามาก ไฟ HDD ติดค้างตลอด สาเหตุคือโหมดรับส่งข้อมูลถูกตั้งเป็นแบบช้าที่สุด (PIO Standard และปิด Ultra DMA)',
+    setup() { saved.pm.xfer = 'Standard'; saved.pm.udma = 'Disabled'; },
+    steps: [
+      F2(),
+      { say: 'เลือก Primary Master แล้วกด Enter', key: () => toward('Primary Master'), done: () => S.stack.some(p => p.id === 'drive:pm') },
+      { say: 'กด ↓ ไปที่ Transfer Mode', key: () => toward('Transfer Mode:', null), done: () => selected().label === 'Transfer Mode:' },
+      { say: 'กด + จนค่าเป็น FPIO 4 / DMA 2', key: 'Plus', done: () => cfg.pm.xfer === 'FPIO 4 / DMA 2', why: 'Standard คือโหมดเก่าที่ช้าที่สุด ให้ CPU ย้ายข้อมูลเองทีละน้อย' },
+      { say: 'กด ↓ ไปที่ Ultra DMA Mode', key: () => toward('Ultra DMA Mode:', null), done: () => selected().label === 'Ultra DMA Mode:' },
+      { say: 'กด + จนเป็น Mode 5', key: 'Plus', done: () => cfg.pm.udma === 'Mode 5', why: 'Ultra DMA Mode 5 (UDMA/100) เร็วกว่า PIO หลายเท่า ถ้าตั้งแล้วเครื่องค้าง ให้ตรวจสาย IDE ว่าเป็นแบบ 80 เส้น' },
+      { say: 'กด Esc กลับหน้า Main', key: 'Esc', done: () => onTab('main') },
+      saveStep(),
+      { say: 'รอเครื่องบูตเข้า OS', done: () => S.mode === 'os' && S.bootLog.some(l => l.includes('Starting')) },
+    ],
+  },
+  {
+    id: 'ghost-backup', ghostOps: ['backup', 'verify'], hddFirst: true, title: '6. Ghost: สร้างไฟล์แบ็คอัพ (Disk → Image)',
+    intro: 'ก่อนซ่อมหรืออัปเดตโปรแกรม HMI ต้องเก็บอิมเมจทั้งฮาร์ดดิสก์ไว้ใน HDD แบ็คอัพภายนอก ใช้แฟลชไดรฟ์ที่มีโปรแกรม ImageCopy บูตเครื่อง แล้วตรวจไฟล์ให้แน่ใจว่าใช้ได้',
+    setup() {},
+    steps: [
+      { say: 'เสียบ HDD แบ็คอัพภายนอก (USB) เข้าเครื่อง', hw: 'ext', done: () => HW.ext, why: 'ห้ามเก็บแบ็คอัพไว้ในดิสก์เดียวกับที่แบ็คอัพ ถ้าดิสก์เสีย ไฟล์ก็หายไปด้วย' },
+      { say: 'เสียบแฟลชไดรฟ์บูต ImageCopy', hw: 'usb', done: () => HW.usb },
+      { say: 'กดปุ่ม "รีสตาร์ทเครื่อง"', hw: 'restart', done: E('reboot') },
+      ...BOOT_USB,
+      { say: 'กด ↓ ไปที่ <b>To Image</b> แล้วกด Enter', key: toMenu(0, 1), done: E('op-backup'), why: 'To Image เก็บดิสก์ทั้งลูกเป็นไฟล์เดียว (.gho)' },
+      { say: 'ตารางเลือกต้นทาง: Drive 1 คือ ST380011A ชนิด IDE (ฮาร์ดดิสก์ระบบ) กด Enter', key: listTo('src', 0), done: E('src-ok'), why: 'ดูรุ่นและชนิด USB = ดิสก์ภายนอก, IDE = ดิสก์ในเครื่อง' },
+      LOOK_BACKUP(),
+      { say: 'กด Tab สองครั้งไปที่ช่อง File name (ช่องจะไฮไลต์เป็นสีขาว)', key: onScr('file', () => 'Tab'), done: E('focus-name') },
+      { say: 'พิมพ์ <code>HMI_L21_2026-10</code> ในช่อง "พิมพ์" ใต้จอ แล้วกด Enter', key: 'Enter', type: 1, done: E('file-ok'), why: 'ตั้งชื่อแบบ เครื่อง_ไลน์_ปี-เดือน จะหาง่ายเวลาต้องกู้คืน โปรแกรมเติม .gho ให้เอง' },
+      { say: 'เลือกการบีบอัด: กด → ไปที่ <b>Fast</b> แล้วกด Enter', key: gk(g => (g.btn === 1 ? 'Enter' : 'Right')), done: () => ['comp-fast', 'comp-high', 'comp-no'].some(e => L.evc[e]), why: 'Fast เร็วและได้ไฟล์เล็กลงราว 40% ส่วน High เล็กกว่าแต่ช้ากว่ามาก' },
+      CONFIRM_YES('ปุ่มเริ่มต้นคือ No กันกด Enter พลาด'),
+      { say: 'รอให้สร้างไฟล์เสร็จ ห้ามถอดสาย USB หรือปิดเครื่อง', done: E('run-done') },
+      { say: 'กด Enter (Continue)', key: 'Enter', done: E('done'), why: 'ยังไม่จบ ต่อไปจะตรวจว่าไฟล์ที่สร้างใช้ได้จริง' },
+      { say: 'กด Enter เปิดเมนู Local อีกครั้ง', key: 'Enter', done: E('menu-local', 2) },
+      { say: 'กด ↓ ไปที่ <b>Check</b> แล้วกด Enter', key: toMenu(2, null), done: E('menu-check') },
+      { say: 'แถบอยู่ที่ <b>Image File</b> กด Enter', key: toMenu(2, 0), done: E('op-verify') },
+      LOOK_BACKUP(),
+      { say: 'กด Tab เข้าไปในรายการไฟล์', key: onScr('file', () => 'Tab'), done: E('focus-list', 2) },
+      { say: 'กด ↓ ไปที่ไฟล์ที่เพิ่งสร้าง (อยู่ล่างสุด)', key: onScr('file', g => (ghostFields(g)[g.focus] === 'list' ? 'Down' : 'Tab')), done: E('file-new') },
+      { say: 'กด Enter เพื่อตรวจไฟล์', key: onScr('file', () => 'Enter'), done: E('file-ok', 2) },
+      { say: 'รอให้ตรวจเสร็จ', done: E('run-done', 2) },
+      RESET_PC,
+      USB_OUT,
+      ...HDD_BACK,
+      BOOT_OK('HDD แบ็คอัพเก็บแยกไว้ที่ปลอดภัย และควรคัดลอกไฟล์สำคัญไว้อีกที่ เช่น NAS'),
+    ],
+  },
+  {
+    id: 'ghost-clone', ghostOps: ['clone'], hddFirst: true, title: '7. Ghost: โคลน HDD ไป SSD ใหม่ (Disk → Disk)',
+    intro: 'ย้ายระบบทั้งลูกจาก HDD 80 GB ไป SSD 120 GB โดยไม่ต้องลง Windows ใหม่ ต่อ SSD เป็นดิสก์ลูกที่สอง โคลน แล้วย้าย SSD ขึ้นแทนลูกเดิม',
+    setup() { HW.spare = 'ssd'; },
+    steps: [
+      ...PREP_OFF,
+      { say: 'ต่อ SSD ใหม่เข้าช่อง SATA 2 (ต่อทั้งสายข้อมูลและสายไฟ)', hw: 'slave', done: () => HW.slave === 'ssd', why: 'ต่อเป็นดิสก์ลูกที่สองชั่วคราว เพื่อให้โปรแกรมเห็นทั้งต้นทางและปลายทาง' },
+      { say: 'เสียบแฟลชไดรฟ์บูต ImageCopy', hw: 'usb', done: () => HW.usb },
+      ...CLOSE_ON,
+      ...BOOT_USB,
+      { say: 'แถบอยู่ที่ <b>To Disk</b> กด Enter', key: toMenu(0, 0), done: E('op-clone'), why: 'To Disk คือโคลนดิสก์ไปดิสก์' },
+      { say: 'ต้นทาง: Drive 1 คือ ST380011A (HDD เดิม) กด Enter', key: listTo('src', 0), done: E('src-ok') },
+      { say: 'ปลายทาง: กด ↓ ไปที่ Drive 2 (KINGSTON SSD) แล้วกด Enter', key: listTo('dst', 1), done: E('dst-ok'), why: 'ดูให้ชัดว่าลูกไหนคือ SSD ใหม่ ถ้าเลือกสลับกัน HDD เดิมจะถูกเขียนทับด้วยดิสก์ว่าง ข้อมูลหายทั้งเครื่อง' },
+      { say: 'ตรวจขนาดพาร์ทิชันใหม่ แล้วกด Enter', key: onScr('details', () => 'Enter'), done: E('details-ok'), why: 'SSD ใหญ่กว่า พาร์ทิชันจะถูกขยายให้เต็ม 120 GB' },
+      CONFIRM_YES('อ่านหมายเลขและรุ่นดิสก์ปลายทางอีกครั้งก่อนเลือก Yes'),
+      { say: 'รอให้โคลนเสร็จ ห้ามปิดเครื่อง', done: E('run-done') },
+      RESET_PC,
+      USB_OUT,
+      ...PREP_OFF,
+      { say: 'ถอดสายข้อมูลออกจาก HDD เก่า', hw: 'data', done: () => HW.data === 'off' },
+      { say: 'ถอดสายไฟออกจาก HDD เก่า', hw: 'sataPower', done: () => HW.sataPower === 'off' },
+      { say: 'ถอด HDD เก่าออกจากช่อง', hw: 'drive', done: () => HW.drive === 'none', why: 'เก็บ HDD เก่าไว้ก่อนจนกว่าเครื่องใหม่จะใช้งานได้ปกติ ใช้เป็นแบ็คอัพสำรองได้' },
+      { say: 'ถอด SSD ออกจากช่อง SATA 2', hw: 'slave', done: () => !HW.slave },
+      { say: 'ใส่ SSD ลงช่องหลัก', hw: 'spare', done: () => HW.drive === 'ssd' },
+      { say: 'เสียบสายไฟ SATA เข้า SSD', hw: 'sataPower', done: () => HW.sataPower === 'ok' },
+      { say: 'เสียบสายข้อมูล SATA เข้า SSD', hw: 'data', done: () => HW.data === 'ok' },
+      ...CLOSE_ON,
+      ...HDD_BACK,
+      BOOT_OK('ถ้าบูตไม่ขึ้น ให้เข้า BIOS ตรวจว่า Primary Master เป็น SSD และ Hard Drive อยู่ในลำดับบูต'),
+    ],
+  },
+  {
+    id: 'ghost-restore', ghostOps: ['restore'], hddFirst: true, title: '8. Ghost: กู้คืนจากไฟล์แบ็คอัพ (Image → Disk)',
+    intro: 'HDD ของเครื่องเสีย เปลี่ยน SSD ใหม่ไปแล้วแต่ยังว่าง จะกู้คืนระบบจากไฟล์ HMI_L21_2026-09.gho ที่เก็บไว้ใน HDD แบ็คอัพ',
+    setup() { HW.drive = 'ssd'; },
+    steps: [
+      { say: 'รอให้เครื่องบูตเอง แล้วอ่านข้อความบนจอ', done: () => S.mode === 'os', why: 'จะขึ้น no operating system เพราะ SSD ใหม่ยังไม่มีระบบ' },
+      { say: 'เสียบ HDD แบ็คอัพภายนอก (USB)', hw: 'ext', done: () => HW.ext },
+      { say: 'เสียบแฟลชไดรฟ์บูต ImageCopy', hw: 'usb', done: () => HW.usb },
+      { say: 'กดปุ่ม "รีสตาร์ทเครื่อง"', hw: 'restart', done: E('reboot') },
+      ...BOOT_USB,
+      { say: 'กด ↓ สองครั้งไปที่ <b>From Image</b> แล้วกด Enter', key: toMenu(0, 2), done: E('op-restore'), why: 'From Image คือเอาไฟล์อิมเมจกลับไปเขียนลงดิสก์' },
+      LOOK_BACKUP(),
+      { say: 'กด Tab เข้าไปในรายการไฟล์', key: onScr('file', () => 'Tab'), done: E('focus-list') },
+      { say: 'แถบอยู่ที่ <code>HMI_L21_2026-09.gho</code> ตรวจชื่อเครื่องแล้วกด Enter', key: onScr('file', g => (g.fi === 0 ? 'Enter' : 'Up')), done: E('file-ok'), why: 'ต้องเป็นอิมเมจของเครื่องนี้ (L21) เท่านั้น ถ้าใช้ของไลน์อื่น ชื่อเครื่อง IP และโปรแกรมจะผิดทั้งหมด' },
+      { say: 'ปลายทาง: Drive 1 คือ KINGSTON SSD (ดิสก์ในเครื่อง) กด Enter', key: listTo('dst', 0), done: E('dst-ok'), why: 'Drive 2 คือ HDD แบ็คอัพที่เก็บไฟล์อยู่ ห้ามเลือกเด็ดขาด' },
+      { say: 'ตรวจขนาดพาร์ทิชัน แล้วกด Enter', key: onScr('details', () => 'Enter'), done: E('details-ok') },
+      CONFIRM_YES('ข้อมูลเดิมบนดิสก์ปลายทางจะหายทั้งหมด'),
+      { say: 'รอให้กู้คืนเสร็จ', done: E('run-done') },
+      RESET_PC,
+      USB_OUT,
+      ...HDD_BACK,
+      BOOT_OK('หลังเข้า Windows ให้ตรวจชื่อเครื่อง IP และการเชื่อมต่อ PLC ให้ตรงกับไลน์ก่อนส่งคืนฝ่ายผลิต'),
+    ],
+  },
+];
+
+let L = { id: null, i: 0, mistakes: 0, flash: null, done: false, evc: {} };
+function lessonEv(e) { L.evc[e] = (L.evc[e] || 0) + 1; }
+const lessonStep = () => { const ls = LESSONS.find(x => x.id === L.id); return ls && !L.done ? ls.steps[L.i] : null; };
+function lessonNote(k, t) { L.flash = { k, t }; renderCoach(); }
+function lessonMistake(t) { if (L.id && L.id !== 'free') L.mistakes++; lessonNote('bad', t); }
+
+function lessonStart(id) {
+  const ls = LESSONS.find(x => x.id === id);
+  Object.assign(HW, { power: true, plug: true, strap: false, cover: false, data: 'ok', sataPower: 'ok', drive: 'hdd', spare: null, removed: null, slave: null, usb: false, ext: false, extFiles: defaultExtFiles() });
+  DISK_MODELS.hdd.os = true; DISK_MODELS.ssd.os = false;
+  if (id === 'free') { L = { id: null, i: 0, mistakes: 0, flash: null, done: false, evc: {} }; saved = Object.assign(clone(DEFAULTS), loadCmos().cfg); }
+  else { L = { id, i: 0, mistakes: 0, flash: null, done: false, evc: {} }; saved = clone(DEFAULTS); }
+  if (ls.hddFirst) saved.bootOrder = ['hdd', 'removable', 'cdrom', 'network'];
+  ls.setup();
+  cfg = clone(saved);
+  expanded.removable = expanded.hdd = false;
+  S.sel = {}; S.mode = 'post';
+  S.mode = 'post'; HW.power = true; reboot();
+  L.evc = {};
+  if (id === 'free') L.id = null;
+  renderCoach();
+}
+
+function lessonAfterRender() {
+  const ls = LESSONS.find(x => x.id === L.id);
+  if (ls && !L.done) {
+    let moved = false;
+    while (L.i < ls.steps.length && !ls.steps[L.i].info && ls.steps[L.i].done()) { L.i++; moved = true; L.flash = null; }
+    if (L.i >= ls.steps.length) { L.done = true; moved = true; }
+    if (moved) renderCoach();
+  }
+  const st = lessonStep();
+  let want = st && st.key ? (typeof st.key === 'function' ? st.key() : st.key) : null;
+  if (want !== L.lastKey) { L.lastKey = want; renderCoach(); }
+  document.querySelectorAll('#keypad [data-key]').forEach(b => b.classList.toggle('hint', b.dataset.key === want));
+  renderHW();
+}
+
+function renderCoach() {
+  const el = document.getElementById('coach');
+  const ls = LESSONS.find(x => x.id === (L.id || 'free'));
+  let h = `<label for="lessonPick" class="bar"><span>เลือกสถานการณ์ที่จะฝึก</span></label>
+    <select id="lessonPick">${LESSONS.map(x => `<option value="${x.id}" ${x.id === ls.id ? 'selected' : ''}>${x.title}</option>`).join('')}</select>
+    <p class="intro">${ls.intro}</p>`;
+  if (ls.steps.length) {
+    h += `<div class="bar"><span>ขั้นที่ ${Math.min(L.i + 1, ls.steps.length)} / ${ls.steps.length} · ผิดพลาด ${L.mistakes}</span><button id="lessonRestart">เริ่มบทนี้ใหม่</button></div>`;
+    if (L.done) h += `<div class="flash ok"><b>ทำครบทุกขั้นแล้ว</b> ผิดพลาด ${L.mistakes} ครั้ง ${L.mistakes ? 'ลองทำใหม่ให้ไม่ผิดเลย' : 'เยี่ยมมาก'}</div>`;
+    h += `<ol class="steps">${ls.steps.map((s, i) => {
+      const cls = L.done || i < L.i ? 'done' : i === L.i ? 'cur' : '';
+      let body = s.say;
+      if (i === L.i && !L.done) {
+        if (s.why) body += `<span class="why">${s.why}</span>`;
+        const k = s.key ? (typeof s.key === 'function' ? s.key() : s.key) : null;
+        if (s.hw) body += `<span class="act">แตะที่ตัวเครื่องด้านล่างที่มีกรอบสีส้ม</span>`;
+        else if (k === 'Esc' && S.mode === 'ghost' && S.ic && S.ic.scr !== 'main') body += `<span class="act">ตอนนี้อยู่ผิดหน้า กด Esc เพื่อย้อนกลับเมนูหลักก่อน แล้วเลือกเมนูใหม่</span>`;
+        else if (k) body += `<span class="act">ปุ่มที่ต้องกดมีกรอบสีส้มบนแป้นพิมพ์ (ตอนนี้คือ ${({ Up: '↑', Down: '↓', Left: '←', Right: '→', Plus: '+', Minus: '−' })[k] || k})</span>`;
+        if (s.info) body += `<span class="act"><button class="next" id="lessonNext">เข้าใจแล้ว ต่อไป</button></span>`;
+      }
+      return `<li class="${cls}"><div>${body}</div></li>`;
+    }).join('')}</ol>`;
+  }
+  if (L.flash) h += `<div class="flash ${L.flash.k}">${L.flash.k === 'bad' ? '<b>ระวัง:</b> ' : ''}${L.flash.t}</div>`;
+  el.innerHTML = h;
+  document.getElementById('lessonPick').onchange = e => { e.target.blur(); lessonStart(e.target.value); $screen.focus({ preventScroll: true }); };
+  const r = document.getElementById('lessonRestart'); if (r) r.onclick = () => lessonStart(L.id);
+  const n = document.getElementById('lessonNext'); if (n) n.onclick = () => { L.i++; L.flash = null; renderCoach(); lessonAfterRender(); };
+  const cur = el.querySelector('.steps .cur'); if (cur) { const box = el.querySelector('.steps'); box.scrollTop = cur.offsetTop - box.offsetTop - 40; }
+}
+
+
+/* =====================================================================
+   12) ImageCopy — โปรแกรมโคลน / แบ็คอัพ / กู้คืนดิสก์ (บูตจากแฟลชไดรฟ์)
+   ===================================================================== */
+const MBs = g => Math.round(g * 1e9 / 1048576).toLocaleString('en');
+const lpad = (s, n) => String(s).padStart(n);
+const capGB = m => parseInt(m.cap, 10);
+const GHOST_DD = ['Disk', 'Partition', 'Check'];
+const GHOST_SUB = [['To Disk', 'To Image', 'From Image'], ['To Partition', 'To Image', 'From Image'], ['Image File', 'Disk']];
+const GC = { ev: e => lessonEv(e), mistake: t => lessonMistake(t), note: t => lessonNote('info', t) };
+const SYS_PART = (size) => ({ label: 'C: WinXP', fs: 'NTFS', size, used: 35 });
+function defaultExtFiles() {
+  return [
+    { name: 'HMI_L21_2026-09.gho', size: 21, date: '09/14/2026', parts: [SYS_PART(80)], srcSize: 80 },
+    { name: 'HMI_L12_2026-07.gho', size: 24, date: '07/02/2026', parts: [SYS_PART(80)], srcSize: 80 },
+    { name: 'SCADA_L31_2026-04.gho', size: 41, date: '04/20/2026', parts: [{ label: 'C: Win2000', fs: 'NTFS', size: 160, used: 68 }], srcSize: 160 },
+  ];
+}
+const usedOf = d => d.parts.reduce((a, p) => a + p.used, 0);
+
+function ghostDisks() {
+  const list = [];
+  const add = o => { o.n = list.length + 1; list.push(o); };
+  const sys = (m, key, role) => ({ size: capGB(m), type: 'IDE', model: m.name, role, key, parts: m.os ? [SYS_PART(capGB(m))] : [] });
+  if (DRIVES.pm) add(sys(DRIVES.pm, HW.drive, 'pm'));
+  if (DRIVES.ps) add(sys(DRIVES.ps, HW.slave, 'ps'));
+  if (HW.ext) add({ size: 500, type: 'USB', model: 'WD Elements 500GB', role: 'backup',
+    parts: [{ label: 'D: BACKUP', fs: 'NTFS', size: 500, used: 30 + HW.extFiles.reduce((a, f) => a + f.size, 0), files: HW.extFiles }] });
+  if (HW.usb) add({ size: 8, type: 'USB', model: 'SanDisk Cruzer 8GB', role: 'boot', parts: [{ label: 'A: BOOT', fs: 'FAT32', size: 8, used: 0.1, files: [] }] });
+  list.forEach(d => d.parts.forEach((p, i) => { p.id = `${d.n}:${i + 1}`; }));
+  return list;
+}
+function ghostInit() {
+  return { scr: 'splash', mb: 0, menu: { open: false, i: 0, sub: -1, j: 0 }, list: 0, li: 0, fi: 0, focus: 0, btn: 0, name: '',
+    op: null, src: null, dst: null, img: null, comp: null, prog: 0, running: false, err: null, quit: false, newName: null, disks: ghostDisks() };
+}
+const gDisk = (g, n) => g.disks.find(d => d.n === n);
+const ghostLocs = g => g.disks.flatMap(d => d.parts.map(p => ({ p, d })));
+const ghostLoc = g => ghostLocs(g)[g.li] || ghostLocs(g)[0];
+const ghostFiles = g => { const l = ghostLoc(g); return l && l.p.files ? l.p.files : []; };
+const ghostFields = g => (g.op === 'backup' ? ['look', 'list', 'name', 'ok', 'cancel'] : ['look', 'list', 'ok', 'cancel']);
+function ghostToMain(g) { Object.assign(g, { scr: 'main', menu: { open: false, i: 0, sub: -1, j: 0 }, op: null, focus: 0, btn: 0, list: 0, quit: false }); }
+
+/* ---------- วาดหน้าจอ ImageCopy ---------- */
+/* หน้าตา ImageCopy ใช้แบบเดียวกับ BIOS Setup: หัวน้ำเงิน · พื้นเทา · เส้นกรอบขาว · หน้าต่างถามเป็นกล่องน้ำเงิน */
+/* =====================================================================
+   หน้าจอกราฟิก: เมนูแฟลชไดรฟ์บูต → Mini Windows 7 → โปรแกรม ImageCopy 32
+   วาดลง canvas พิกัด 720 x 540 (4:3) แบบหน้าต่าง Windows คลาสสิก
+   ===================================================================== */
+const GW = 720, GH = 540;
+const GHOST_MAIN = ['Local', 'Peer to peer', 'GhostCast', 'Options', 'Help', 'Quit'];
+const TOOLKIT_ITEMS = ['Boot from Hard Drive', 'Mini Windows 7', 'Mini Windows XP', 'Dos Programs (Backup Tools)', 'Memory Test'];
+const DESK_ICONS = ['Computer', GHOST_TITLE + ' 32', 'Partition Tool', 'Command Prompt'];
+const FONT = (s, b) => `${b ? 'bold ' : ''}${s}px Tahoma, "Segoe UI", Verdana, Arial, sans-serif`;
+
+function gctx() { const c = ctx2d; c.setTransform(2, 0, 0, 800 / GH, 0, 0); c.textBaseline = 'middle'; c.globalAlpha = 1; return c; }
+function txt(c, s, x, y, o = {}) { c.font = FONT(o.size || 11, o.bold); c.fillStyle = o.color || '#000'; c.textAlign = o.align || 'left'; c.fillText(String(s), x, y); }
+function hit(x, y, w, h, fn) { S.hits.push({ x, y, w, h, fn }); }
+function bevel(c, x, y, w, h, inset, face = '#d4d0c8') {
+  c.fillStyle = face; c.fillRect(x, y, w, h);
+  c.fillStyle = inset ? '#808080' : '#ffffff'; c.fillRect(x, y, w, 1); c.fillRect(x, y, 1, h);
+  c.fillStyle = inset ? '#ffffff' : '#404040'; c.fillRect(x, y + h - 1, w, 1); c.fillRect(x + w - 1, y, 1, h);
+  c.fillStyle = inset ? '#404040' : '#808080'; c.fillRect(x + 1, y + h - 2, w - 2, 1); c.fillRect(x + w - 2, y + 1, 1, h - 2);
+}
+function field(c, x, y, w, h, bg = '#ffffff') { bevel(c, x, y, w, h, true, bg); }
+function dialog(c, x, y, w, h, title) {
+  c.fillStyle = 'rgba(0,0,0,.35)'; c.fillRect(x + 4, y + 4, w, h);
+  bevel(c, x, y, w, h);
+  const g = c.createLinearGradient(x, 0, x + w, 0); g.addColorStop(0, '#0a246a'); g.addColorStop(1, '#a6caf0');
+  c.fillStyle = g; c.fillRect(x + 3, y + 3, w - 6, 18);
+  txt(c, title, x + 7, y + 12.5, { bold: true, color: '#fff' });
+}
+function btn(c, x, y, w, label, focus, fn) {
+  const h = 23; bevel(c, x, y, w, h);
+  if (focus) { c.strokeStyle = '#000'; c.lineWidth = 1; c.strokeRect(x - 0.5, y - 0.5, w + 1, h + 1); c.setLineDash([1, 1]); c.strokeRect(x + 4.5, y + 4.5, w - 9, h - 9); c.setLineDash([]); }
+  txt(c, label, x + w / 2, y + h / 2 + 0.5, { align: 'center' });
+  if (fn) hit(x, y, w, h, fn);
+}
+function groupBox(c, x, y, w, h, label) {
+  c.strokeStyle = '#808080'; c.strokeRect(x + 0.5, y + 0.5, w, h); c.strokeStyle = '#fff'; c.strokeRect(x + 1.5, y + 1.5, w, h);
+  c.fillStyle = '#d4d0c8'; const tw = c.measureText(label).width + 8; c.fillRect(x + 8, y - 6, tw + 6, 12);
+  txt(c, label, x + 12, y + 0.5);
+}
+const gpress = k => () => { handleKey(k); };
+
+/* ---------- เมนูของแฟลชไดรฟ์บูต ---------- */
+function drawToolkit(c) {
+  const g = c.createLinearGradient(0, 0, 0, GH); g.addColorStop(0, '#04122e'); g.addColorStop(1, '#000000');
+  c.fillStyle = g; c.fillRect(0, 0, GW, GH);
+  txt(c, 'USB Boot Toolkit 15.2', GW / 2, 70, { size: 26, bold: true, color: '#e8eef8', align: 'center' });
+  txt(c, 'Rescue and maintenance tools for technicians', GW / 2, 100, { size: 12, color: '#8aa0c8', align: 'center' });
+  const x = 170, y = 150, w = 380;
+  c.fillStyle = 'rgba(30,60,120,.35)'; c.fillRect(x, y, w, TOOLKIT_ITEMS.length * 34 + 20);
+  c.strokeStyle = '#3c5c9c'; c.strokeRect(x + 0.5, y + 0.5, w, TOOLKIT_ITEMS.length * 34 + 20);
+  TOOLKIT_ITEMS.forEach((t, i) => {
+    const iy = y + 10 + i * 34, on = i === S.tk.sel;
+    if (on) { const hg = c.createLinearGradient(0, iy, 0, iy + 30); hg.addColorStop(0, '#4f86d8'); hg.addColorStop(1, '#2350a0'); c.fillStyle = hg; c.fillRect(x + 8, iy, w - 16, 30); }
+    txt(c, t, x + 24, iy + 15.5, { size: 15, color: on ? '#fff' : '#c8d4ea' });
+    hit(x + 8, iy, w - 16, 30, () => { if (S.tk.sel === i) handleKey('Enter'); else S.tk.sel = i; });
+  });
+  txt(c, 'Use the ↑ and ↓ keys to select an entry, press Enter to boot.', GW / 2, 430, { size: 12, color: '#8aa0c8', align: 'center' });
+  txt(c, `The highlighted entry will be booted automatically in ${Math.max(0, Math.ceil(9 - S.tk.t))} seconds.`, GW / 2, 450, { size: 12, color: '#8aa0c8', align: 'center' });
+}
+
+/* ---------- Mini Windows 7 กำลังโหลด ---------- */
+function drawWinLoad(c) {
+  c.fillStyle = '#000'; c.fillRect(0, 0, GW, GH);
+  const t = S.wl.t;
+  txt(c, t < 1.5 ? 'Preparing Mini Windows files from USB ...' : 'Starting Mini Windows 7', GW / 2, 300, { size: 16, color: '#d8d8d8', align: 'center' });
+  field(c, 260, 330, 200, 16, '#000');
+  for (let i = 0; i < 3; i++) { const bx = 262 + ((t * 120 + i * 16) % 196); c.fillStyle = '#3fa64a'; c.fillRect(bx, 333, 12, 10); }
+}
+
+/* ---------- เดสก์ท็อป Mini Windows ---------- */
+function icon(c, name, x, y) {
+  if (name === 'Computer') { c.fillStyle = '#cfd8e6'; c.fillRect(x + 4, y + 4, 28, 20); c.fillStyle = '#2d6cc0'; c.fillRect(x + 7, y + 7, 22, 14); c.fillStyle = '#9aa6b8'; c.fillRect(x + 12, y + 25, 12, 4); c.fillRect(x + 8, y + 29, 20, 3); }
+  else if (name.startsWith(GHOST_TITLE)) { c.fillStyle = '#f2c300'; c.fillRect(x + 4, y + 4, 28, 28); c.fillStyle = '#0a246a'; c.fillRect(x + 8, y + 10, 20, 4); c.fillRect(x + 8, y + 17, 20, 4); c.fillRect(x + 8, y + 24, 13, 4); }
+  else if (name === 'Partition Tool') { c.fillStyle = '#e6e6e6'; c.beginPath(); c.arc(x + 18, y + 18, 14, 0, Math.PI * 2); c.fill(); c.fillStyle = '#d83b2c'; c.beginPath(); c.moveTo(x + 18, y + 18); c.arc(x + 18, y + 18, 14, -Math.PI / 2, 0.6); c.fill(); }
+  else { c.fillStyle = '#000'; c.fillRect(x + 3, y + 6, 30, 24); c.strokeStyle = '#ccc'; c.strokeRect(x + 3.5, y + 6.5, 30, 24); txt(c, 'C:\\>', x + 7, y + 18, { size: 9, color: '#ddd' }); }
+}
+function drawDesktop(c, withTaskButton) {
+  const g = c.createLinearGradient(0, 0, GW, GH); g.addColorStop(0, '#2d7ed0'); g.addColorStop(1, '#0b2f66');
+  c.fillStyle = g; c.fillRect(0, 0, GW, GH);
+  DESK_ICONS.forEach((n, i) => {
+    const x = 18, y = 16 + i * 78, on = S.dk && S.dk.sel === i && S.mode === 'desktop';
+    if (on) { c.fillStyle = 'rgba(160,200,255,.35)'; c.fillRect(x - 6, y - 4, 76, 70); c.strokeStyle = 'rgba(200,225,255,.8)'; c.strokeRect(x - 5.5, y - 3.5, 75, 69); }
+    icon(c, n, x + 14, y);
+    txt(c, n, x + 32 + 1, y + 50 + 1, { size: 11, color: 'rgba(0,0,0,.7)', align: 'center' });
+    txt(c, n, x + 32, y + 50, { size: 11, color: '#fff', align: 'center' });
+    if (S.mode === 'desktop') hit(x - 6, y - 4, 76, 70, () => { if (S.dk.sel === i) handleKey('Enter'); else S.dk.sel = i; });
+  });
+  // แถบงาน
+  const tb = c.createLinearGradient(0, GH - 30, 0, GH); tb.addColorStop(0, '#2a3e5c'); tb.addColorStop(1, '#101a2a');
+  c.fillStyle = tb; c.fillRect(0, GH - 30, GW, 30);
+  const og = c.createRadialGradient(22, GH - 15, 2, 22, GH - 15, 13); og.addColorStop(0, '#7fc4ff'); og.addColorStop(1, '#1a5fb0');
+  c.fillStyle = og; c.beginPath(); c.arc(22, GH - 15, 12, 0, Math.PI * 2); c.fill();
+  if (withTaskButton) { c.fillStyle = 'rgba(255,255,255,.18)'; c.fillRect(44, GH - 27, 150, 24); txt(c, `${GHOST_TITLE} 32`, 54, GH - 15, { color: '#fff' }); }
+  const d = now();
+  txt(c, `${p2(d.getHours())}:${p2(d.getMinutes())}`, GW - 12, GH - 15, { color: '#fff', align: 'right' });
+}
+
+/* ---------- หน้าต่างโปรแกรม ImageCopy 32 ---------- */
+function drawGhostGui(c) {
+  const g = S.ic;
+  drawDesktop(c, true);
+  // หน้าต่างเต็มจอ (ไม่ทับแถบงาน)
+  const X = 0, Y = 0, W = GW, H = GH - 30;
+  const tg = c.createLinearGradient(0, 0, 0, 24); tg.addColorStop(0, '#a9c8ef'); tg.addColorStop(1, '#6f9fd8');
+  c.fillStyle = tg; c.fillRect(X, Y, W, 24);
+  txt(c, `${GHOST_TITLE} 32  -  Disk Imaging Utility`, 10, 12.5, { color: '#000' });
+  [['–', W - 92], ['□', W - 64]].forEach(([s, x]) => { c.fillStyle = '#dbe7f6'; c.fillRect(x, 3, 26, 18); txt(c, s, x + 13, 12, { align: 'center' }); });
+  c.fillStyle = '#c94a3c'; c.fillRect(W - 36, 3, 32, 18); txt(c, '✕', W - 20, 12, { color: '#fff', align: 'center', bold: true });
+  hit(W - 36, 3, 32, 18, () => { g.quit = true; g.btn = 1; g.scr = g.scr === 'splash' ? 'main' : g.scr; });
+  // พื้นหลังโปรแกรม
+  const CX = 3, CY = 24, CW = W - 6, CH = H - 27;
+  const bg = c.createLinearGradient(0, CY, 0, CY + CH); bg.addColorStop(0, '#24489c'); bg.addColorStop(.55, '#0c2260'); bg.addColorStop(1, '#000a24');
+  c.fillStyle = bg; c.fillRect(CX, CY, CW, CH);
+  c.save(); c.font = 'italic bold 30px Tahoma, Verdana, sans-serif'; c.fillStyle = '#f2c300'; c.textAlign = 'left'; c.fillText(GHOST_TITLE, CX + 22, CY + 34); c.restore();
+  txt(c, 'Disk imaging and cloning', CX + 24, CY + 58, { color: '#c8d6f0' });
+  txt(c, 'Version 11.5', CX + CW - 16, CY + 20, { color: '#c8d6f0', align: 'right' });
+  const sc = g.scr;
+
+  if (sc === 'main' || sc === 'splash') drawGhostMenu(c, CX, CY + CH);
+  if (sc === 'splash') {
+    S.hits = [];
+    const x = 170, y = 160, w = 380, h = 170;
+    dialog(c, x, y, w, h, `About ${GHOST_TITLE}`);
+    c.save(); c.font = 'italic bold 22px Tahoma, Verdana, sans-serif'; c.fillStyle = '#0a246a'; c.fillText(GHOST_TITLE, x + 20, y + 52); c.restore();
+    txt(c, 'Version 11.5   Disk imaging and cloning utility', x + 20, y + 80);
+    txt(c, `${g.disks.length} disk drives detected`, x + 20, y + 100);
+    txt(c, 'Training simulator - no real disks are written.', x + 20, y + 120, { color: '#555' });
+    btn(c, x + w / 2 - 40, y + h - 36, 80, 'OK', true, gpress('Enter'));
+  }
+  else if (sc === 'src' || sc === 'dst') drawDriveTable(c);
+  else if (sc === 'file') drawFileDialog(c);
+  else if (sc === 'details') drawDetails(c);
+  else if (['prog', 'fin', 'comp', 'confirm'].includes(sc)) drawProgress(c, CX, CY, CW, CH);
+  if (g.quit) {
+    S.hits = [];
+    const x = 220, y = 200, w = 280, h = 120;
+    dialog(c, x, y, w, h, 'Quit');
+    drawQIcon(c, x + 22, y + 48);
+    txt(c, 'Are you sure you want to quit?', x + 60, y + 50);
+    btn(c, x + 60, y + 82, 70, 'Yes', g.btn === 0, () => { g.btn = 0; handleKey('Enter'); });
+    btn(c, x + 150, y + 82, 70, 'No', g.btn === 1, () => { g.btn = 1; handleKey('Enter'); });
+  }
+  if (g.err) {
+    S.hits = [];
+    const lines = wrapPx(c, g.err, 300), x = 190, y = 190, w = 340, h = 90 + lines.length * 16;
+    dialog(c, x, y, w, h, 'Application Error');
+    c.fillStyle = '#d0281e'; c.beginPath(); c.arc(x + 32, y + 50, 14, 0, Math.PI * 2); c.fill(); txt(c, '✕', x + 32, y + 50.5, { color: '#fff', bold: true, align: 'center', size: 14 });
+    lines.forEach((l, i) => txt(c, l, x + 58, y + 44 + i * 16));
+    btn(c, x + w / 2 - 38, y + h - 34, 76, 'OK', true, gpress('Enter'));
+  }
+}
+function drawQIcon(c, x, y) { c.fillStyle = '#2a64c8'; c.beginPath(); c.arc(x + 10, y, 14, 0, Math.PI * 2); c.fill(); txt(c, '?', x + 10, y + 1, { color: '#fff', bold: true, size: 16, align: 'center' }); }
+function wrapPx(c, s, w) { c.font = FONT(11); const out = []; let line = ''; for (const word of String(s).split(' ')) { const t = line ? line + ' ' + word : word; if (c.measureText(t).width > w && line) { out.push(line); line = word; } else line = t; } if (line) out.push(line); return out; }
+
+function drawGhostMenu(c, x0, bottom) {
+  const g = S.ic, m = g.menu, iw = 130, ih = 22;
+  const mx = x0 + 14, my = bottom - 14 - GHOST_MAIN.length * ih - 6;
+  bevel(c, mx, my, iw, GHOST_MAIN.length * ih + 6);
+  GHOST_MAIN.forEach((t, i) => {
+    const iy = my + 3 + i * ih, on = i === g.mb, dim = i === 1 || i === 2;
+    if (on) { c.fillStyle = '#0a246a'; c.fillRect(mx + 3, iy, iw - 6, ih); }
+    txt(c, t, mx + 12, iy + ih / 2 + 0.5, { color: on ? '#fff' : dim ? '#808080' : '#000' });
+    if (i < 3) txt(c, '►', mx + iw - 12, iy + ih / 2, { color: on ? '#fff' : '#000', align: 'right', size: 9 });
+    hit(mx + 3, iy, iw - 6, ih, () => { g.mb = i; m.open = false; m.sub = -1; handleKey('Enter'); });
+  });
+  if (!m.open) return;
+  const lx = mx + iw - 4, ly = my + 3 + 0 * ih - 3;
+  bevel(c, lx, ly, iw, 3 * ih + 6);
+  GHOST_DD.forEach((t, i) => {
+    const iy = ly + 3 + i * ih, on = i === m.i, dim = i === 1;
+    if (on) { c.fillStyle = '#0a246a'; c.fillRect(lx + 3, iy, iw - 6, ih); }
+    txt(c, t, lx + 12, iy + ih / 2 + 0.5, { color: on ? '#fff' : dim ? '#808080' : '#000' });
+    txt(c, '►', lx + iw - 12, iy + ih / 2, { color: on ? '#fff' : '#000', align: 'right', size: 9 });
+    hit(lx + 3, iy, iw - 6, ih, () => { m.i = i; m.sub = -1; handleKey('Enter'); });
+  });
+  if (m.sub < 0) return;
+  const items = GHOST_SUB[m.sub], sx = lx + iw - 4, sy = ly + m.sub * ih;
+  bevel(c, sx, sy, iw, items.length * ih + 6);
+  items.forEach((t, j) => {
+    const iy = sy + 3 + j * ih, on = j === m.j, dim = m.sub === 1 || (m.sub === 2 && j === 1);
+    if (on) { c.fillStyle = '#0a246a'; c.fillRect(sx + 3, iy, iw - 6, ih); }
+    txt(c, t, sx + 12, iy + ih / 2 + 0.5, { color: on ? '#fff' : dim ? '#808080' : '#000' });
+    hit(sx + 3, iy, iw - 6, ih, () => { m.j = j; handleKey('Enter'); });
+  });
+}
+
+function table(c, x, y, w, cols, rows, opts = {}) {
+  // cols: [[label, width, align]] rows: [{cells, sel, color}]
+  field(c, x, y, w, 22 + Math.max(rows.length, opts.minRows || 0) * 18 + 4);
+  let cx = x + 2;
+  cols.forEach(([label, cw]) => { bevel(c, cx, y + 2, cw, 20); txt(c, label, cx + 6, y + 12.5); cx += cw; });
+  rows.forEach((r, i) => {
+    const ry = y + 24 + i * 18;
+    if (r.sel) { c.fillStyle = '#0a246a'; c.fillRect(x + 2, ry, w - 4, 18); }
+    let cx2 = x + 2;
+    cols.forEach(([, cw, al], k) => {
+      const tx = al === 'right' ? cx2 + cw - 6 : cx2 + 6;
+      txt(c, r.cells[k], tx, ry + 9.5, { color: r.sel ? '#fff' : r.color || '#000', align: al === 'right' ? 'right' : 'left' });
+      cx2 += cw;
+    });
+    if (r.fn) hit(x + 2, ry, w - 4, 18, r.fn);
+  });
+}
+
+function drawDriveTable(c) {
+  const g = S.ic, sc = g.scr, x = 50, y = 110, w = 620, h = 260;
+  const title = sc === 'src' ? 'Select local source drive by clicking on the drive number' : 'Select local destination drive by clicking on the drive number';
+  dialog(c, x, y, w, h, title);
+  const locked = d => (sc === 'dst' && ((g.op === 'clone' && d.n === g.src) || (g.op === 'restore' && d.parts.some(p => p.files && p.files.includes(g.img)))));
+  const cols = [['Drive', 46], ['Location', 66], ['Model', 172], ['Size(MB)', 78, 'right'], ['Type', 50], ['Cylinders', 70, 'right'], ['Heads', 52, 'right'], ['Sectors', 56, 'right']];
+  const rows = g.disks.map((d, i) => {
+    const mb = Math.round(d.size * 1e9 / 1048576);
+    return { cells: [d.n, d.type === 'USB' ? 'USB' : 'Local', d.model.slice(0, 26), mb.toLocaleString('en'), 'Basic', Math.round(mb / 7.84).toLocaleString('en'), 255, 63],
+      sel: i === g.list, color: locked(d) ? '#c00000' : '#000', fn: () => { if (g.list === i) handleKey('Enter'); else { g.list = i; GC.ev(sc + '-row-' + (i + 1)); } } };
+  });
+  table(c, x + 12, y + 34, w - 24, cols, rows, { minRows: 6 });
+  if (sc === 'dst' && g.disks.some(locked)) txt(c, 'Drives shown in red are locked and cannot be selected.', x + 14, y + h - 52, { color: '#c00000' });
+  btn(c, x + w - 270, y + h - 36, 80, 'OK', true, gpress('Enter'));
+  btn(c, x + w - 180, y + h - 36, 80, 'Cancel', false, gpress('Esc'));
+  btn(c, x + w - 90, y + h - 36, 76, 'Help', false, null);
+}
+
+function drawFileDialog(c) {
+  const g = S.ic, save = g.op === 'backup', F = ghostFields(g), f = F[g.focus], loc = ghostLoc(g), files = ghostFiles(g);
+  const x = 80, y = 70, w = 560, h = 380;
+  dialog(c, x, y, w, h, save ? 'File name to copy image to' : 'Image file name to restore from');
+  txt(c, 'Look in:', x + 14, y + 44);
+  field(c, x + 80, y + 33, 330, 22);
+  if (f === 'look') { c.fillStyle = '#0a246a'; c.fillRect(x + 83, y + 36, 304, 16); }
+  txt(c, `${loc.p.id.replace(':', '.')}: [${loc.p.label}] ${loc.p.fs} drive`, x + 88, y + 44.5, { color: f === 'look' ? '#fff' : '#000' });
+  bevel(c, x + 390, y + 35, 18, 18); txt(c, '▼', x + 399, y + 44, { align: 'center', size: 9 });
+  hit(x + 80, y + 33, 330, 22, () => { g.focus = 0; handleKey('Down'); });
+  const rows = files.map((fl, i) => ({ cells: [fl.name, MBs(fl.size) + ' MB', fl.date], sel: i === g.fi && f === 'list', color: i === g.fi ? '#0a246a' : '#000',
+    fn: () => { const lf = F.indexOf('list'); if (g.focus === lf && g.fi === i) handleKey('Enter'); else { g.focus = lf; g.fi = i; if (fl.name === g.newName) GC.ev('file-new'); GC.ev('focus-list'); } } }));
+  table(c, x + 14, y + 66, w - 28, [['Name', 270], ['Size', 120, 'right'], ['Date', 134]], rows, { minRows: 6 });
+  if (!files.length) txt(c, '(no image files in this location)', x + 24, y + 100, { color: '#808080' });
+  let yy = y + 66 + 22 + 6 * 18 + 16;
+  txt(c, 'File name:', x + 14, yy + 11);
+  field(c, x + 100, yy, 300, 22);
+  if (save) {
+    txt(c, g.name, x + 106, yy + 11.5);
+    if (f === 'name' && Math.floor(Date.now() / 500) % 2 === 0) { c.font = FONT(11); c.fillStyle = '#000'; c.fillRect(x + 106 + c.measureText(g.name).width + 1, yy + 4, 1, 14); }
+    if (f === 'name') { c.strokeStyle = '#0a246a'; c.strokeRect(x + 99.5, yy - 0.5, 301, 23); }
+    hit(x + 100, yy, 300, 22, () => { g.focus = F.indexOf('name'); GC.ev('focus-name'); });
+  } else txt(c, files[g.fi] ? files[g.fi].name : '', x + 106, yy + 11.5);
+  yy += 32;
+  txt(c, 'Files of type:', x + 14, yy + 11); field(c, x + 100, yy, 300, 22); txt(c, '*.GHO', x + 106, yy + 11.5);
+  yy += 32;
+  txt(c, 'Image file description:', x + 14, yy + 6); field(c, x + 14, yy + 14, 386, 40);
+  btn(c, x + w - 130, y + h - 116, 110, save ? 'Save' : 'Open', f === 'ok', () => { g.focus = F.indexOf('ok'); handleKey('Enter'); });
+  btn(c, x + w - 130, y + h - 84, 110, 'Cancel', f === 'cancel', gpress('Esc'));
+}
+
+function drawDetails(c) {
+  const g = S.ic, dd = gDisk(g, g.dst), src = g.op === 'clone' ? gDisk(g, g.src) : null;
+  const parts = src ? src.parts : g.img.parts, srcSize = src ? src.size : g.img.srcSize, k = dd.size / srcSize;
+  const x = 40, y = 120, w = 640, h = 250;
+  dialog(c, x, y, w, h, 'Destination Drive Details');
+  const used = parts.reduce((a, p) => a + p.used, 0);
+  const rows = parts.map((p, i) => ({ cells: [i + 1, 'Primary', '07', 'NTFS', p.label.replace(/^C: /, ''), MBs(p.size * k), MBs(p.size), MBs(p.used)], sel: false }));
+  rows.push({ cells: ['', '', '', 'Free', '', MBs(Math.max(0, dd.size - parts.reduce((a, p) => a + p.size * k, 0))), '', ''] });
+  rows.push({ cells: ['', '', '', 'Total', '', MBs(dd.size), MBs(srcSize), MBs(used)] });
+  table(c, x + 12, y + 34, w - 24, [['Part', 40], ['Type', 66], ['ID', 34], ['Description', 90], ['Volume Label', 104], ['New Size', 98, 'right'], ['Old Size', 92, 'right'], ['Data Size', 88, 'right']], rows, { minRows: 5 });
+  txt(c, k < 1 ? 'Destination is smaller than source. Partition sizes will be reduced.' : 'Partition will be resized to use the whole destination drive. You can type a new size if needed.', x + 14, y + h - 60, { color: '#0a246a' });
+  btn(c, x + w - 180, y + h - 36, 80, 'OK', true, gpress('Enter'));
+  btn(c, x + w - 90, y + h - 36, 76, 'Cancel', false, gpress('Esc'));
+}
+
+function drawProgress(c, CX, CY, CW, CH) {
+  const g = S.ic, sc = g.scr;
+  const total = (g.total || 0) * 1024, spd = { clone: 2100, backup: 1300, restore: 1450, verify: 1900 }[g.op] || 1;
+  const p = sc === 'prog' || sc === 'fin' ? g.prog : 0, done = total * p, fmt = v => `${String(v / 60 | 0).padStart(2, '0')}:${String(v % 60 | 0).padStart(2, '0')}`;
+  const x = 30, y = 90, w = 660, h = 380;
+  bevel(c, x, y, w, h);
+  txt(c, g.op === 'verify' ? 'Checking Image File' : 'Progress Indicator', x + 14, y + 18, { bold: true });
+  field(c, x + 14, y + 34, w - 28, 26);
+  const bw = Math.round((w - 34) * p);
+  for (let bx = 0; bx < bw; bx += 10) { c.fillStyle = '#0a246a'; c.fillRect(x + 17 + bx, y + 37, Math.min(8, bw - bx), 20); }
+  [['0%', 0], ['25%', .25], ['50%', .5], ['75%', .75], ['100%', 1]].forEach(([t, f]) => txt(c, t, x + 17 + (w - 34) * f, y + 72, { align: f === 0 ? 'left' : f === 1 ? 'right' : 'center' }));
+  groupBox(c, x + 14, y + 96, 300, 170, 'Statistics');
+  [['Percent complete', Math.floor(p * 100)], ['Speed (MB/min)', spd.toLocaleString('en')], ['MB copied', Math.round(done).toLocaleString('en')],
+   ['MB remaining', Math.round(total - done).toLocaleString('en')], ['Time elapsed', fmt(done / spd * 60)], ['Time remaining', fmt((total - done) / spd * 60)]]
+    .forEach(([a, b], i) => { txt(c, a, x + 30, y + 122 + i * 22); txt(c, b, x + 296, y + 122 + i * 22, { align: 'right' }); });
+  groupBox(c, x + 330, y + 96, 316, 170, 'Details');
+  const cf = ['\\Windows\\System32\\drivers\\', '\\Program Files\\HMI Runtime\\', '\\Documents and Settings\\', '\\Windows\\Prefetch\\'][(p * 40 | 0) % 4];
+  const srcTxt = g.op === 'restore' || g.op === 'verify' ? (g.img ? g.img.name : '') : `Local drive [${g.src}]`;
+  const dstTxt = g.op === 'backup' ? (g.newName || '') : g.op === 'verify' ? '(read only)' : `Local drive [${g.dst}]`;
+  [['Connection type', 'Local'], ['Source', srcTxt], ['Target', dstTxt], ['Source Partition', 'Type:7 [NTFS], 1 of 1'], ['Current file', p > 0 && p < 1 ? cf + (p * 99991 | 0).toString(16) : '']]
+    .forEach(([a, b], i) => { txt(c, a, x + 346, y + 122 + i * 22); txt(c, String(b).slice(0, 28), x + 460, y + 122 + i * 22, { color: '#0a246a' }); });
+  txt(c, `${GHOST_TITLE} 32   -   Do not turn off the computer or remove the USB drives`, x + w / 2, y + h - 30, { align: 'center', color: '#404040' });
+
+  if (sc === 'comp') {
+    const dx = 210, dy = 200, dw = 300, dh = 120;
+    dialog(c, dx, dy, dw, dh, 'Compress Image (1916)');
+    drawQIcon(c, dx + 18, dy + 50);
+    txt(c, 'Compress image file?', dx + 60, dy + 50);
+    ['No', 'Fast', 'High'].forEach((t, i) => btn(c, dx + 40 + i * 80, dy + 82, 70, t, g.btn === i, () => { g.btn = i; handleKey('Enter'); }));
+  }
+  if (sc === 'confirm') {
+    const dd = g.dst ? gDisk(g, g.dst) : null;
+    const L = g.op === 'backup' ? ['Proceed with disk image creation?'] : [`Proceed with ${g.op === 'clone' ? 'disk clone' : 'disk load'}?`, `Destination drive ${g.dst} [${dd.model.slice(0, 24)}]`, 'will be overwritten!!'];
+    const dx = 170, dy = 190, dw = 380, dh = 100 + L.length * 16;
+    dialog(c, dx, dy, dw, dh, 'Question: (1837)');
+    drawQIcon(c, dx + 18, dy + 52);
+    L.forEach((t, i) => txt(c, t, dx + 60, dy + 46 + i * 16, { color: i === 2 ? '#c00000' : '#000', bold: i === 2 }));
+    btn(c, dx + dw / 2 - 90, dy + dh - 36, 80, 'Yes', g.btn === 0, () => { g.btn = 0; handleKey('Enter'); });
+    btn(c, dx + dw / 2 + 10, dy + dh - 36, 80, 'No', g.btn === 1, () => { g.btn = 1; handleKey('Enter'); });
+  }
+  if (sc === 'fin') {
+    const t = { clone: ['Clone Complete (1912)', 'Clone Completed Successfully'], backup: ['Image Creation Complete (1925)', 'Image Creation Completed Successfully'],
+      restore: ['Clone Complete (1912)', 'Clone Completed Successfully'], verify: ['Integrity Check Passed', 'Image file passed integrity check'] }[g.op];
+    const dx = 190, dy = 200, dw = 340, dh = 120;
+    dialog(c, dx, dy, dw, dh, t[0]);
+    c.fillStyle = '#2a64c8'; c.beginPath(); c.arc(dx + 30, dy + 50, 14, 0, Math.PI * 2); c.fill(); txt(c, 'i', dx + 30, dy + 51, { color: '#fff', bold: true, size: 16, align: 'center' });
+    txt(c, t[1], dx + 60, dy + 50);
+    btn(c, dx + 40, dy + 82, 110, 'Continue', g.btn === 0, () => { g.btn = 0; handleKey('Enter'); });
+    btn(c, dx + 170, dy + 82, 130, 'Reset Computer', g.btn === 1, () => { g.btn = 1; handleKey('Enter'); });
+  }
+}
+
+/* ---------- ปุ่มของเมนูแฟลชไดรฟ์และเดสก์ท็อป ---------- */
+function toolkitKey(k) {
+  const n = TOOLKIT_ITEMS.length; S.tk.t = 0;
+  if (k === 'Up') S.tk.sel = (S.tk.sel + n - 1) % n;
+  else if (k === 'Down') S.tk.sel = (S.tk.sel + 1) % n;
+  else if (k === 'Enter') toolkitBoot();
+  render();
+}
+function toolkitBoot() {
+  const i = S.tk.sel;
+  if (i === 0) { bootSystem(saved.bootOrder.filter(d => d !== 'removable')); return; }
+  if (i === 1) { lessonEv('toolkit-win7'); S.mode = 'winload'; S.wl = { t: 0 }; return; }
+  lessonNote('info', 'เมนูนี้ไม่ได้ใช้ในบทเรียน ให้เลือก Mini Windows 7');
+}
+function desktopKey(k) {
+  const n = DESK_ICONS.length;
+  if (k === 'Up') S.dk.sel = (S.dk.sel + n - 1) % n;
+  else if (k === 'Down') S.dk.sel = (S.dk.sel + 1) % n;
+  else if (k === 'Enter') {
+    if (S.dk.sel === 1) { lessonEv('open-ghost'); S.mode = 'ghost'; S.ic = ghostInit(); }
+    else lessonNote('info', `${DESK_ICONS[S.dk.sel]} ไม่ได้ใช้ในบทเรียนนี้ ให้เปิด ${GHOST_TITLE} 32`);
+  }
+  render();
+}
+function paintGui() {
+  const c = gctx(); S.hits = [];
+  if (S.mode === 'toolkit') drawToolkit(c);
+  else if (S.mode === 'winload') drawWinLoad(c);
+  else if (S.mode === 'desktop') drawDesktop(c, false);
+  else if (S.mode === 'ghost') drawGhostGui(c);
+}
+$screen.addEventListener('click', e => {
+  if (!['toolkit', 'desktop', 'ghost'].includes(S.mode)) return;
+  const r = $screen.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * GW, y = (e.clientY - r.top) / r.height * GH;
+  for (let i = S.hits.length - 1; i >= 0; i--) { const h = S.hits[i]; if (x >= h.x && x < h.x + h.w && y >= h.y && y < h.y + h.h) { h.fn(); render(); return; } }
+});
+
+/* ---------- ปุ่มใน ImageCopy ---------- */
+function ghostKey(g, k) {
+  const c = GC;
+  if (g.err) { if (k === 'Enter' || k === 'Esc') g.err = null; return; }
+  const sc = g.scr;
+  if (sc === 'splash') { if (k === 'Enter') { g.scr = 'main'; c.ev('splash-ok'); } return; }
+  if (sc === 'main') {
+    const m = g.menu;
+    if (g.quit) {
+      if (k === 'Left' || k === 'Right' || k === 'Tab') g.btn = g.btn ? 0 : 1;
+      else if (k === 'Esc') g.quit = false;
+      else if (k === 'Enter') { if (g.btn === 0) { c.ev('reset'); reboot(); } else g.quit = false; }
+      return;
+    }
+    if (!m.open) {
+      if (k === 'Up') g.mb = (g.mb + GHOST_MAIN.length - 1) % GHOST_MAIN.length;
+      else if (k === 'Down') g.mb = (g.mb + 1) % GHOST_MAIN.length;
+      else if (k === 'Enter' || k === 'Right' || k === 'F10') {
+        if (g.mb === 0) { m.open = true; m.i = 0; m.sub = -1; c.ev('menu-local'); }
+        else if (g.mb === 5) { g.quit = true; g.btn = 1; }
+        else g.err = 'This function is not available in training mode.';
+      }
+      return;
+    }
+    if (m.sub < 0) {
+      if (k === 'Up') m.i = (m.i + 2) % 3; else if (k === 'Down') m.i = (m.i + 1) % 3;
+      else if (k === 'Esc' || k === 'F10' || k === 'Left') m.open = false;
+      else if (k === 'Enter' || k === 'Right') { m.sub = m.i; m.j = 0; c.ev('menu-' + ['disk', 'part', 'check'][m.i]); }
+      return;
+    }
+    const items = GHOST_SUB[m.sub];
+    if (k === 'Up') m.j = (m.j + items.length - 1) % items.length;
+    else if (k === 'Down') m.j = (m.j + 1) % items.length;
+    else if (k === 'Esc' || k === 'Left') m.sub = -1;
+    else if (k === 'Enter') {
+      const op = m.sub === 0 ? ['clone', 'backup', 'restore'][m.j] : (m.sub === 2 && m.j === 0) ? 'verify' : null;
+      if (!op) { g.err = 'This function is not available in training mode.'; return; }
+      g.disks = ghostDisks();
+      Object.assign(g, { op, list: 0, li: 0, fi: 0, focus: 0, name: '', img: null, src: null, dst: null });
+      m.open = false; m.sub = -1; c.ev('op-' + op);
+      const ls = LESSONS.find(x => x.id === L.id);
+      if (ls && ls.ghostOps && !ls.ghostOps.includes(op)) c.note(`บทนี้ต้องใช้เมนู ${ls.ghostOps.map(o => ({ backup: 'To Image', clone: 'To Disk', restore: 'From Image', verify: 'Check ► Image File' })[o]).join(' และ ')} กด Esc เพื่อย้อนกลับไปเลือกใหม่`);
+      g.scr = (op === 'clone' || op === 'backup') ? 'src' : 'file';
+    }
+    return;
+  }
+  if (sc === 'src' || sc === 'dst') {
+    if (k === 'Up') { g.list = Math.max(0, g.list - 1); c.ev(sc + '-row-' + (g.list + 1)); }
+    else if (k === 'Down') { g.list = Math.min(g.disks.length - 1, g.list + 1); c.ev(sc + '-row-' + (g.list + 1)); }
+    else if (k === 'Esc') { ghostToMain(g); c.note('กด Esc ยกเลิกงาน กลับเมนูหลัก'); }
+    else if (k === 'Enter') ghostPickDrive(g, g.list + 1);
+    return;
+  }
+  if (sc === 'file') {
+    const F = ghostFields(g), f = F[g.focus], locs = ghostLocs(g), files = ghostFiles(g);
+    if (k === 'Tab') { g.focus = (g.focus + 1) % F.length; c.ev('focus-' + F[g.focus]); return; }
+    if (k === 'Esc') { ghostToMain(g); c.note('ยกเลิก กลับเมนูหลัก'); return; }
+    if (f === 'look' && (k === 'Up' || k === 'Down')) { g.li = (g.li + (k === 'Down' ? 1 : locs.length - 1)) % locs.length; g.fi = 0; c.ev('loc-' + ghostLoc(g).p.label); return; }
+    if (f === 'list' && (k === 'Up' || k === 'Down')) {
+      if (!files.length) return;
+      g.fi = Math.max(0, Math.min(files.length - 1, g.fi + (k === 'Down' ? 1 : -1)));
+      if (files[g.fi].name === g.newName) c.ev('file-new');
+      return;
+    }
+    if (f === 'name') { if (k === 'Backspace') { g.name = g.name.slice(0, -1); return; } if (k.length === 1) { if (g.name.length < 38) g.name += k; return; } }
+    if ((k === 'Left' || k === 'Right') && (f === 'ok' || f === 'cancel')) { g.focus = F.indexOf(f === 'ok' ? 'cancel' : 'ok'); return; }
+    if (k.length === 1 || k === 'Backspace') { if (g.op === 'backup') c.note('เคอร์เซอร์ยังไม่อยู่ในช่อง File name กด Tab จนช่อง File name ไฮไลต์เป็นสีขาวก่อนพิมพ์'); return; }
+    if (k === 'Enter') { if (f === 'cancel') { ghostToMain(g); return; } ghostFileOk(g); }
+    return;
+  }
+  if (sc === 'comp') {
+    if (k === 'Left') g.btn = (g.btn + 2) % 3; else if (k === 'Right' || k === 'Tab') g.btn = (g.btn + 1) % 3;
+    else if (k === 'Esc') ghostToMain(g);
+    else if (k === 'Enter') { g.comp = ['no', 'fast', 'high'][g.btn]; c.ev('comp-' + g.comp); g.scr = 'confirm'; g.btn = 1; if (g.comp !== 'fast') c.note(g.comp === 'no' ? 'ไม่บีบอัด: เร็วที่สุดแต่ไฟล์ใหญ่' : 'High: ไฟล์เล็กสุดแต่ช้ากว่า Fast มาก'); }
+    return;
+  }
+  if (sc === 'details') { if (k === 'Enter') { c.ev('details-ok'); g.scr = 'confirm'; g.btn = 1; } else if (k === 'Esc') ghostToMain(g); return; }
+  if (sc === 'confirm') {
+    if (k === 'Left' || k === 'Right' || k === 'Tab') { g.btn = g.btn ? 0 : 1; return; }
+    if (k === 'Esc') { ghostToMain(g); return; }
+    if (k === 'Enter') {
+      if (g.btn === 1) { ghostToMain(g); c.note('เลือก No งานถูกยกเลิก กลับเมนูหลัก ต้องเริ่มใหม่'); return; }
+      const dd = g.dst ? gDisk(g, g.dst) : null;
+      if (dd && dd.role === 'backup') { c.mistake('ปลายทางคือ HDD แบ็คอัพ ถ้าเป็นของจริง ไฟล์อิมเมจของทุกเครื่องในนั้นหายหมดแล้ว ระบบจำลองย้อนให้เลือกปลายทางใหม่'); Object.assign(g, { scr: 'dst', list: 0, dst: null }); return; }
+      const src = g.src ? gDisk(g, g.src) : null;
+      g.total = g.op === 'restore' ? g.img.parts.reduce((a, p) => a + p.used, 0) : usedOf(src);
+      c.ev('confirm-yes'); g.scr = 'prog'; g.prog = 0; g.running = true;
+    }
+    return;
+  }
+  if (sc === 'fin') {
+    if (k === 'Left' || k === 'Right' || k === 'Tab') g.btn = g.btn ? 0 : 1;
+    else if (k === 'Enter') { if (g.btn === 1) { c.ev('reset'); reboot(); } else { c.ev('done'); ghostToMain(g); } }
+  }
+}
+
+function ghostPickDrive(g, n) {
+  const c = GC, d = gDisk(g, n);
+  if (g.scr === 'src') {
+    if (!d.parts.length || !usedOf(d)) { g.err = 'Source drive contains no valid partitions.'; c.mistake('ดิสก์นี้ยังว่าง ไม่มีข้อมูลให้คัดลอก'); return; }
+    if (d.role === 'backup' || d.role === 'boot') { c.mistake(`Drive ${n} คือ${d.role === 'backup' ? ' HDD แบ็คอัพภายนอก' : 'แฟลชไดรฟ์บูต'} ไม่ใช่ดิสก์ระบบของเครื่อง ดูจากรุ่นและชนิด (USB / IDE)`); return; }
+    g.src = n; g.list = 0; c.ev('src-ok');
+    if (g.op === 'clone') g.scr = 'dst'; else Object.assign(g, { scr: 'file', focus: 0, li: 0, fi: 0, name: '' });
+    return;
+  }
+  if (g.op === 'clone' && n === g.src) { g.err = 'Source and destination drives cannot be the same.'; c.mistake('เลือกปลายทางเป็นดิสก์ลูกเดียวกับต้นทาง'); return; }
+  if (g.op === 'restore' && d.parts.some(p => p.files && p.files.includes(g.img))) { g.err = 'Destination drive contains the image file being loaded.'; c.mistake('ดิสก์นี้เก็บไฟล์อิมเมจที่กำลังกู้อยู่ ถ้าเขียนทับ ไฟล์จะหายระหว่างทำงาน'); return; }
+  const need = g.op === 'clone' ? usedOf(gDisk(g, g.src)) : g.img.parts.reduce((a, p) => a + p.used, 0);
+  if (d.size < need + 2) { g.err = `Destination drive too small. Required: ${MBs(need + 2)} MB`; c.mistake(`Drive ${n} มี ${d.size} GB แต่ข้อมูลมี ${need} GB`); return; }
+  g.dst = n; c.ev('dst-ok'); g.scr = 'details';
+}
+
+function ghostFileOk(g) {
+  const c = GC, loc = ghostLoc(g), files = ghostFiles(g);
+  if (g.op === 'backup') {
+    const name = g.name.trim(), src = gDisk(g, g.src), est = Math.round(usedOf(src) * 0.6);
+    if (loc.d.n === g.src) { g.err = 'Cannot create image file on the source drive.'; c.mistake('ห้ามเก็บไฟล์อิมเมจไว้ในดิสก์ที่กำลังแบ็คอัพ ถ้าดิสก์นั้นเสีย ไฟล์แบ็คอัพก็หายไปด้วย'); return; }
+    if (loc.p.fs === 'FAT32' || loc.p.size - loc.p.used < est) { g.err = 'Insufficient space on destination drive.'; c.mistake('แฟลชไดรฟ์บูตมี 8 GB และเป็น FAT32 เก็บอิมเมจขนาดนี้ไม่ได้ ใช้ HDD แบ็คอัพ'); return; }
+    if (!name) { g.err = 'Please enter a file name.'; return; }
+    if (!/^[\w.\-]+$/.test(name)) { g.err = 'Invalid file name. Use letters, numbers, - and _ only.'; return; }
+    const nm = /\.gho$/i.test(name) ? name : name + '.gho';
+    if (files.some(f => f.name.toLowerCase() === nm.toLowerCase())) { g.err = 'File already exists. Choose another name.'; c.mistake('ชื่อไฟล์ซ้ำกับแบ็คอัพเดิม ถ้าเขียนทับจะไม่เหลือแบ็คอัพเก่าไว้ย้อน'); return; }
+    g.newName = nm; g.est = est; c.ev('file-ok'); g.scr = 'comp'; g.btn = 0; return;
+  }
+  if (!files.length) { g.err = 'No image files found in this location.'; return; }
+  const img = files[g.fi];
+  if (g.op === 'restore' && !img.name.startsWith('HMI_L21')) { c.mistake(`${img.name} เป็นอิมเมจของเครื่องอื่น เครื่องนี้คือ HMI ไลน์ L21`); return; }
+  g.img = img; c.ev('file-ok');
+  if (g.op === 'restore') Object.assign(g, { scr: 'dst', list: 0 });
+  else { g.total = img.size; g.scr = 'prog'; g.prog = 0; g.running = true; }
+}
+
+function ghostTick(g, dt) {
+  g.prog = Math.min(1, g.prog + dt / (g.op === 'verify' ? 4 : 8));
+  if (g.prog < 1) return;
+  g.running = false; g.scr = 'fin'; g.btn = 0;
+  if (g.op === 'backup') {
+    HW.extFiles.push({ name: g.newName, size: g.comp === 'no' ? 35 : g.comp === 'high' ? 17 : g.est, date: '10/27/2026', parts: gDisk(g, g.src).parts.map(p => ({ ...p })), srcSize: gDisk(g, g.src).size });
+  }
+  if (g.op === 'clone' || g.op === 'restore') {
+    const dd = gDisk(g, g.dst);
+    if (DISK_MODELS[dd.key]) DISK_MODELS[dd.key].os = true;
+  }
+  g.disks = ghostDisks();
+  GC.ev('run-done');
+}
+
+/* ---------- Boot Menu (F12) ---------- */
+function drawBootMenu() {
+  const s = screen, b = S.bootMenu, w = 44, h = b.list.length + 4, x = 18, y = 6;
+  s.shadow(x, y, w, h); s.box(x, y, w, h, true, C.WHITE, C.BLUE);
+  s.center(y, ' Boot Menu ', C.WHITE, C.BLUE, x, w);
+  b.list.forEach((dev, i) => {
+    const on = i === b.sel;
+    const name = dev === 'removable' && HW.usb ? 'USB Flash Drive (SanDisk Cruzer)' : dev === 'hdd' && DRIVES.pm ? `Hard Drive (${DRIVES.pm.name.slice(0, 18)})` : BOOT_NAMES[dev];
+    s.fill(x + 1, y + 2 + i, w - 2, 1, ' ', C.WHITE, on ? C.WHITE : C.BLUE);
+    s.text(x + 3, y + 2 + i, `${i + 1}. ${name}`.slice(0, w - 5), on ? C.BLUE : C.WHITE, on ? C.WHITE : C.BLUE);
+  });
+}
+function bootMenuKey(k) {
+  const b = S.bootMenu;
+  if (k === 'Up') b.sel = (b.sel + b.list.length - 1) % b.list.length;
+  else if (k === 'Down') b.sel = (b.sel + 1) % b.list.length;
+  else if (k === 'Esc') S.bootMenu = null;
+  else if (k === 'Enter') { const dev = b.list[b.sel]; S.bootMenu = null; bootSystem([dev, ...saved.bootOrder.filter(d => d !== dev)]); return; }
+  render();
+}
+/* ---------- เริ่มทำงาน ---------- */
+lessonStart('free');
+$screen.focus({ preventScroll: true });
+
+</script>
+</body>
+</html>
