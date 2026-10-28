@@ -59,9 +59,15 @@ h2{font-size:23px!important;font-weight:700;letter-spacing:-.3px;color:var(--nav
 .hd a{color:var(--brand)!important;font-weight:600}
 
 /* ---------- Dashboard: hero & actions ---------- */
-.hero{border-radius:14px!important;height:150px!important;box-shadow:0 14px 30px -14px rgba(10,26,56,.55);padding:0 36px!important}
-.hero:before{background:linear-gradient(100deg,rgba(7,18,38,.96) 30%,rgba(15,36,80,.80) 62%,rgba(37,99,235,.35))!important}
-.hero h1{font-size:30px!important;font-weight:700;letter-spacing:-.5px}.hero p{color:#c6d6f5!important;font-size:15px!important}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0}
+.hero{display:block!important;height:auto!important;width:100%;aspect-ratio:2166/726;max-height:360px;padding:0!important;border-radius:18px!important;background:#f3f6fb;border:1px solid var(--line);box-shadow:0 1px 2px rgba(15,23,42,.04),0 18px 40px -22px rgba(10,26,56,.45);animation:spIn .6s cubic-bezier(.2,.7,.2,1) both}
+.hero:before{display:none!important}
+.hero .pic{position:absolute;inset:0;border-radius:inherit;overflow:hidden}
+.hero .pic svg,.hero .pic img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .pic img{object-fit:cover;object-position:center 60%}
+.hero:after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.55);pointer-events:none;z-index:3}
+@keyframes spIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.row>.act{animation:spIn .6s .08s cubic-bezier(.2,.7,.2,1) both}.row>.act:nth-child(2){animation-delay:.14s}.row>.act:nth-child(3){animation-delay:.2s}
 .act{border-radius:14px!important;padding:20px!important;background:#fff!important;border:1px solid var(--line)!important;box-shadow:var(--sh-1);transition:.2s}
 .act:hover{box-shadow:var(--sh-2);transform:translateY(-2px)}
 .act::before{content:"";position:absolute;left:0;top:0;right:0;height:3px}
@@ -133,3 +139,10 @@ body.loginpg button{background:linear-gradient(180deg,#3b82f6,#2563eb)!important
 .user .u-out,.u-out{background:transparent!important;color:var(--ink-2)!important;border:1px solid var(--line)!important;border-radius:99px!important;padding:5px 12px!important;font:600 12px "Inter","Noto Sans Thai",sans-serif!important;cursor:pointer;transition:.15s}
 .user .u-out:hover,.u-out:hover{background:var(--bad-bg)!important;color:var(--bad)!important;border-color:#fecaca!important}
 .btn.on{background:linear-gradient(180deg,#f59e0b,#d97706)!important}
+
+/* ---------- Refinement: จังหวะระยะห่างแบบพรีเมียม ---------- */
+.row{gap:16px!important;margin-top:16px!important}
+main>.box{margin-top:16px!important}
+.foot{margin-top:16px!important}
+.act h3{letter-spacing:-.2px}
+.act p{line-height:1.55}
