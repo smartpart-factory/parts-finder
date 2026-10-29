@@ -749,7 +749,7 @@ D.routeTo=function(c,rect){var N=D.nodes,best=null;
 D.pathTo=function(tgt,racks){
  var col=D.colliders(racks),B=D.bounds,R=.3,S=.1,x0=B[0]-.5,z0=B[1]-.5,W=Math.ceil((B[2]-B[0]+1.5)/S),H=Math.ceil((B[3]-B[1]+2.2)/S);
  function blk(x,z){for(var k=0;k<col.length;k++){var c=col[k],qx=Math.max(c[0],Math.min(c[2],x)),qz=Math.max(c[1],Math.min(c[3],z));if(Math.hypot(x-qx,z-qz)<R)return true}return false}
- var g=new Uint8Array(W*H);for(var j=0;j<H;j++)for(var i=0;i<W;i++)g[j*W+i]=blk(x0+(i+.5)*S,z0+(j+.5)*S)?1:0;
+ var ck=W+"x"+H+":"+col.toString(),g;if(D._gk===ck)g=D._g;else{g=new Uint8Array(W*H);for(var j=0;j<H;j++)for(var i=0;i<W;i++)g[j*W+i]=blk(x0+(i+.5)*S,z0+(j+.5)*S)?1:0;D._gk=ck;D._g=g}
  function cell(p){return[Math.max(0,Math.min(W-1,Math.floor((p[0]-x0)/S))),Math.max(0,Math.min(H-1,Math.floor((p[1]-z0)/S)))]}
  function near(c){if(!g[c[1]*W+c[0]])return c;for(var r=1;r<80;r++){var b=null,bd=1e9;for(var dj=-r;dj<=r;dj++)for(var di=-r;di<=r;di++){if(Math.max(Math.abs(di),Math.abs(dj))!==r)continue;var a=c[0]+di,e=c[1]+dj;if(a<0||e<0||a>=W||e>=H||g[e*W+a])continue;var d=di*di+dj*dj;if(d<bd){bd=d;b=[a,e]}}if(b)return b}return c}
  var st=D.entry,s=near(cell([st[0],st[1]-.8])),t=near(cell(tgt)),N=W*H,TURN=12;
