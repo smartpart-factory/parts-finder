@@ -18,7 +18,7 @@ body{margin:0;background:#eef3fa;color:#1e293b;font-family:"Noto Sans Thai","Seg
 .side{position:fixed;top:66px;bottom:0;left:0;width:207px;background:#0b2150;padding:20px 10px;color:#dbe6fb;overflow-y:auto}
 .side a{text-decoration:none;display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:6px;color:inherit;margin-bottom:6px;cursor:pointer}
 .side a:hover{background:#15306e}.side a.on{background:#1565d8;color:#fff}
-.side .ft{position:absolute;bottom:20px;left:14px;font-size:11px;color:#a9bde6}.side .fb{display:flex;gap:10px;align-items:center;margin-bottom:60px;font-size:12px}
+.side{display:flex;flex-direction:column}.side>*{flex:none}.side .ft{position:static;margin-top:auto;padding:18px 4px 6px;font-size:11px;color:#a9bde6}.side .fb{display:flex;gap:10px;align-items:center;margin-bottom:14px;font-size:12px}
 main{margin:66px 0 0 207px;padding:10px 12px}
 .pic{position:relative;overflow:hidden;background:#cfdbee}.pic svg{position:absolute;inset:0;width:100%;height:100%}
 .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -78,6 +78,7 @@ text-shadow:1px 1px 0 #cfe6ff,2px 2px 0 #9cc7f7,3px 3px 0 #5a93e0,4px 4px 0 #2a5
 @media(max-width:760px){.logo{width:auto!important}.logo small{display:none!important}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="theme.css">
+<script src="icons.js"></script>
 </head>
 <body>
 <div class="top">

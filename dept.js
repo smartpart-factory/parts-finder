@@ -118,6 +118,235 @@ D.xray=function(on,except){(D._sg||[]).forEach(function(grp){if(on&&except&&grp.
  else if(mt.userData.xo){mt.opacity=mt.userData.xo[0];mt.transparent=mt.userData.xo[1];mt.depthWrite=mt.userData.xo[2];mt.userData.xo=null}mt.needsUpdate=true})})};
 D.rackTheta=function(r){return r.w>=r.d?(frontSign(r)>0?0:Math.PI):(frontSign(r)>0?Math.PI/2:-Math.PI/2)};
 D.rackExtra=function(){};
+// ===== โมเดลอะไหล่ชุดใหม่ (ตามรูปถ่ายจริง) — ใช้กับ D.model: คืน true เมื่อสร้างสำเร็จ =====
+D.modelX=function(t,g,box,cyl,tor,M){
+ var TC=D._tc||(D._tc={}),PI=Math.PI;
+ function tex(k,cw,ch,fn){if(TC[k])return TC[k];var c=document.createElement("canvas");c.width=cw;c.height=ch;fn(c.getContext("2d"),cw,ch);var tx=new THREE.CanvasTexture(c);tx.anisotropy=4;return TC[k]=tx}
+ function pl(w,h,tx,x,y,z,face,rot){var m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:tx,transparent:true,roughness:.6,metalness:.05,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.position.set(x,y,z);m.rotation.order="YXZ";
+  if(face==="y"){m.rotation.x=-PI/2;if(rot)m.rotation.y=rot}else if(face==="x"){m.rotation.y=PI/2}else{if(rot)m.rotation.z=rot}g.add(m);return m}
+ function cy(r1,r2,h,x,y,z,c,o,ax){var m=cyl(r1,r2,h,c,o,ax);m.position.set(x,y,z);return m}
+ function hx(r,h,x,y,z,c,o){var m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,6),M(c,o));m.position.set(x,y,z);g.add(m);return m}
+ function sp(r,x,y,z,c,o){var m=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),M(c,o));m.position.set(x,y,z);g.add(m);return m}
+ function bx(w,h,d,x,y,z,c,o,ry,rz){var m=box(w,h,d,x,y,z,c,o);if(ry)m.rotation.y=ry;if(rz)m.rotation.z=rz;return m}
+ function tube(pts,r,c,o,seg){var cv=new THREE.CatmullRomCurve3(pts.map(function(p){return new THREE.Vector3(p[0],p[1],p[2])}));var m=new THREE.Mesh(new THREE.TubeGeometry(cv,seg||40,r,6,false),M(c,o));g.add(m);return m}
+ function helix(x0,x1,y,z,R,r,n,c){var pts=[],N=n*12;for(var i=0;i<=N;i++){var a=i/12*PI*2;pts.push([x0+(x1-x0)*i/N,y+Math.sin(a)*R,z+Math.cos(a)*R])}return tube(pts,r,c,{metalness:.8,roughness:.35},N*2)}
+ function txt(ctx,s,x,y,size,col,w,al){ctx.fillStyle=col||"#111";ctx.font=(w||"700")+" "+size+"px Arial,sans-serif";ctx.textAlign=al||"center";ctx.textBaseline="middle";ctx.fillText(s,x,y)}
+ var STEEL=0xc9ced3,DARK=0x15171b,BRASS=0xc9a143;
+ if(t==="ranger"){
+  /* Spectra Ranger — คอมพิวเตอร์อุตสาหกรรมแร็ค (วางตั้ง): แผงหน้าครีม ฝาตะแกรงดำ + ปุ่มทองเหลือง ประตูมีกุญแจและหน้าต่างมีคานทแยง */
+  var CR=0xd9d6cc,CO={roughness:.6,metalness:.2};
+  bx(.178,.33,.27,-.0,.2,-.015,CR,CO);bx(.19,.34,.007,0,.2,.1535,CR,CO);
+  bx(.205,.012,.007,0,.378,.1535,CR,CO);bx(.205,.012,.007,0,.022,.1535,CR,CO);
+  [-.07,-.035,.035,.07].forEach(function(x){bx(.011,.005,.002,x,.378,.1575,0x2a2a2a);bx(.011,.005,.002,x,.022,.1575,0x2a2a2a)});
+  bx(.107,.154,.004,.023,.274,.158,0x15171b);
+  pl(.1,.147,tex("rg_fan",256,360,function(c,w,h){c.fillStyle="#0e0f12";c.fillRect(0,0,w,h);for(var j=0;j<20;j++)for(var i=0;i<14;i++){c.fillStyle="#9a958a";c.beginPath();c.arc(12+i*17.5+(j%2)*8,12+j*17.5,5.2,0,7);c.fill()}}),.023,.274,.1602,"z");
+  cy(.0055,.0055,.009,.067,.349,.1615,0xc2a04a,{metalness:.7,roughness:.35},"z");cy(.0055,.0055,.009,.055,.2,.1615,0xc2a04a,{metalness:.7,roughness:.35},"z");
+  bx(.02,.05,.002,-.043,.327,.1585,0xb9bcc0);pl(.019,.049,tex("rg_sp",64,160,function(c,w,h){c.fillStyle="#c4c7cb";c.fillRect(0,0,w,h);c.save();c.translate(w/2,h/2);c.rotate(-PI/2);txt(c,"spectra",0,0,34,"#202327","800");c.restore()}),-.043,.327,.1598,"z");
+  cy(.0027,.0027,.003,-.056,.318,.1565,0x22c55e,{emissive:0x16a34a,emissiveIntensity:.9},"z");cy(.0027,.0027,.003,-.056,.304,.1565,0x7f1d1d,{emissive:0xdc2626,emissiveIntensity:.3},"z");
+  pl(.011,.036,tex("rg_ph",44,150,function(c,w,h){c.save();c.translate(w/2,h/2);c.rotate(-PI/2);txt(c,"POWER H.D.D",0,0,22,"#222","600");c.restore()}),-.047,.31,.1581,"z");
+  bx(.011,.0065,.004,-.049,.248,.1585,0x1b1b1b);bx(.011,.0065,.004,-.037,.248,.1585,0x1b1b1b);bx(.009,.002,.0044,-.049,.2485,.1585,0x9ca3af,{metalness:.7});bx(.009,.002,.0044,-.037,.2485,.1585,0x9ca3af,{metalness:.7});
+  bx(.052,.015,.002,-.052,.221,.1585,0x4a4a4e);pl(.05,.013,tex("rg_rg",200,52,function(c,w,h){c.fillStyle="#3e3e42";c.fillRect(0,0,w,h);txt(c,"Ranger",w/2,h/2+2,40,"#f3f3f3","800")}),-.052,.221,.1599,"z");
+  bx(.122,.158,.012,.004,.108,.16,CR,CO);bx(.079,.106,.002,.004,.097,.1665,0x2a1a1c,{roughness:.2,metalness:.35});bx(.072,.098,.001,.004,.097,.1673,0x5a3a38,{roughness:.3});
+  var tri=new THREE.Shape();tri.moveTo(-.04,-.053);tri.lineTo(-.04,.002);tri.lineTo(.03,-.053);tri.lineTo(-.04,-.053);var tm=new THREE.Mesh(new THREE.ShapeGeometry(tri),M(CR,CO));tm.position.set(.004,.097,.1676);g.add(tm);
+  var dg=bx(.098,.014,.0025,.0035,.1,.1678,CR,CO);dg.rotation.z=-.62;
+  bx(.014,.016,.004,.0005,.2,.1665,CR,CO);cy(.0075,.0075,.012,.0005,.18,.1675,0xb9bec4,{metalness:.9,roughness:.25},"z");bx(.0015,.006,.002,.0005,.18,.1738,0x222);
+  bx(.016,.034,.001,-.062,.172,.1664,0xf4f4f2);pl(.014,.03,tex("rg_bc",40,90,function(c,w,h){c.fillStyle="#fff";c.fillRect(0,0,w,h);for(var i=0;i<30;i++){c.fillStyle="#111";c.fillRect(3+i*1.1,5,(i*7%3)+.6,60)}}),-.062,.172,.1672,"z");
+  cy(.003,.003,.003,.058,.052,.1675,0x6b6b6b,{metalness:.7},"z")
+  return true}
+ if(t==="magarm"){
+  /* แขนจับยึด (Magic arm): แกนโครเมียมกลาง + ปุ่มดำ + ก้านสองข้างต่างความยาว ปลายเป็นก้านลูกบอลสีดำ + สตั๊ดเกลียว */
+  var CH={metalness:.92,roughness:.18};
+  cy(.021,.021,.034,0,.04,0,0xd7dce0,CH);cy(.0095,.0095,.024,0,.069,0,0xcfd4d8,CH);cy(.012,.012,.006,0,.058,0,0x1a1a1a,{metalness:.2});
+  var kn=cy(.026,.026,.011,0,.0845,0,0x151515,{metalness:.1,roughness:.5});for(var q=0;q<5;q++){var a=q*PI*2/5,l=cy(.012,.012,.011,Math.cos(a)*.019,.0845,Math.sin(a)*.019,0x151515,{metalness:.1,roughness:.5})}
+  cy(.006,.006,.17,-.105,.05,-.012,0xdfe3e6,CH,"x");cy(.006,.006,.11,.075,.03,.012,0xdfe3e6,CH,"x");
+  cy(.012,.012,.01,-.018,.05,-.012,0xc8cdd1,CH,"x");cy(.012,.012,.01,.018,.03,.012,0xc8cdd1,CH,"x");
+  cy(.0185,.03,.075,-.215,.05,-.012,0x181a1d,{metalness:.2,roughness:.5},"x");sp(.0295,-.252,.05,-.012,0x181a1d,{metalness:.2,roughness:.45});
+  cy(.0135,.02,.05,.14,.03,.012,0x181a1d,{metalness:.2,roughness:.5},"x");sp(.0195,.164,.03,.012,0x181a1d,{metalness:.2,roughness:.45});
+  cy(.0045,.0045,.03,-.248,.085,-.012,0xd7dce0,CH);hx(.0085,.007,-.248,.073,-.012,0xc3c8cc,CH);
+  cy(.0045,.0045,.03,.162,.065,.012,0xd7dce0,CH);hx(.0085,.007,.162,.053,.012,0xc3c8cc,CH);
+  return true}
+ if(t==="intcam"||t==="intcamb"){
+  /* การ์ด INT CAM K190801: แผ่นเขียว ขั้วต่อเขียว แผงโลหะ 4 คอนเน็กเตอร์กลม DVI 2 ช่อง DB9+สายแพ ตัวต้านทานขาว ตัวเก็บประจุแดง */
+  var S=.000241,X=function(p){return (p-705)*S},Z=function(p){return (p-992)*S},BY=.0016,GC=0x1f6b3a;
+  bx(.2,.0016,.317,0,.0008,0,GC,{roughness:.5,metalness:.05});
+  function tb(px0,px1,py0,py1,n,hor){var cx=X((px0+px1)/2),cz=Z((py0+py1)/2),w=(px1-px0)*S,d=(py1-py0)*S;bx(w,.012,d,cx,BY+.006,cz,0x2fa24f,{roughness:.55});for(var i=0;i<n;i++){var f=(i+.5)/n,sx=hor?X(px0)+w*f:cx,sz=hor?cz:Z(py0)+d*f;bx(hor?w/n*.7:w*.45,.004,hor?d*.45:d/n*.7,sx,BY+.014,sz,0x14301a);}}
+  tb(530,905,385,470,10,true);tb(320,405,1325,1600,7,false);tb(440,830,1560,1650,9,true);
+  bx(.042,.003,.158,X(785),BY+.0015,Z(965),0xb8bdc2,{metalness:.8,roughness:.35});
+  [770,890,1020,1135].forEach(function(py){cy(.0125,.0125,.012,X(790),BY+.009,Z(py),0xbfc4c8,{metalness:.85,roughness:.3});cy(.009,.009,.003,X(790),BY+.0155,Z(py),0x18191c,{});for(var k=0;k<8;k++){var a=k*PI/4;cy(.0008,.0008,.002,X(790)+Math.cos(a)*.005,BY+.017,Z(py)+Math.sin(a)*.005,0x888,{})}});
+  [[680,950],[990,1260]].forEach(function(r,i){var cx=X(935),cz=Z((r[0]+r[1])/2);bx(.034,.011,.064,cx,BY+.0075,cz,0xe7e3d4,{roughness:.6});bx(.027,.006,.056,cx,BY+.013,cz,0xb5bac0,{metalness:.8,roughness:.3});bx(.015,.0025,.045,cx,BY+.0165,cz,0xdfe3e6,{});for(var q=0;q<3;q++)bx(.002,.002,.045,cx-.004+q*.004,BY+.0175,cz,0x222);});
+  pl(.012,.036,tex("ic_dvil",30,90,function(c,w,h){c.fillStyle="#fff";c.fillRect(0,0,w,h);c.save();c.translate(w/2,h/2);c.rotate(-PI/2);txt(c,"INTCAM1",0,0,16,"#111","700");c.restore()}),X(940),BY+.0185,Z(1125),"y");
+  bx(.047,.012,.017,X(490),BY+.008,Z(725),0xe8e4d6,{roughness:.8});
+  cy(.011,.011,.022,X(380),BY+.012,Z(620),0x1b1b1d);cy(.0125,.0125,.019,X(470),BY+.0105,Z(830),0x2a2a2e);cy(.011,.011,.017,X(535),BY+.009,Z(810),0x202024);cy(.011,.011,.017,X(595),BY+.009,Z(805),0x202024);cy(.02,.02,.022,X(390),BY+.012,Z(1270),0x18181a);
+  bx(.033,.015,.014,X(400),BY+.008,Z(1090),0xc0262d,{roughness:.5});
+  [[505,640],[600,650],[470,760],[560,760],[530,1180],[520,1000],[420,950]].forEach(function(p,i){bx(.014+(i%3)*.003,.004,.012,X(p[0]),BY+.003,Z(p[1]),0x16171a)});bx(.05,.004,.022,X(525),BY+.0035,Z(1160),0x16171a);
+  [[555,1300],[555,1385],[710,1380]].forEach(function(p){bx(.009,.007,.006,X(p[0]),BY+.0045,Z(p[1]),0xd69a2c,{roughness:.5})});
+  [[375,385],[1090,440],[1060,1620],[310,1635]].forEach(function(p){cy(.006,.006,.002,X(p[0]),BY+.0016,Z(p[1]),0xcfd3d6,{metalness:.8});cy(.003,.003,.0025,X(p[0]),BY+.0017,Z(p[1]),0x555,{})});
+  [[915,1090,400,480],[915,1090,480,560]].forEach(function(r,i){bx(.034,.01,.016,X((r[0]+r[1])/2),BY+.006,Z(440+i*60),0x1a1a1d);});bx(.016,.01,.016,X(1040),BY+.006,Z(520),0x1a1a1d);
+  bx(.05,.014,.04,X(980),BY+.007,Z(1425),0x1b1b1e,{roughness:.4});bx(.04,.008,.03,X(925),BY+.01,Z(1440),0x111);
+  
+  var rb=bx(.07,.0007,.017,X(1160),BY+.0045,Z(1435),0xd8d8d3,{roughness:.8});rb.rotation.y=-.28;bx(.026,.0007,.017,X(1130),BY+.0045,Z(1405),0xe8a6c0,{roughness:.8});
+  tube([[X(345),BY+.004,Z(330)],[X(440),BY+.018,Z(520)],[X(560),BY+.02,Z(610)],[X(760),BY+.018,Z(650)]],.0016,0xb9c63a,{roughness:.6});cy(.008,.008,.007,X(350),BY+.006,Z(320),0x2358d6,{});cy(.0065,.0065,.007,X(760),BY+.018,Z(650),0x2358d6,{});
+  cy(.0035,.0035,.022,X(430),BY+.015,Z(520),0xf1efe6,{},"z");
+  pl(.052,.01,tex("ic_lbl",260,50,function(c,w,h){c.fillStyle="#d6d9c8";c.fillRect(0,0,w,h);txt(c,"INT CAM   K190801",w/2,h/2,26,"#1b1b1b","700")}),X(970),BY+.0012,Z(1625),"y");
+  bx(.014,.0007,.04,X(825),BY+.0013,Z(1405),0xf4f4f4);pl(.012,.038,tex("ic_cvm",40,120,function(c,w,h){c.fillStyle="#fff";c.fillRect(0,0,w,h);c.save();c.translate(w/2,h/2);c.rotate(-PI/2);txt(c,"CV-M10",0,0,34,"#222","700");c.restore()}),X(825),BY+.0018,Z(1405),"y");
+  if(t==="intcamb"){
+   var bg=new THREE.Mesh(new THREE.BoxGeometry(.222,.018,.342),new THREE.MeshStandardMaterial({color:0x7d838c,metalness:.9,roughness:.22,transparent:true,opacity:.42,depthWrite:false}));bg.position.set(0,.009,0);g.add(bg);
+   bx(.222,.0025,.012,0,.0175,-.165,0x8c929b,{metalness:.9,roughness:.3});bx(.012,.0025,.342,-.105,.0175,0,0x8c929b,{metalness:.9,roughness:.3});bx(.012,.0025,.342,.105,.0175,0,0x8c929b,{metalness:.9,roughness:.3});
+   pl(.12,.09,tex("ic_hand",300,230,function(c,w,h){c.clearRect(0,0,w,h);c.save();c.translate(w/2,h/2);c.rotate(-1.12);c.strokeStyle="#2a78ff";c.fillStyle="#2a78ff";c.font="700 46px 'Comic Sans MS',cursive,Arial";c.textAlign="center";c.textBaseline="middle";c.fillText("INT CAM",0,-16);c.fillText("K190 ..",0,34);c.restore()}),.03,.0193,.0,"y");
+   pl(.07,.02,tex("ic_esd",280,80,function(c,w,h){c.clearRect(0,0,w,h);txt(c,"ESD SHIELDING BAG",w/2,26,24,"#222","700");txt(c,"CAUTION  ELECTROSTATIC SENSITIVE DEVICE",w/2,56,15,"#333","600")}),0,.0195,.07,"y",PI)
+  }
+  return true}
+ if(t==="rollarm"){
+  /* แขนลูกกลิ้ง (กลไกสวิตช์/ไกด์): ตัวเหล็กดำ มีรูเกลียว 3 รู ปลอกทองเหลือง คันโยกพร้อมลูกกลิ้งโพลียูรีเทนสีเหลือง */
+  bx(.14,.018,.045,0,.009,0,0x303033,{metalness:.65,roughness:.5});bx(.12,.012,.01,-.005,.006,.0275,0x3a3a3d,{metalness:.65,roughness:.5});
+  [-.04,0,.04].forEach(function(x){cy(.0032,.0032,.0012,x,.0187,.016,0x0a0a0a,{})});
+  bx(.07,.002,.004,-.015,.0188,-.006,0x5a5a5e,{metalness:.5},.0,.02);
+  var bs=tor(.0115,.0042,-.048,.0185,-.005,BRASS,{metalness:.8,roughness:.3},PI/2);bs.rotation.x=PI/2;cy(.0085,.0085,.004,-.048,.0195,-.005,0x1b1b1d,{metalness:.5});
+  bx(.06,.009,.03,-.052,.0125,-.035,DARK,{metalness:.55},.0);bx(.04,.008,.034,-.054,.02,-.062,0x202023,{metalness:.55},.0);
+  bx(.045,.006,.045,.052,.005,.0,0x252527,{metalness:.5});
+  cy(.0305,.0305,.021,-.055,.0245,-.075,0xf0c81a,{roughness:.55,metalness:.02});cy(.0205,.0205,.023,-.055,.0245,-.075,0xc9ced3,{metalness:.85,roughness:.3});hx(.0115,.008,-.055,.0345,-.075,0x3a3a3d,{metalness:.6});
+  cy(.004,.004,.003,-.0,-.0,0,0x888,{});
+  return true}
+ if(t==="fitting"){
+  /* ข้อต่อหัวต่อสีดำ + แหวนปรับสีขาว (ปลายท่อ/นิปเปิล มีเกลียวและแป้นหกเหลี่ยม) */
+  cy(.045,.045,.008,0,.004,0,0xe9e6df,{roughness:.8,metalness:.02});for(var kk=0;kk<24;kk++){var ka=kk*PI/12;bx(.0035,.0066,.0045,Math.cos(ka)*.0455,.0045,Math.sin(ka)*.0455,0xcfccc2,{roughness:.9},-ka)}
+  cy(.037,.039,.036,0,.026,0,0x16171a,{roughness:.45,metalness:.45});cy(.024,.024,.002,0,.0445,.003,0x0d0d0f,{});
+  bx(.012,.012,.02,.01,.03,.034,0x08090b,{});hx(.0195,.012,0,.05,0,0x1e1f23,{metalness:.65,roughness:.4});cy(.0125,.0125,.016,0,.062,0,0x2a2b2f,{metalness:.7,roughness:.35});
+  for(var th=0;th<4;th++)cy(.0132,.0132,.0014,0,.056+th*.0032,0,0x17181b,{metalness:.7});cy(.0092,.0092,.03,0,.083,0,0x111215,{metalness:.5,roughness:.4});cy(.0042,.0042,.0025,0,.0985,0,0x000,{});
+  return true}
+
+ if(t==="mobo"){
+  /* เมนบอร์ดเซิร์ฟเวอร์ Supermicro X7DBE: LGA771 สองซ็อกเก็ต DIMM 8 ช่อง PCI-X 6 ช่อง ฮีตซิงก์สี่ก้อน ขั้วพอร์ตด้านล่าง */
+  var K=.000255,X=function(p){return (p-1080)*K},Z=function(p){return (p-725)*K},Y0=.0017;
+  bx(.306,.0017,.31,0,.00085,0,0x2b6a3d,{roughness:.5,metalness:.05});
+  function slot(px,py0,py1,w,c){var cz=Z((py0+py1)/2);bx(w,.01,(py1-py0)*K,X(px),Y0+.005,cz,c,{roughness:.6});bx(w*.4,.002,(py1-py0)*K*.9,X(px),Y0+.0105,cz,0x1a1a1a,{})}
+  for(var d=0;d<8;d++){slot(517+d*43,640,1180,.0075,0x15161a);bx(.006,.012,.004,X(517+d*43),Y0+.006,Z(630),0xe7e1d0,{});bx(.006,.012,.004,X(517+d*43),Y0+.006,Z(1190),0xe7e1d0,{})}
+  [0,1].forEach(function(d){bx(.0035,.03,.13,X(517+d*43),Y0+.016,Z(910),0x0e0f12,{});for(var c=0;c<6;c++)bx(.0045,.012,.012,X(517+d*43),Y0+.018,Z(740+c*38),0x1f2024,{})});
+  [[640,430,1],[940,430,0]].forEach(function(s){var cx=X(s[0]),cz=Z(s[1]);bx(.054,.009,.054,cx,Y0+.0045,cz,0xb4b8bd,{metalness:.8,roughness:.3});
+   if(s[2]){bx(.04,.004,.04,cx,Y0+.011,cz,0xb59f6b,{metalness:.5,roughness:.6});bx(.034,.0006,.034,cx,Y0+.0132,cz,0x9a8758,{});}
+   else{bx(.046,.006,.046,cx,Y0+.012,cz,0x141414,{});pl(.036,.026,tex("mb_warn",144,104,function(c,w,h){c.fillStyle="#f4f4f2";c.fillRect(0,0,w,h/2);txt(c,"HCRT293",w/2,16,22,"#111","700");txt(c,"1112004",w/2,38,18,"#111","600");c.fillStyle="#f2c200";c.fillRect(0,h/2,w,h/2);txt(c,"WARNING!",w/2,h*.75,22,"#c0151c","800")}),cx,Y0+.0153,cz+.002,"y")}
+   [[-.026,-.026],[.026,-.026],[-.026,.026],[.026,.026]].forEach(function(o){bx(.004,.01,.004,cx+o[0],Y0+.005,cz+o[1],0xd8dadd,{metalness:.8})})});
+  function hs(px,py,w,d,h,n,al){var cx=X(px),cz=Z(py);bx(w,.003,d,cx,Y0+.0015,cz,0xc4c8cc,{metalness:.8,roughness:.3});for(var i=0;i<n;i++){var f=(i+.5)/n;if(al==="z")bx(w/n*.55,h,d*.98,cx-w/2+w*f,Y0+.003+h/2,cz,0xc4c8cc,{metalness:.85,roughness:.28});else bx(w*.98,h,d/n*.55,cx,Y0+.003+h/2,cz-d/2+d*f,0xc4c8cc,{metalness:.85,roughness:.28})}}
+  hs(965,690,.05,.047,.016,10,"z");hs(1150,250,.027,.085,.014,6,"z");hs(1230,250,.027,.085,.014,6,"z");hs(1230,575,.038,.05,.014,9,"z");hs(1450,560,.044,.05,.014,9,"z");
+  [1160,1225,1295,1385,1455,1550].forEach(function(px,i){slot(px,665,1170,.01,0xebe6d5)});slot(1100,810,1235,.008,0x14151a);
+  bx(.046,.012,.011,X(1190),Y0+.006,Z(140),0x2457c4,{roughness:.55});bx(.046,.01,.012,X(1190),Y0+.005,Z(190),0x15161a,{});
+  [210,275,340,410,480,550].forEach(function(py,i){bx(.025,.009,.011,X(1550),Y0+.0045,Z(py),0x16171a,{roughness:.5})});
+  bx(.016,.011,.034,X(460),Y0+.0055,Z(830),0xe8e2cf,{});bx(.012,.011,.016,X(490),Y0+.0055,Z(215),0xe8e2cf,{});
+  for(var cc=0;cc<5;cc++){var tq=tor(.0075,.0038,X(900),Y0+.0075,Z(965+cc*45),0xd88c2a,{roughness:.5,metalness:.3},PI/2);}
+  for(var vv=0;vv<10;vv++)bx(.012,.009,.011,X(560+vv*46),Y0+.0045,Z(245),0x6f6c52,{roughness:.6,metalness:.3});
+  function capc(px,py,c){cy(.0042,.0042,.01,X(px),Y0+.005,Z(py),c||0x6a3f93,{roughness:.4,metalness:.3})}
+  for(var a1=0;a1<10;a1++)capc(490,300+a1*30);for(var a2=0;a2<7;a2++){capc(1010,380+a2*36);capc(1070,380+a2*36,0x7a7f86)}for(var a3=0;a3<6;a3++){capc(800,120+a3*20,0x7a7f86);capc(1090,880+a3*50,0x2a2a2e)}
+  for(var a4=0;a4<8;a4++){capc(1210+a4*50,1100,0x2a2a2e)}
+  bx(.03,.013,.012,X(640),Y0+.0065,Z(1285),0x2f8f9a,{roughness:.4});bx(.03,.012,.012,X(775),Y0+.006,Z(1305),0x2b6ad1,{roughness:.4});
+  cy(.0105,.0105,.004,X(780),Y0+.0025,Z(1245),0xcfd3d6,{metalness:.85,roughness:.3});[900,985].forEach(function(px){bx(.016,.014,.017,X(px),Y0+.007,Z(1295),0xc4c8cc,{metalness:.8,roughness:.35})});
+  bx(.016,.02,.02,X(445),Y0+.01,Z(1285),0xb4b8bd,{metalness:.8});bx(.013,.006,.013,X(1210),Y0+.003,Z(1225),0x15161a);bx(.018,.004,.018,X(1450),Y0+.002,Z(1215),0x15161a);bx(.022,.004,.022,X(1545),Y0+.002,Z(1175),0x15161a);
+  bx(.032,.002,.012,X(660),Y0+.001,Z(560),0xe8e8e0,{});
+  return true}
+ if(t==="lens"){
+  /* เลนส์ C-mount (โฟกัสระยะ 0.3–1 m, ไดอะแฟรม C/16/8/4): เกลียวเงิน แหวนโลหะ ตัวดำสเกลขาว ฮูดดำ */
+  var ST=function(k,txts){return tex(k,512,64,function(c,w,h){c.fillStyle="#0e0f11";c.fillRect(0,0,w,h);txts.forEach(function(s,i){txt(c,s,230+i*55,32,26,"#e8e8e6","600")})})};
+  function ring(r,h,y,k,txts){var mt=[new THREE.MeshStandardMaterial({map:ST(k,txts),roughness:.5,metalness:.3}),M(0x15161a,{}),M(0x15161a,{})];var m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,40),mt);m.position.y=y;m.rotation.y=-PI/2;g.add(m)}
+  cy(.0125,.0125,.008,0,.004,0,0xc9ced3,{metalness:.85,roughness:.3});cy(.0165,.0165,.009,0,.0125,0,0xc6cbd0,{metalness:.85,roughness:.28});
+  ring(.0155,.012,.0215,"ln_a",["C","16","8","4"]);cy(.0148,.0148,.002,0,.0285,0,0xaab0b5,{metalness:.9});ring(.0158,.017,.039,"ln_b",["0.3","0.4","0.5","0.7","1"]);
+  cy(.0172,.0172,.01,0,.0525,0,0x16171a,{roughness:.5,metalness:.2});for(var nn=0;nn<10;nn++){var na=nn*PI/5;bx(.0028,.011,.004,Math.cos(na)*.0174,.0525,Math.sin(na)*.0174,0x0d0d0f,{},-na)}
+  cy(.0135,.0135,.001,0,.0576,0,0x1b2230,{metalness:.5,roughness:.1});
+  return true}
+ if(t==="sewmv"){
+  /* SEW Eurodrive (อินเวอร์เตอร์เล็กสีแดง V2): ตัวแดง ฝาบนมีพอร์ต X44 X45 X46 ช่องระบายอากาศ ฉลากเหลือง แผ่นยึดเงิน */
+  var RD=0xc9302a,RO={roughness:.45,metalness:.1};
+  bx(.285,.003,.115,0,.0015,0,0xb9bec3,{metalness:.5,roughness:.4});[[-.13,-.035],[-.13,.035]].forEach(function(p){cy(.005,.005,.004,p[0],.003,p[1],0x555,{})});bx(.012,.004,.022,-.145,.003,0,0x555,{});
+  bx(.235,.092,.09,.006,.049,0,RD,RO);bx(.11,.02,.075,.05,.105,0,RD,RO);bx(.05,.012,.055,.09,.116,0,0xd13a33,RO);
+  bx(.018,.014,.017,.09,.123,.002,0x18191c,{roughness:.35});bx(.014,.0012,.012,.09,.1305,.002,0xdcdad5,{});for(var rp=0;rp<6;rp++)bx(.0012,.0008,.006,.0845+rp*.0022,.131,.002,0xc9a143,{metalness:.8});
+  bx(.026,.003,.016,.06,.1155,.006,0x2a1210,{});cy(.0085,.0085,.006,.03,.109,-.012,0xb02620,RO);cy(.0035,.0035,.007,.03,.1085,-.012,0x15161a,{});
+  [["X44",.095],["X45",.075],["X46",.06]].forEach(function(s,i){pl(.012,.006,tex("sw_"+s[0],60,30,function(c,w,h){c.clearRect(0,0,w,h);txt(c,s[0],w/2,h/2,24,"#f4f1ea","700")}),s[1],.1235,-.03,"y")});
+  bx(.07,.003,.06,-.04,.0955,0,0xd1352f,RO);bx(.06,.0006,.03,-.04,.09,.0,0xf0f0ee,{});pl(.05,.026,tex("sw_v2",200,104,function(c,w,h){c.fillStyle="#f2f2f0";c.fillRect(0,0,w,h);txt(c,"V2",w/2,h/2+4,86,"#1a1a1a","800")}),-.04,.0975,0,"y");
+  cy(.0035,.0035,.002,-.01,.0975,.028,0x55321f,{});
+  [[0,.19],[1,.205]].forEach(function(r){});
+  bx(.03,.02,.034,-.095,.014,.0,0x1a1a1d,{roughness:.5});bx(.035,.0018,.02,-.11,.049,.0455,0xb9bec3,{metalness:.5});
+  for(var vc=0;vc<3;vc++)for(var vr=0;vr<9;vr++)bx(.011,.0022,.002,-.07+vc*.015,.025+vr*.007,.0455,0x1a0c0b,{});
+  bx(.07,.058,.001,.05,.058,.0455,0xe0e2e4,{});pl(.068,.056,tex("sw_lbl",272,224,function(c,w,h){c.fillStyle="#e4e6e8";c.fillRect(0,0,w,h);c.fillStyle="#1b1b1b";c.font="700 22px Arial";c.fillText("SEW",14,32);c.fillText("EURODRIVE",14,60);c.font="600 14px Arial";for(var l=0;l<8;l++)c.fillText("———  ———  ——",14,92+l*16)}),.05,.058,.0462,"z");
+  bx(.014,.05,.001,.095,.058,.0462,0xe9c43a,{});
+  return true}
+ if(t==="sewdrive"){
+  /* SEW MOVIDRIVE + การ์ด DEH11B: ตัวโลหะเทา ฝาแดงยาว (MOVIDRIVE®) ช่องดำด้านขวามี D-sub X14/X15 ตัวต่อขั้วดำด้านล่าง ขายึดเงิน */
+  bx(.30,.07,.105,0,.045,0,0x969b9f,{metalness:.55,roughness:.45});
+  bx(.30,.004,.12,0,.008,0,0xb9bec3,{metalness:.6,roughness:.4});bx(.05,.003,.17,-.155,.008,0,0xb9bec3,{metalness:.6,roughness:.4});[-.03,.03].forEach(function(z){bx(.012,.004,.006,-.17,.01,z*1.6,0x444,{})});
+  for(var vr=0;vr<12;vr++)bx(.003,.003,.003,0,0,0,0,{});
+  for(var s1=0;s1<9;s1++)bx(.07,.0015,.003,-.035,.026+s1*.0057,.0535,0x111214,{});
+  bx(.285,.026,.058,.007,.093,-.02,0xd0342c,RO={roughness:.4,metalness:.1});bx(.05,.008,.058,.145,.108,-.02,0xdc3c33,{roughness:.4});
+  bx(.04,.012,.03,.115,.108,-.02,0xc02a23,{roughness:.4});
+  pl(.19,.021,tex("sd_cap",760,84,function(c,w,h){c.fillStyle="#d0342c";c.fillRect(0,0,w,h);txt(c,"MOVIDRIVE®",w-40,h/2+2,50,"#2a0b09","800","right")}),-.02,.1066,-.02,"y");
+  bx(.28,.05,.048,.015,.075,.0345,0x14151a,{roughness:.5,metalness:.35});bx(.28,.03,.002,.015,.075,.0585,0x1a1b21,{});
+  [[.09,0xd6c98a,"X14",.034],[.135,0xb8bcc0,"X15",.034]].forEach(function(s,i){bx(.03,.01,.016,s[0],.101,.034,s[1],{metalness:.75,roughness:.3});bx(.022,.003,.009,s[0],.1065,.034,0x1b1b1b,{});pl(.012,.006,tex("sd_"+s[2],60,30,function(c,w,h){c.clearRect(0,0,w,h);txt(c,s[2],w/2,h/2,24,"#cfcfcf","700")}),s[0],.1006,.052,"y");});
+  pl(.03,.008,tex("sd_deh",120,32,function(c,w,h){c.clearRect(0,0,w,h);txt(c,"DEH11B",w/2,h/2,26,"#e4e4e4","700")}),.062,.1006,.034,"y");
+  bx(.04,.02,.034,-.12,.022,.0,0x18191c,{roughness:.5});for(var tt=0;tt<6;tt++)bx(.003,.004,.004,-.133+tt*.0053,.034,.0,0xb9bec3,{metalness:.7});
+  tor(.009,.0013,-.092,.045,.054,0xf0efe8,{roughness:.6},PI/2);
+  return true}
+ if(t==="jaicam"){
+  /* กล้อง JAI CV-M10SX + เลนส์: ตัวดำ ฝาบนมีป้ายแนะนำสกรู 4 ตัวมุม ป้าย CE ท้ายเครื่อง เลนส์ริบ ฮูดหน้า */
+  bx(.058,.03,.045,0,.015,0,0x131417,{roughness:.55,metalness:.3});
+  bx(.0585,.001,.0452,0,.0302,0,0x1b1c20,{});
+  [[-.022,-.0195],[-.022,.0195],[.022,-.0195],[.022,.0195]].forEach(function(p){cy(.003,.003,.0018,p[0],.0306,p[1],0xc1c5ca,{metalness:.85,roughness:.3})});
+  pl(.04,.03,tex("jai_lbl",320,240,function(c,w,h){c.fillStyle="#ececea";c.fillRect(0,0,w,h);c.fillStyle="#181818";c.font="700 16px Arial";c.textAlign="left";c.fillText("⚠ Important Notice to",10,22);c.fillText("Camera Fixing Screws",10,44);c.strokeStyle="#222";c.lineWidth=2;c.strokeRect(20,60,150,110);c.fillRect(30,100,70,50);c.beginPath();c.moveTo(210,70);c.lineTo(210,150);c.stroke();c.font="600 15px Arial";c.fillText("max",225,95);c.fillText("5mm",225,115);c.fillText("Camera Chassis",20,200);c.fillText("Camera Fixing Screw",150,200);c.fillText("カメラ取付ネジに関する注意",10,230)}),-.004,.0306,0,"y",PI/2);
+  pl(.016,.02,tex("jai_ce",64,80,function(c,w,h){c.fillStyle="#ececea";c.fillRect(0,0,w,h);txt(c,"CE",w/2,24,24,"#111","800");txt(c,"CV-M10SX",w/2,56,11,"#111","700")}),.023,.0306,.0,"y",PI/2);
+  cy(.0185,.0185,.014,-.035,.015,0,0x1a1b1e,{roughness:.5,metalness:.4},"x");
+  cy(.0165,.0165,.04,-.062,.015,0,0x17181b,{roughness:.55,metalness:.35},"x");for(var rb=0;rb<9;rb++)cy(.0168,.0168,.0022,-.045-rb*.0045,.015,0,0x0f1012,{},"x");
+  cy(.0165,.0165,.012,-.088,.015,0,0x1b1c20,{metalness:.4},"x");cy(.0125,.0125,.004,-.0955,.015,0,0x0a0e14,{roughness:.1,metalness:.6},"x");cy(.0175,.0175,.003,-.0925,.015,0,0x101113,{},"x");
+  bx(.006,.004,.004,-.075,.032,0,0xc9ced3,{metalness:.8});
+  return true}
+ if(t==="bluecam"){
+  /* กล้อง/หัวตรวจมุมฉากสีน้ำเงินอโนไดซ์ S/N 00255: ท่อกลมยาว แหวนทองเหลืองมีเลข ข้อศอกขวางด้านหลัง ขั้วต่อกลมดำพร้อมฝาครอบ */
+  var BL=0x1f45c2,BO={metalness:.55,roughness:.38};
+  cy(.037,.037,.145,-.02,.044,0,BL,BO,"x");cy(.0385,.0385,.012,.065,.044,0,BL,BO,"x");var bm=[new THREE.MeshStandardMaterial({map:tex("bc_sn",512,64,function(c,w,h){c.fillStyle="#b7a982";c.fillRect(0,0,w,h);txt(c,"S/N   00255",256,34,34,"#2a2a22","700")}),metalness:.6,roughness:.45}),M(0xb7a982,{metalness:.7}),M(0xb7a982,{metalness:.7})];var bb=new THREE.Mesh(new THREE.CylinderGeometry(.0378,.0378,.008,40),bm);bb.rotation.z=PI/2;bb.rotation.x=-PI/2;bb.position.set(.032,.044,0);g.add(bb);
+  bx(.07,.075,.075,.1,.044,0,BL,BO);cy(.0375,.0375,.075,.1,.044,0,BL,BO,"z");sp(.0375,.1,.044,-.0375,BL,BO);
+  cy(.03,.03,.002,-.092,.044,0,0x2a1740,{metalness:.5,roughness:.1},"x");cy(.0345,.0345,.004,-.0925,.044,0,0x9aa3ad,{metalness:.85,roughness:.3},"x");
+  bx(.034,.004,.034,.015,.014,-.045,BL,BO);bx(.034,.004,.034,.015,.074,-.045,BL,BO);bx(.034,.058,.01,.015,.044,-.0455,BL,BO);[-.008,.008].forEach(function(z){cy(.0032,.0032,.012,.0,.044,-.0455,0x0d1840,{},"z")});
+  cy(.0165,.0165,.02,.113,.086,.0,0x15161a,{roughness:.55,metalness:.3});cy(.019,.019,.018,.113,.103,0,0x1d1e22,{roughness:.5,metalness:.35});for(var cq=0;cq<12;cq++){var ca=cq*PI/6;bx(.004,.018,.003,.113+Math.cos(ca)*.0195,.103,Math.sin(ca)*.0195,0x0d0e10,{},-ca)}
+  cy(.014,.014,.012,.113,.114,0,0x0e0f11,{});bx(.002,.002,.03,.125,.12,.02,0x2a2a2a,{});tube([[.126,.118,.0],[.14,.104,.015],[.15,.09,.04]],.002,0x2a2a2a,{roughness:.7});
+  return true}
+ if(t==="smps"){
+  /* พาวเวอร์ซัพพลายแบบเปิด (+5V ADJ): ฝาตะแกรงเงินเจาะรู เห็นแผงเหลืองข้างใน บล็อกขั้วสกรูหน้า ป้าย L N ⏚ -V +V COM +5V ไฟ LED เขียว */
+  bx(.16,.002,.101,0,.001,0,0xd4b341,{roughness:.55});bx(.16,.038,.092,0,.021,-.004,0xc3c6c9,{metalness:.65,roughness:.4});
+  pl(.158,.09,tex("sp_perf",640,360,function(c,w,h){c.fillStyle="#b8bbbe";c.fillRect(0,0,w,h);for(var j=0;j<20;j++)for(var i=0;i<36;i++){var rr=Math.sin(i*1.3+j*.9);c.fillStyle=rr>.55?"#d8b640":rr>0?"#2a2c2f":rr>-.5?"#5b5a4a":"#8a8f95";c.beginPath();c.arc(10+i*17.6,10+j*17.6,6.2,0,7);c.fill()}}),0,.0402,-.004,"y");
+  bx(.17,.014,.028,0,.016,.052,0x17181b,{roughness:.55});for(var sx=0;sx<7;sx++){cy(.0068,.0068,.003,-.066+sx*.022,.0245,.052,0xc8ccd0,{metalness:.8,roughness:.3});bx(.0085,.0008,.0008,-.066+sx*.022,.026,.052,0x222);}
+  bx(.17,.004,.005,0,.0255,.0385,0x14151a,{});
+  pl(.168,.016,tex("sp_lab",840,80,function(c,w,h){c.fillStyle="#d2d5d8";c.fillRect(0,0,w,h);["L","N","⏚","-V","+V","COM","+5V"].forEach(function(s,i){txt(c,s,70+i*118,38,34,"#1a1a1a","700")});c.fillStyle="#1a1a1a";c.fillRect(790,8,2,64);c.fillRect(0,0,w,3)}),0,.0268,.07,"y");
+  cy(.0045,.0045,.002,.067,.0175,.07,0x39e06b,{emissive:0x22c55e,emissiveIntensity:.7},"z");cy(.0055,.0055,.004,.07,.0185,.036,0xe8e8e4,{roughness:.6});bx(.0035,.001,.0015,.07,.021,.036,0x333);
+  bx(.03,.002,.03,-.085,.0035,.04,0xb8bcc0,{metalness:.7});cy(.0035,.0035,.003,-.088,.0035,.04,0x444,{});
+  return true}
+ if(t==="collet"){
+  /* คอลเล็ต ER (สปริงคอลเล็ต): ลำตัวเรียวมีร่องผ่าสลับหน้า-หลัง แหวนร่องที่คอ รูตรงกลาง */
+  var CC=0x4a4b4f,CO2={metalness:.7,roughness:.45};
+  cy(.0092,.0118,.034,0,.0118,0,CC,CO2,"x");cy(.0125,.0125,.003,-.0165,.0118,0,0x3a3b3e,CO2,"x");cy(.0118,.0118,.0025,.0148,.0118,0,0x6a6b6f,CO2,"x");
+  cy(.0058,.0058,.0018,-.0176,.0118,0,0x070707,{},"x");cy(.0058,.0058,.0018,.0166,.0118,0,0x070707,{},"x");
+  for(var i=0;i<12;i++){var a=i*PI/6,s=i%2?1:-1;var gp=new THREE.Group();gp.position.set(s>0?-.0035:.0035,.0118,0);gp.rotation.x=a;var sl=new THREE.Mesh(new THREE.BoxGeometry(.021,.0016,.0018),M(0x050505,{}));sl.position.set(0,.0103,0);gp.add(sl);g.add(gp)}
+  return true}
+ if(t==="kebf5"){
+  /* อินเวอร์เตอร์ KEB F5: ตัวครีม แผงควบคุมบนมีจอ LED 4 หลักและปุ่ม START/STOP แถบแดงเฉียง โลโก้ KEB ฐานโลหะเงินมีป้าย F5 */
+  var CM=0xe3dfd0,CMO={roughness:.62,metalness:.05};
+  bx(.2,.02,.15,0,.027,0,0xaeb1b4,{metalness:.7,roughness:.4});
+  bx(.215,.014,.17,0,.009,0,0x9a9ea2,{metalness:.7,roughness:.4});bx(.075,.034,.002,-.0,.02,.086,0xc9ccd0,{metalness:.6});
+  pl(.073,.032,tex("kb_lbl",292,128,function(c,w,h){c.fillStyle="#cfd2d6";c.fillRect(0,0,w,h);c.fillStyle="#111";c.font="italic 800 56px Arial";c.fillText("F5",14,60);c.font="600 12px Arial";for(var l=0;l<6;l++)c.fillText("———  ——————  ———",100,22+l*17)}),0,.02,.0872,"z");
+  bx(.2,.085,.148,0,.075,0,CM,CMO);bx(.2,.004,.15,0,.1195,0,0xf0ede0,CMO);for(var v=0;v<8;v++)bx(.0015,.05,.002,-.1006,.07,-.06+v*.017,0x6b6a60,{});
+  bx(.115,.034,.082,-.018,.138,-.01,CM,CMO);bx(.12,.003,.088,-.018,.1565,-.01,0xece8d9,CMO);bx(.12,.012,.01,-.018,.128,.034,CM,CMO);
+  pl(.118,.084,tex("kb_top",472,336,function(c,w,h){c.fillStyle="#ebe8da";c.fillRect(0,0,w,h);c.fillStyle="#2a2a2c";c.fillRect(34,38,150,76);c.fillStyle="#181818";c.fillRect(40,44,138,64);c.fillStyle="#d8252b";c.font="700 56px 'Courier New',monospace";c.textAlign="center";c.textBaseline="middle";c.fillText("2.88",110,78);["FUNC.","ENTER"].forEach(function(s,i){c.fillStyle="#222";c.font="700 15px Arial";c.fillText(s,64+i*0,140+i*84);});c.fillStyle="#c9cbc3";[[218,60],[218,114],[170,196],[250,196]].forEach(function(p){c.fillRect(p[0],p[1],40,34)});c.fillStyle="#2fa04f";c.fillRect(214,106,48,12);c.fillStyle="#d8252b";c.fillRect(278,106,48,12);txt(c,"START",238,100,13,"#222");txt(c,"STOP",302,100,13,"#222");txt(c,"SPEED",240,58,13,"#222");txt(c,"F/R",270,230,13,"#222");c.fillStyle="#1d1d1f";c.fillRect(380,60,50,56);c.fillStyle="#c8c9c0";c.fillRect(388,70,34,18);txt(c,"X6B",405,140,14,"#222");c.fillStyle="#d8252b";[0,1,2,3].forEach(function(i){c.save();c.translate(340+i*26,300);c.rotate(-.85);c.fillRect(-9,-120,10,240);c.restore()})}),-.018,.1583,-.01,"y");
+  pl(.032,.013,tex("kb_logo",128,52,function(c,w,h){c.fillStyle="#d8252b";c.fillRect(0,0,w,h);txt(c,"KEB",w/2,h/2+2,40,"#fff","800")}),.038,.1583,-.034,"y");
+  return true}
+ if(t==="slide"){
+  /* ชุดกลไกสไลด์ + สปริง: โครงหล่อเทาครีมรูปตัว C เพลาโครเมียมพร้อมน็อตล็อก แกนไกด์สองแกน บล็อกดำ สปริงคู่แผ่นดำ แคลมป์ดำพร้อมแผ่นสีน้ำเงิน */
+  var AL=0xd5d1c4,AO={roughness:.7,metalness:.25},CH2={metalness:.92,roughness:.18};
+  bx(.26,.05,.015,.0,.033,-.037,AL,AO);bx(.052,.05,.088,.115,.033,0,AL,AO);bx(.07,.05,.082,-.1,.033,-.003,AL,AO);
+  bx(.05,.036,.014,-.02,.033,-.0475,AL,AO);[-.012,.0,.012].forEach(function(x){cy(.0028,.0028,.002,-.02+x*1.8,.033,-.0556,0x888,{},"z");});
+  cy(.0115,.0115,.1,.205,.033,0,0xd7dbde,CH2,"x");cy(.0195,.0195,.012,.14,.033,0,0x6b6054,{metalness:.6,roughness:.55},"x");cy(.0175,.0175,.008,.152,.033,0,0x80766a,{metalness:.6},"x");
+  cy(.0058,.0058,.15,.0,.044,.018,0xcfd3d6,CH2,"x");cy(.0058,.0058,.15,.0,.022,.018,0xcfd3d6,CH2,"x");
+  bx(.1,.034,.04,.0,.033,.015,0x0f1115,{roughness:.3,metalness:.3});bx(.1,.002,.01,.0,.051,.015,0x2a2d34,{});
+  bx(.2,.045,.004,.0,.033,.0375,0x101216,{roughness:.35,metalness:.4});helix(.095,-.09,.033,.05,.0105,.0017,18,0xb9b2a8);
+  cy(.0035,.0035,.2,.0,.033,.05,0xcfd3d6,CH2,"x");cy(.0135,.0135,.006,.1,.033,.05,0x2b2b2e,{metalness:.5},"x");cy(.0135,.0135,.006,-.098,.033,.05,0x2b2b2e,{metalness:.5},"x");
+  bx(.075,.045,.062,-.175,.033,.0,0x14161a,{roughness:.4,metalness:.5});bx(.03,.012,.07,-.14,.005,.0,0x2c3190,{roughness:.4,metalness:.4});
+  bx(.05,.004,.05,-.175,.057,.0,0x25282e,{metalness:.5});cy(.007,.007,.004,-.175,.0595,.0,0x0a0a0b,{});[-.012,.012].forEach(function(z){cy(.0035,.0035,.004,-.19,.0595,z,0x0a0a0b,{})});
+  bx(.04,.02,.012,-.215,.033,.0,0x15171b,{roughness:.4,metalness:.5});cy(.0125,.0125,.016,-.215,.05,.0,0x24262b,{metalness:.6},"x");
+  return true}
+ return false};
 // ===== โมเดล 3D ของอะไหล่ (สร้างด้วยโค้ด วางฐานที่ y=0, ยาวตามแกน x) =====
 D.model=function(t){
  var g=new THREE.Group();function M(c,o){return mat(c,Object.assign({roughness:.55,metalness:.15},o||{}))}
@@ -244,6 +473,7 @@ D.model=function(t){
   box(.05,.045,.006,.18,.12,.207,0x1a1a1a);box(.05,.04,.006,.18,.07,.207,0x1a1a1a);box(.05,.04,.006,.205,.1,.207,0xc0262d);
   box(.02,.18,.05,-.24,.1,.17,0x2b2f36,{metalness:.4});box(.02,.18,.05,.24,.1,.17,0x2b2f36,{metalness:.4});box(.46,.012,.4,0,.016,0,0x3b3f46);
   box(.5,.22,.44,0,.11,0,0xffffff,{transparent:true,opacity:.14,depthWrite:false,roughness:.1})
+ }else if(D.modelX(t,g,box,cyl,tor,M)){g.traverse(function(m){if(m.isMesh){[].concat(m.material).forEach(function(q){if(q&&q.metalness>.45)q.metalness=.45;if(q&&q.roughness<.3)q.roughness=.3})}})
  }else{
   box(.32,.2,.26,0,.1,0,0xc8a26a,{roughness:.9});box(.07,.002,.26,0,.2,0,0xe7d6b0);box(.07,.1,.002,0,.15,.131,0xe7d6b0);
  }

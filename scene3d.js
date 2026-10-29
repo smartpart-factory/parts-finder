@@ -121,11 +121,11 @@ function wire(i){var m=infoEl.querySelector('[data-a=mv]'),d=infoEl.querySelecto
  if(d)d.onclick=function(){if(!confirm("ลบตำแหน่งที่ปักหมุดของ "+i.n+" ?"))return;var l=SP_ITEMS.slice();delete i.pos;delete i.at;delete i.spot;delete i.dw;EDR=null;spItemsSave(l);o.onChange&&o.onChange();show(i)}}
 // ---- โหมดวางอะไหล่ ----
 var placing=false,target=null,hit=null;
-var ghostOn=false,GO=[],gb=null,tpb=null;
+var ghostOn=false,GO=[],gb=null,tpb=null,rcw=null;
 function ghost(on){ghostOn=on;if(on){var pk=new Set(PICKS);[DEPT,items].forEach(function(root){root.traverse(function(m){if(!m.isMesh||pk.has(m))return;(Array.isArray(m.material)?m.material:[m.material]).forEach(function(mt){if(!mt)return;mt.userData=mt.userData||{};if(mt.userData.gh)return;mt.userData.gh=[mt.opacity,mt.transparent,mt.depthWrite];mt.transparent=true;mt.opacity=Math.min(mt.opacity,.2);mt.depthWrite=false;mt.needsUpdate=true;GO.push(mt)})})})}
  else{GO.forEach(function(mt){var o=mt.userData&&mt.userData.gh;if(o){mt.opacity=o[0];mt.transparent=o[1];mt.depthWrite=o[2];mt.userData.gh=null;mt.needsUpdate=true}});GO=[]}
  if(gb)gb.textContent=on?"👻 มองทะลุ: เปิด":"👻 มองทะลุ: ปิด"}
-function place(on,item){placing=!!on;if(gb){gb.style.display=on?"":"none";tpb.style.display=on?"":"none"}if(on&&!ghostOn&&!walk)ghost(true);else if(!on&&ghostOn)ghost(false);target=item||null;hit=null;ring.visible=false;host.style.cursor=on?"crosshair":"";
+function place(on,item){placing=!!on;if(gb){gb.style.display=on?"":"none";tpb.style.display=on?"":"none";if(rcw)rcw.style.display=on?"":"none"}if(on&&!ghostOn&&!walk)ghost(true);else if(!on&&ghostOn)ghost(false);target=item||null;hit=null;ring.visible=false;host.style.cursor=on?"crosshair":"";
  if(on)infoEl.innerHTML='<b>📌 โหมดวางอะไหล่</b>'+(item?' — '+esc(item.n):'')+'<br>คลิกจุดที่ต้องการในโมเดล (พื้น · โต๊ะ · บนตู้ · ชั้นเชล) <button class="btn" id="pl-x" style="padding:4px 10px;margin-left:6px">ยกเลิก</button>';
  var x=document.getElementById("pl-x");if(x)x.onclick=function(){place(false);infoEl.innerHTML="เลือกอะไหล่จากรายการเพื่อดูตำแหน่งและเส้นทาง"};
  if(plb){plb.classList.toggle("on",placing);plb.textContent=placing?"✖ ออกจากโหมดวางอะไหล่":"📌 วางอะไหล่ในโมเดล"}}
@@ -196,6 +196,16 @@ function pad(lab,key){var b=document.createElement("button");b.textContent=lab;b
  r1.appendChild(pad("↶","tl"));r1.appendChild(pad("▲","f"));r1.appendChild(pad("↷","tr"));r2.appendChild(pad("◀","l"));r2.appendChild(pad("▼","b"));r2.appendChild(pad("▶","r"));wkp.appendChild(r1);wkp.appendChild(r2)})();
 function ob(txt,css,fn){var b=document.createElement("button");b.className="btn";b.style.cssText="position:absolute;z-index:3;padding:7px 12px;"+css;b.textContent=txt;b.onclick=fn;host.appendChild(b);return b}
 var plb=ob("📌 วางอะไหล่ในโมเดล","left:10px;top:52px",function(){if(!canEdit()){infoEl.innerHTML='<span style="color:#dc2626">การวางอะไหล่ทำได้เฉพาะบัญชี ผู้ดูแลระบบเท่านั้น</span>';return}if(walk)setWalk(false);place(!placing)});plb.id="plbtn";gb=ob("👻 มองทะลุ: เปิด","left:10px;top:94px",function(){ghost(!ghostOn)});gb.style.display="none";gb.title="ทำให้ตู้/โต๊ะ/โมเดลอื่นโปร่งใส จะได้คลิกวางบนชั้นหรือพื้นที่ถูกบังได้";tpb=ob("🛰️ มุมบน","left:10px;top:136px",function(){FOC=null;el=1.45});tpb.style.display="none";tpb.title="มองจากด้านบนลงมา";
+rcw=document.createElement("div");rcw.style.cssText="position:absolute;z-index:3;left:10px;top:178px;display:none;background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:6px 8px;box-shadow:0 2px 8px rgba(0,0,0,.15)";rcw.innerHTML='<div style="font-size:11px;color:#64748b;margin-bottom:3px">🔎 พิมพ์รหัสตู้ แล้วกล้องจะไปที่ตู้</div><input id="rcin" list="rcdl" placeholder="เช่น C3 / S2 / G1" autocomplete="off" style="width:150px;padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px;text-transform:uppercase"><datalist id="rcdl"></datalist><div id="rcmsg" style="font-size:11px;margin-top:3px;min-height:14px"></div>';host.appendChild(rcw);
+["mousedown","pointerdown","click","wheel","touchstart","keydown"].forEach(function(e){rcw.addEventListener(e,function(ev){ev.stopPropagation()})});
+(function(){var inp=rcw.querySelector("#rcin"),msg=rcw.querySelector("#rcmsg"),dl=rcw.querySelector("#rcdl");
+function ids(){var a=Object.keys(SP_RACKS||{});((spDept&&spDept.furn)||[]).forEach(function(f){if(f.id)a.push(f.id)});return a}
+function find(v){v=v.trim().toUpperCase();if(!v)return null;var a=ids();for(var i=0;i<a.length;i++)if(String(a[i]).toUpperCase()===v)return a[i];return null}
+function go(){var v=inp.value,k=find(v);if(!k){msg.innerHTML=v.trim()?'<span style="color:#dc2626">ไม่พบรหัส "'+v.trim().replace(/[<>&]/g,"")+'"</span>':"";return}
+if(SP_RACKS[k]){focusRack(k,1)}else{var DF=spDept.furnById(k);spDept.xray(false);focus(DF.x,DF.h*.5,DF.z,1.9*spDept.KD,spDept.faceRot(DF),.28)}
+msg.innerHTML='<span style="color:#16a34a">✓ ไปที่ '+k+'</span>'}
+inp.addEventListener("input",go);inp.addEventListener("keydown",function(e){if(e.key==="Enter")go()});
+inp.addEventListener("focus",function(){dl.innerHTML=ids().map(function(x){return'<option value="'+x+'">'}).join("")})})();
 var vwb=ob("🔄 มุมมอง","right:56px;top:10px",function(){if(walk)setWalk(false);fitView(!horiz)});
 var fsb=ob("⛶","right:10px;top:10px;padding:7px 11px",function(){var el=host.parentNode;if(document.fullscreenElement){document.exitFullscreen()}else if(el.requestFullscreen){el.requestFullscreen()}else{el.classList.toggle("spfs")}});fsb.title="เต็มจอ";
 var stx=document.createElement("style");stx.textContent=".spfs{position:fixed!important;inset:0;z-index:999;background:#fff;overflow:auto}";document.head.appendChild(stx);

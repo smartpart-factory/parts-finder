@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RS232 Tool - INT CAM</title>
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--tx:#0f172a;--mu:#64748b;--bd:#cbd5e1;--pr:#1565d8;--ok:#16a34a;--bad:#dc2626}
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--tx);padding:16px}
+h1{font-size:20px;margin:0 0 4px}.sub{color:var(--mu);font-size:13px;margin-bottom:14px}
+.wrap{max-width:1100px;margin:auto;display:grid;gap:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.card h2{font-size:15px;margin:0 0 10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+label{font-size:12px;color:var(--mu);display:flex;flex-direction:column;gap:3px}
+select,input[type=text],input[type=number]{padding:8px 10px;border:1px solid var(--bd);border-radius:8px;font:inherit;background:#fff;color:var(--tx)}
+button{padding:8px 14px;border:1px solid var(--pr);background:var(--pr);color:#fff;border-radius:8px;font:inherit;cursor:pointer}
+button.s{background:#fff;color:var(--pr)}button.d{background:var(--bad);border-color:var(--bad)}button:disabled{opacity:.45;cursor:not-allowed}
+#st{font-weight:600}.on{color:var(--ok)}.off{color:var(--mu)}
+#log{height:340px;overflow:auto;background:#0b1220;color:#d6e2f5;border-radius:8px;padding:10px;font:13px/1.5 Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+.tx{color:#7dd3fc}.rx{color:#bbf7d0}.sy{color:#fcd34d}
+.sig{display:inline-flex;align-items:center;gap:5px;font-size:12px;margin-right:10px}
+.dot{width:11px;height:11px;border-radius:50%;background:#cbd5e1;display:inline-block}.dot.h{background:var(--ok)}
+.q{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.warn{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;border-radius:8px;padding:10px;font-size:13px}
+@media(max-width:700px){body{padding:10px}}
+</style>
+<script src="icons.js"></script>
+</head>
+<body>
+<div class="wrap">
+ <div>
+  <h1>🔌 โปรแกรมคุย RS232 — บอร์ด INT CAM</h1>
+  <div class="sub">ต่อผ่านสาย USB-RS232 (แปลง RS232 ↔ USB) แล้วเปิดหน้านี้ด้วย Chrome หรือ Edge บนคอม ไม่ต้องติดตั้งโปรแกรม</div>
+ </div>
+ <div class="warn" id="nosup" style="display:none">เบราว์เซอร์นี้ไม่รองรับ Web Serial — ให้เปิดด้วย Chrome หรือ Edge (เวอร์ชันคอมพิวเตอร์) และเปิดไฟล์ผ่านเว็บ https หรือ http://localhost</div>
+
+ <div class="card">
+  <h2>1) การเชื่อมต่อ <span id="st" class="off">● ยังไม่เชื่อมต่อ</span></h2>
+  <div class="row">
+   <label>Baud rate<select id="baud"><option>1200</option><option>2400</option><option>4800</option><option selected>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option><option>230400</option></select></label>
+   <label>Data bits<select id="db"><option>7</option><option selected>8</option></select></label>
+   <label>Parity<select id="par"><option value="none">None</option><option value="even">Even</option><option value="odd">Odd</option></select></label>
+   <label>Stop bits<select id="sb"><option selected>1</option><option>2</option></select></label>
+   <label>Flow control<select id="fc"><option value="none">None</option><option value="hardware">RTS/CTS</option></select></label>
+   <button id="bc">เชื่อมต่อ</button><button id="bd" class="d" disabled>ตัดการเชื่อมต่อ</button>
+   <button id="bs" class="s" title="ลองทีละ baud แล้วฟังข้อมูลที่เข้ามา ใช้เมื่อไม่รู้ว่าอุปกรณ์ใช้ baud เท่าไหร่">🔍 สแกนหา baud</button>
+  </div>
+  <div id="scanout" class="sub" style="margin:8px 0 0"></div>
+ </div>
+
+ <div class="card">
+  <h2>2) ข้อมูลที่รับ / ส่ง</h2>
+  <div class="row" style="margin-bottom:8px">
+   <label>แสดงผล<select id="vm"><option value="a">ข้อความ (ASCII)</option><option value="h">HEX</option><option value="b">ทั้งสองแบบ</option></select></label>
+   <label>ตัดบรรทัดเมื่อเจอ<select id="le"><option value="n">LF (\n)</option><option value="r">CR (\r)</option><option value="rn">CR+LF</option><option value="t">ตัดตามเวลา (50ms)</option></select></label>
+   <label style="flex-direction:row;align-items:center;gap:6px;margin-top:16px"><input type="checkbox" id="ts" checked> เวลา</label>
+   <label style="flex-direction:row;align-items:center;gap:6px;margin-top:16px"><input type="checkbox" id="as" checked> เลื่อนอัตโนมัติ</label>
+   <button class="s" id="bcl" style="margin-top:14px">ล้างหน้าจอ</button>
+   <button class="s" id="bsv" style="margin-top:14px">💾 บันทึกเป็นไฟล์</button>
+  </div>
+  <div id="log"></div>
+  <div class="sub" id="cnt" style="margin:6px 0 0">รับ 0 ไบต์ · ส่ง 0 ไบต์</div>
+ </div>
+
+ <div class="card">
+  <h2>3) ส่งคำสั่ง</h2>
+  <div class="row">
+   <label style="flex:1;min-width:220px">ข้อความที่จะส่ง<input type="text" id="tx" placeholder="เช่น STATUS  หรือ  01 03 00 00 (โหมด HEX)"></label>
+   <label>รูปแบบ<select id="tm"><option value="a">ข้อความ (ASCII)</option><option value="h">HEX</option></select></label>
+   <label>ต่อท้าย<select id="ap"><option value="">ไม่ต่อท้าย</option><option value="n">LF</option><option value="r">CR</option><option value="rn" selected>CR+LF</option></select></label>
+   <button id="bt" disabled style="margin-top:14px">ส่ง</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+   <label style="flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="rp"> ส่งซ้ำทุก</label>
+   <input type="number" id="rpms" value="1000" min="20" style="width:90px"> <span class="sub" style="margin:0">มิลลิวินาที</span>
+  </div>
+  <div class="row" style="margin-top:12px"><b style="font-size:13px">คำสั่งที่บันทึกไว้</b><input type="text" id="qn" placeholder="ชื่อปุ่ม" style="width:120px"><button class="s" id="qa">+ เก็บคำสั่งจากช่องด้านบน</button></div>
+  <div class="q" id="ql"></div>
+ </div>
+
+ <div class="card">
+  <h2>4) สายควบคุม (ขา handshake / TRIG)</h2>
+  <div class="sub">บอร์ดมีช่อง "RS232 + TRIG" — ถ้า TRIG ต่ออยู่กับขา RTS หรือ DTR ของสาย ใช้ปุ่มนี้ส่งพัลส์ได้ (ตรวจต่อสายจริงก่อนใช้งาน)</div>
+  <div class="row">
+   <button class="s" id="dtr" disabled>DTR: ปิด</button>
+   <button class="s" id="rts" disabled>RTS: ปิด</button>
+   <label>ความกว้างพัลส์ (ms)<input type="number" id="pw" value="50" min="1" style="width:90px"></label>
+   <button id="pdtr" disabled style="margin-top:14px">⚡ พัลส์ DTR</button>
+   <button id="prts" disabled style="margin-top:14px">⚡ พัลส์ RTS</button>
+  </div>
+  <div style="margin-top:10px">
+   <span class="sig"><i class="dot" id="s-cts"></i>CTS</span><span class="sig"><i class="dot" id="s-dsr"></i>DSR</span><span class="sig"><i class="dot" id="s-dcd"></i>DCD</span><span class="sig"><i class="dot" id="s-ri"></i>RI</span>
+  </div>
+ </div>
+</div>
+
+<script>
+(function(){
+var $=function(i){return document.getElementById(i)};
+var port=null,reader=null,writer=null,rxN=0,txN=0,rbuf=[],rtimer=null,rpTimer=null,sigTimer=null,sig={dtr:false,rts:false},logTxt=[],scanning=false;
+if(!("serial" in navigator))$("nosup").style.display="block";
+function pad(n,l){n=String(n);while(n.length<(l||2))n="0"+n;return n}
+function stamp(){var d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds())+"."+pad(d.getMilliseconds(),3)}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function add(cls,tag,txt){var l=$("log"),t=($("ts").checked?stamp()+" ":"");logTxt.push(t+tag+" "+txt);
+ var d=document.createElement("div");d.className=cls;d.innerHTML=esc(t+tag+" "+txt);l.appendChild(d);while(l.childNodes.length>3000)l.removeChild(l.firstChild);if($("as").checked)l.scrollTop=l.scrollHeight}
+function cnt(){$("cnt").textContent="รับ "+rxN+" ไบต์ · ส่ง "+txN+" ไบต์"}
+function hex(a){return a.map(function(b){return pad(b.toString(16).toUpperCase(),2)}).join(" ")}
+function asc(a){return a.map(function(b){return b===13?"\\r":b===10?"\\n":b===9?"\\t":(b>=32&&b<127)?String.fromCharCode(b):"."}).join("")}
+function fmt(a){var m=$("vm").value;return m==="h"?hex(a):m==="a"?asc(a):hex(a)+"  |  "+asc(a)}
+function flush(){if(!rbuf.length)return;var a=rbuf;rbuf=[];add("rx","RX",fmt(a))}
+function feed(u8){rxN+=u8.length;cnt();var le=$("le").value;
+ if(le==="t"){for(var i=0;i<u8.length;i++)rbuf.push(u8[i]);clearTimeout(rtimer);rtimer=setTimeout(flush,50);return}
+ for(var i=0;i<u8.length;i++){var b=u8[i];rbuf.push(b);
+  if(le==="n"&&b===10||le==="r"&&b===13||le==="rn"&&b===10&&rbuf.length>1&&rbuf[rbuf.length-2]===13)flush()}
+ clearTimeout(rtimer);rtimer=setTimeout(flush,400)}
+function setSt(on){$("st").textContent=on?"● เชื่อมต่อแล้ว":"● ยังไม่เชื่อมต่อ";$("st").className=on?"on":"off";
+ $("bc").disabled=on;$("bd").disabled=!on;$("bt").disabled=!on;["dtr","rts","pdtr","prts"].forEach(function(i){$(i).disabled=!on})}
+function opts(baud){return{baudRate:baud||+$("baud").value,dataBits:+$("db").value,stopBits:+$("sb").value,parity:$("par").value,flowControl:$("fc").value,bufferSize:4096}}
+async function readLoop(onData){try{while(port&&port.readable){reader=port.readable.getReader();
+  try{for(;;){var r=await reader.read();if(r.done)break;if(r.value)onData(r.value)}}finally{reader.releaseLock();reader=null}}}catch(e){add("sy","!!","อ่านข้อมูลผิดพลาด: "+e.message)}}
+async function connect(){try{port=await navigator.serial.requestPort();await port.open(opts());writer=port.writable.getWriter();
+  setSt(true);add("sy","##","เชื่อมต่อ "+$("baud").value+" "+$("db").value+(({none:"N",even:"E",odd:"O"})[$("par").value])+$("sb").value);
+  sig={dtr:false,rts:false};upSig();readLoop(feed).then(function(){if(port)disconnect(true)});
+  sigTimer=setInterval(pollSig,400)}catch(e){add("sy","!!","เชื่อมต่อไม่ได้: "+e.message);port=null}}
+async function disconnect(auto){clearInterval(sigTimer);clearInterval(rpTimer);$("rp").checked=false;
+ try{if(reader)await reader.cancel()}catch(e){}try{if(writer){writer.releaseLock();writer=null}}catch(e){}try{if(port)await port.close()}catch(e){}
+ port=null;flush();setSt(false);add("sy","##",auto?"การเชื่อมต่อหลุด":"ตัดการเชื่อมต่อ")}
+function parseHex(s){var t=s.replace(/0x/gi,"").replace(/[^0-9a-fA-F]/g,"");if(!t.length||t.length%2)return null;var o=[];for(var i=0;i<t.length;i+=2)o.push(parseInt(t.substr(i,2),16));return o}
+function build(){var s=$("tx").value,m=$("tm").value,ap=({"":"",n:"\n",r:"\r",rn:"\r\n"})[$("ap").value],o;
+ if(m==="h"){o=parseHex(s);if(!o){add("sy","!!","HEX ไม่ถูกต้อง (ต้องเป็นคู่ตัวเลข เช่น 01 A3 FF)");return null}}
+ else{o=[];var u=new TextEncoder().encode(s);for(var i=0;i<u.length;i++)o.push(u[i])}
+ for(var j=0;j<ap.length;j++)o.push(ap.charCodeAt(j));return o}
+async function send(){if(!writer)return;var o=build();if(!o||!o.length)return;
+ try{await writer.write(new Uint8Array(o));txN+=o.length;cnt();add("tx","TX",fmt(o))}catch(e){add("sy","!!","ส่งไม่ได้: "+e.message)}}
+async function sigSet(){try{await port.setSignals({dataTerminalReady:sig.dtr,requestToSend:sig.rts})}catch(e){add("sy","!!","ตั้งค่าสายไม่ได้: "+e.message)}upSig()}
+function upSig(){$("dtr").textContent="DTR: "+(sig.dtr?"เปิด":"ปิด");$("rts").textContent="RTS: "+(sig.rts?"เปิด":"ปิด")}
+async function pollSig(){if(!port)return;try{var s=await port.getSignals();$("s-cts").className="dot"+(s.clearToSend?" h":"");$("s-dsr").className="dot"+(s.dataSetReady?" h":"");$("s-dcd").className="dot"+(s.dataCarrierDetect?" h":"");$("s-ri").className="dot"+(s.ringIndicator?" h":"")}catch(e){}}
+async function pulse(k){if(!port)return;var w=Math.max(1,+$("pw").value||50);sig[k]=true;await sigSet();setTimeout(async function(){sig[k]=false;if(port)await sigSet()},w);add("sy","##","พัลส์ "+k.toUpperCase()+" "+w+" ms")}
+// ---- สแกน baud ----
+async function scan(){if(scanning||port)return;scanning=true;var out=$("scanout");out.textContent="เลือกพอร์ตก่อน แล้วระบบจะลองทีละ baud (ใช้เวลาประมาณ 15 วินาที) — ให้อุปกรณ์ส่งข้อมูลอยู่ระหว่างนี้";
+ var bauds=[1200,2400,4800,9600,19200,38400,57600,115200],res=[],p;
+ try{p=await navigator.serial.requestPort()}catch(e){scanning=false;out.textContent="ยกเลิก";return}
+ for(var i=0;i<bauds.length;i++){var n=0,pr=0,tot=0;out.textContent="กำลังลอง "+bauds[i]+" ...";
+  try{await p.open(opts(bauds[i]));var rd=p.readable.getReader(),end=Date.now()+1500;
+   while(Date.now()<end){var r=await Promise.race([rd.read(),new Promise(function(z){setTimeout(function(){z({timeout:1})},300)})]);if(r.timeout)continue;if(r.done)break;
+    for(var k=0;k<r.value.length;k++){tot++;var b=r.value[k];if(b===10||b===13||(b>=32&&b<127))pr++}}
+   try{await rd.cancel()}catch(e){}rd.releaseLock();await p.close()}catch(e){try{await p.close()}catch(z){}}
+  res.push({b:bauds[i],tot:tot,pct:tot?Math.round(pr*100/tot):0})}
+ var best=res.filter(function(x){return x.tot>0}).sort(function(a,b){return b.pct-a.pct||b.tot-a.tot})[0];
+ out.innerHTML=res.map(function(x){return x.b+": "+(x.tot?x.tot+" ไบต์ อ่านออก "+x.pct+"%":"ไม่มีข้อมูล")}).join(" · ")+"<br><b>"+(best?"น่าจะเป็น "+best.b+" baud (อ่านออก "+best.pct+"%)":"ไม่พบข้อมูลเข้ามาเลย — เช็กสาย/ขา TX-RX/อุปกรณ์ส่งข้อมูลอยู่หรือไม่")+"</b>";
+ if(best)$("baud").value=String(best.b);scanning=false}
+// ---- คำสั่งที่บันทึก ----
+function ql(){try{return JSON.parse(localStorage.getItem("rs232_q")||"[]")}catch(e){return[]}}
+function qs(a){try{localStorage.setItem("rs232_q",JSON.stringify(a))}catch(e){}}
+function drawQ(){var a=ql(),b=$("ql");b.innerHTML="";a.forEach(function(q,i){var w=document.createElement("span");w.style.cssText="display:inline-flex;gap:2px";
+ var x=document.createElement("button");x.className="s";x.textContent=q.n;x.title=q.m+" · "+q.t;x.onclick=function(){$("tx").value=q.t;$("tm").value=q.m;$("ap").value=q.a;send()};
+ var d=document.createElement("button");d.className="s";d.textContent="✕";d.title="ลบ";d.onclick=function(){a.splice(i,1);qs(a);drawQ()};w.appendChild(x);w.appendChild(d);b.appendChild(w)});
+ if(!a.length)b.innerHTML='<span class="sub" style="margin:0">ยังไม่มีคำสั่งที่บันทึก</span>'}
+$("qa").onclick=function(){var t=$("tx").value;if(!t)return;var a=ql();a.push({n:$("qn").value||t.slice(0,12),t:t,m:$("tm").value,a:$("ap").value});qs(a);$("qn").value="";drawQ()};
+// ---- ปุ่ม ----
+$("bc").onclick=connect;$("bd").onclick=function(){disconnect(false)};$("bs").onclick=scan;
+$("bt").onclick=send;$("tx").onkeydown=function(e){if(e.key==="Enter")send()};
+$("bcl").onclick=function(){$("log").innerHTML="";logTxt=[];rxN=0;txN=0;cnt()};
+$("bsv").onclick=function(){var b=new Blob([logTxt.join("\r\n")],{type:"text/plain"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="rs232-log-"+Date.now()+".txt";a.click()};
+$("dtr").onclick=function(){sig.dtr=!sig.dtr;sigSet()};$("rts").onclick=function(){sig.rts=!sig.rts;sigSet()};
+$("pdtr").onclick=function(){pulse("dtr")};$("prts").onclick=function(){pulse("rts")};
+$("rp").onchange=function(){clearInterval(rpTimer);if($("rp").checked)rpTimer=setInterval(send,Math.max(20,+$("rpms").value||1000))};
+drawQ();
+})();
+</script>
+</body>
+</html>
