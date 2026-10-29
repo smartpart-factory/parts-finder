@@ -443,13 +443,29 @@ D.model=function(t){
   var k1=cyl(.018,.018,.05,0xd0d4d9,{metalness:.9,roughness:.3},"x");k1.position.set(-.12,.02,0);cyl(.012,.012,.04,0x15171b,{},"x").position.set(-.15,.02,0);
   var bn=cyl(.02,.02,.025,0xc9a227,{metalness:.8,roughness:.3},"x");bn.position.set(.12,.02,0);var cb2=cyl(.024,.024,.09,0xd9e4cd,{roughness:.8},"x");cb2.position.set(.18,.024,0);cyl(.0245,.0245,.01,0xf0d419,{},"x").position.set(.225,.024,0)
  }else if(t==="dinpsu"){
-  /* Mean Well DR-120-24 (DIN rail power supply): กล่องเทา ขั้วต่อเขียวสองปลาย ป้ายแดง MW */
-  box(.125,.06,.114,0,.03,0,0xe4e6e9,{metalness:.15,roughness:.5});box(.11,.006,.1,0,.063,0,0xe6e8ea,{metalness:.2});
-  box(.02,.034,.1,-.0575,.075,0,0x1f9d55,{roughness:.5});box(.02,.034,.1,.0575,.075,0,0x1f9d55,{roughness:.5});
-  for(var q1=0;q1<4;q1++){cyl(.006,.006,.01,0xc9a227,{metalness:.8},"x").position.set(-.0575,.095,-.04+q1*.027);cyl(.006,.006,.01,0xc9a227,{metalness:.8},"x").position.set(.0575,.095,-.04+q1*.027)}
-  box(.03,.002,.014,.012,.067,-.025,0xc0262d);box(.03,.002,.012,-.015,.067,-.03,0x111827);cyl(.004,.004,.003,0xd9a400,{},"y").position.set(.048,.066,.045);
-  box(.126,.004,.02,0,.002,0,0x9aa0a6,{metalness:.15})
- }else if(t==="rackmod"){
+  /* Mean Well DR-120-24 วางนอนหงายหน้าแผ่นป้าย: ยาวตามแกน x · ปลายซ้าย=ฝาระบายอากาศ+ขั้ว L/N/PE · ปลายขวา=ขั้ว +V/-V */
+  var ctx_=function(w,h,fn){var c=document.createElement("canvas");c.width=w;c.height=h;fn(c.getContext("2d"),w,h);var q=new THREE.CanvasTexture(c);q.anisotropy=8;return q};var PL=.1252,PT=.1,PW=.0855;
+  box(PL,PT,PW,0,PT/2,0,0x9ea5ad,{metalness:.25,roughness:.55});
+  box(PL-.002,.003,PW-.002,0,PT+.0015,0,0xc3cad2,{metalness:.1,roughness:.55});
+  var vt=ctx_(512,256,function(x,w,h){x.fillStyle="#2b2c2f";x.fillRect(0,0,w,h);x.fillStyle="#070708";for(var r=0;r<9;r++)for(var c=0;c<18;c++){var px=14+c*28+(r%2?14:0),py=14+r*28;x.beginPath();for(var k=0;k<6;k++){var an=Math.PI/3*k+Math.PI/6;x.lineTo(px+9*Math.cos(an),py+9*Math.sin(an))}x.closePath();x.fill()}});
+  var vp=new THREE.Mesh(new THREE.PlaneGeometry(PW-.004,PT-.004),new THREE.MeshStandardMaterial({map:vt,roughness:.6,metalness:.2}));vp.rotation.y=-Math.PI/2;vp.position.set(-PL/2-.0006,PT/2,0);g.add(vp);
+  var vt2=new THREE.Mesh(new THREE.PlaneGeometry(.026,PW-.004),new THREE.MeshStandardMaterial({map:vt,roughness:.6,metalness:.2}));vt2.rotation.x=-Math.PI/2;vt2.position.set(-PL/2+.0135,PT+.0035,0);g.add(vt2);
+  box(.006,.012,.04,-PL/2-.002,.014,0,0xdfe2e5,{roughness:.6});
+  var lb=ctx_(1024,700,function(x,w,h){x.fillStyle="#bcc4cc";x.fillRect(0,0,w,h);x.fillStyle="#222";x.textBaseline="middle";
+   x.fillStyle="#d3242b";x.fillRect(330,70,110,80);x.fillStyle="#fff";x.font="bold 40px Arial";x.textAlign="center";x.fillText("MW",385,110);x.font="14px Arial";x.fillStyle="#222";x.fillText("MEAN WELL",385,170);
+   x.font="bold 54px Arial";x.fillStyle="#2a2d31";x.fillText("DR-120-24",730,200);
+   x.font="22px Arial";x.textAlign="left";x.fillText("INPUT: 100-120VAC  3.3A",520,300);x.fillText("200-240VAC  2.0A",520,332);x.fillText("OUTPUT: 24V  5.0A",520,380);
+   x.font="bold 26px Arial";x.fillText("CE",150,160);x.font="18px Arial";x.fillText("MADE IN TAIWAN",120,520);
+   x.fillStyle="#111";x.fillRect(250,235,48,92);x.fillStyle="#555";x.fillRect(258,262,32,28);x.font="14px Arial";x.fillStyle="#222";x.fillText("115VAC",216,345);x.fillText("230VAC",216,222);
+   x.font="bold 26px Arial";x.fillText("⏚   N    L",100,600);x.fillText("+V +V -V -V",800,560);x.beginPath();x.arc(940,420,7,0,7);x.fillStyle="#6f9a38";x.fill()});
+  var lp=new THREE.Mesh(new THREE.PlaneGeometry(PL-.004,PW-.004),new THREE.MeshBasicMaterial({map:lb,transparent:true}));lp.rotation.x=-Math.PI/2;lp.position.set(0,PT+.0036,0);g.add(lp);
+  var GR=0x2a7d3e;
+  box(.022,.018,.04,-.043,PT+.009,0,GR,{roughness:.55});box(.004,.011,.034,-.055,PT+.008,0,0x15351d,{});
+  for(var q1=-1;q1<=1;q1++){cyl(.0045,.0045,.003,0xb6bcc2,{metalness:.5,roughness:.4},"y").position.set(-.043,PT+.0195,q1*.0125)}
+  box(.016,.016,.052,.0555,PT+.008,0,GR,{roughness:.55});box(.004,.01,.046,.0635,PT+.008,0,0x15351d,{});
+  for(var q2=0;q2<4;q2++){cyl(.0042,.0042,.003,0xb6bcc2,{metalness:.5,roughness:.4},"y").position.set(.0555,PT+.0175,-.018+q2*.012)}
+  box(.012,.004,.012,-.06,.006,.0,0xdfe2e5,{roughness:.6});
+}else if(t==="rackmod"){
   /* โมดูลแร็ค Precitec M4 (ตลับอลูมิเนียม แผงหน้า + ฝาเจาะรู + มือจับ) หน้าแผงอยู่ด้าน +z */
   box(.06,.13,.25,0,.075,-.01,0xdfe3e7,{metalness:.15,roughness:.4});box(.07,.15,.006,0,.075,.12,0xdadde0,{metalness:.15,roughness:.35});
   box(.05,.06,.002,0,.1,.124,0xf1f2f4);box(.012,.012,.003,.016,.092,.126,0x111827);

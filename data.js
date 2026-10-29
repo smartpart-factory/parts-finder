@@ -172,3 +172,6 @@ function spMigrateImgs(prog,cb){var L=[];SP_ITEMS.forEach(function(i){if(i.img&&
  var n=L.length,done=0,ok=0,k=0;if(!n)return cb({n:0,ok:0});
  function next(){if(k>=L.length)return;var e=L[k++];spUploadImg(e.o.img,e.t,function(u){if(u){e.o.img=u;ok++}done++;prog&&prog(done,n);if(done===n){var er="";try{spItemsSave(SP_ITEMS);spMachSave(SP_MACH)}catch(x){er="save"}cb({n:n,ok:ok,err:er})}else next()})}
  for(var w=0;w<3&&w<n;w++)next()}
+
+/* ตำแหน่งเพิ่มเติม (i.alt) — ต่อท้ายข้อความตำแหน่ง */
+(function(){var o=spLoc;spLoc=function(i){var s=o(i);return i&&i.alt&&i.alt.length?s+" (+"+i.alt.length+" ตำแหน่งอื่น: "+i.alt.map(function(a){return spLocShort(a)}).join(", ")+")":s}})();
