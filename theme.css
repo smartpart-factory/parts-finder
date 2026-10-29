@@ -39,7 +39,7 @@ body{font-family:"Inter","Noto Sans Thai","Segoe UI",system-ui,sans-serif!import
 .side a.on{background:linear-gradient(90deg,rgba(37,99,235,.95),rgba(37,99,235,.7))!important;color:#fff!important;font-weight:600;box-shadow:0 6px 16px -6px rgba(37,99,235,.7)}
 .side a.on::before{content:"";position:absolute;left:-12px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:#7dd3fc}
 
-main{margin:64px 0 0 228px!important;padding:24px 28px 40px!important}
+main{margin:64px 0 0 228px!important;padding:24px 28px 40px!important;max-width:none!important}
 h2{font-size:23px!important;font-weight:700;letter-spacing:-.3px;color:var(--navy-900)}
 .sub{color:var(--mute)!important}
 

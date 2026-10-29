@@ -34,14 +34,18 @@ var SPC=(function(){
   return s}
  function loadProfile(){var s=fresh();if(!s)return null;
   if(netBad())return J(PK,null);
+  try{var pc=J(PK,null),pt=+sessionStorage.getItem("sp_cloud_prof_t")||0;if(pc&&pc.id===s.uid&&Date.now()-pt<300000)return pc}catch(e){}
   var r=callS("GET","/rest/v1/profiles?id=eq."+s.uid+"&select=id,username,name,role,active,created_at",null,{tok:s.at});
-  if(r.s===200){var p=r.j&&r.j[0];if(!p){signoutLocal();return null}W(PK,p);return p}
+  if(r.s===200){var p=r.j&&r.j[0];if(!p){signoutLocal();return null}W(PK,p);try{sessionStorage.setItem("sp_cloud_prof_t",String(Date.now()))}catch(e){}return p}
   if(r.s===401||r.s===403){signoutLocal();return null}
   return J(PK,null)}
  /* ---- ดึงข้อมูล ---- */
  function hasLocal(){return KEYS.some(function(k){return k!=="sp_racks_ver"&&lget(k)!==null})}
  function pull(force){var s=fresh();if(!s||netBad())return false;
-  try{if(!force&&Date.now()-(+sessionStorage.getItem("sp_cloud_pull")||0)<6000)return true}catch(e){}
+  try{if(!force&&Date.now()-(+sessionStorage.getItem("sp_cloud_pull")||0)<20000)return true}catch(e){}
+  if(!force){var q=callS("GET","/rest/v1/kv?select=k,ver",null,{tok:s.at});
+   if(q.s===200&&Array.isArray(q.j)&&q.j.length){var b0=J(BK,{}),chg=false;q.j.forEach(function(x){if(KS[x.k]&&(!b0[x.k]||b0[x.k].ver!==x.ver||lget(x.k)===null))chg=true});KEYS.forEach(function(k){if(b0[k]&&!q.j.some(function(x){return x.k===k}))chg=true});
+    if(!chg){try{sessionStorage.setItem("sp_cloud_pull",String(Date.now()))}catch(e){}return true}}}
   var r=callS("GET","/rest/v1/kv?select=k,v,ver",null,{tok:s.at});if(r.s!==200||!Array.isArray(r.j))return false;
   var base=J(BK,{}),dirty=J(DK,{}),seen={},p=J(PK,{});
   if(!r.j.length&&p.role==="admin"&&hasLocal()&&!Object.keys(dirty).length){

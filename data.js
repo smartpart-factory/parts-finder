@@ -175,3 +175,11 @@ function spMigrateImgs(prog,cb){var L=[];SP_ITEMS.forEach(function(i){if(i.img&&
 
 /* ตำแหน่งเพิ่มเติม (i.alt) — ต่อท้ายข้อความตำแหน่ง */
 (function(){var o=spLoc;spLoc=function(i){var s=o(i);return i&&i.alt&&i.alt.length?s+" (+"+i.alt.length+" ตำแหน่งอื่น: "+i.alt.map(function(a){return spLocShort(a)}).join(", ")+")":s}})();
+
+/* วาดรายการยาวๆ ทีละส่วน (เลื่อนใกล้สุดแล้วโหลดเพิ่ม) — ลดจำนวนองค์ประกอบในหน้า ทำให้เปิด/ค้น/เลื่อนลื่น */
+function spChunk(box,items,mk,n){n=n||40;var pos=0,tok={},tb=box.tagName==="TBODY";box._tok=tok;
+ var sent=document.createElement(tb?"tr":"div");if(tb)sent.innerHTML='<td colspan="20" style="text-align:center;padding:12px;color:#64748b;cursor:pointer">แสดงเพิ่ม…</td>';else{sent.style.cssText="grid-column:1/-1;text-align:center;padding:14px;color:#64748b;font-size:13px;cursor:pointer";sent.textContent="แสดงเพิ่ม…"}
+ var io=window.IntersectionObserver?new IntersectionObserver(function(es){if(es[0].isIntersecting){io.disconnect();more()}},{rootMargin:"900px"}):null;
+ function more(){if(box._tok!==tok)return;if(sent.parentNode)sent.parentNode.removeChild(sent);var end=Math.min(items.length,pos+n),fr=document.createDocumentFragment();for(;pos<end;pos++)fr.appendChild(mk(items[pos],pos));box.appendChild(fr);
+  if(pos<items.length){box.appendChild(sent);if(io)io.observe(sent)}}
+ sent.onclick=function(){if(io)io.disconnect();more()};more()}

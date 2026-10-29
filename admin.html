@@ -157,7 +157,7 @@ var VIS=[],SEL={};function syncAll(){var n=VIS.filter(function(i){return SEL[i.c
 function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
  var mc=$("pmc").value,vf=$("pvis").value;var a=SP_ITEMS.filter(function(i){return (i.n+i.c+(i.k||"")).toLowerCase().indexOf(q)>-1&&(!mc||(i.m||[]).indexOf(mc)>-1)&&(!vf||(vf==="h")===!!i.hid)});a=a.map(function(x,k){return[x,k]}).sort(function(p,q){return (!!p[0].hid-!!q[0].hid)||p[1]-q[1]}).map(function(p){return p[0]});VIS=a;setTimeout(syncAll,0);var nh=SP_ITEMS.filter(function(i){return i.hid}).length;$("pcnt")&&($("pcnt").textContent="แสดงในตาราง "+a.length+" จาก "+SP_ITEMS.length+" รายการ · ซ่อนอยู่ "+nh+" รายการ (ช่างจะไม่เห็นรายการที่ซ่อน)");
  if(!a.length){b.innerHTML='<tr><td colspan="7"><div class="empty">'+(SP_ITEMS.length?"ไม่พบรายการ":'ยังไม่มีอะไหล่ กด "+ เพิ่มอะไหล่" เพื่อเริ่มต้น')+'</div></td></tr>';return}
- a.forEach(function(i){var s=spStatus(i),tr=document.createElement("tr");
+ spChunk(b,a,function(i){var s=spStatus(i),tr=document.createElement("tr");
   if(i.hid)tr.style.opacity=".6";
   tr.innerHTML='<td><input type="checkbox" data-a="k"'+(SEL[i.c]?' checked':'')+'></td><td>'+(i.img?'<img src="'+i.img+'" alt="" style="width:34px;height:34px;object-fit:cover;border-radius:6px;float:left;margin-right:8px">':'')+'<b>'+esc(i.n)+'</b><small>'+esc(i.c)+'</small></td><td><div class="mt">'+i.m.map(function(m){return '<i>'+esc(m)+'</i>'}).join("")+'</div></td>'
   +'<td>'+esc(spLocShort(i))+'</td>'
@@ -171,7 +171,7 @@ function pdraw(){var q=$("pq").value.toLowerCase(),b=$("pb");b.innerHTML="";
   tr.querySelector('[data-a="k"]').onchange=function(){if(this.checked)SEL[i.c]=1;else delete SEL[i.c];syncAll()};
   tr.querySelector('[data-a="e"]').onclick=function(){openP(i)};
   tr.querySelector('[data-a="x"]').onclick=function(){if(!ISA)return;if(confirm('ลบ "'+i.n+'" ('+i.c+') ?')){spItemsSave(SP_ITEMS.filter(function(x){return x!==i}));pdraw()}};
-  b.appendChild(tr)})}
+  return tr},50)}
 $("f-kg").onclick=function(){var tmp={n:$("f-n").value,k:$("f-k").value},a=spAutoKeys(tmp),b=$("f-ks");b.style.display="block";
  if(!a.length){b.textContent="ไม่มีคำแนะนำเพิ่ม (ชื่อนี้มีคำค้นครบแล้ว หรือระบบยังไม่รู้จักคำ)";return}
  $("f-k").value=(tmp.k.trim()+" "+a.join(" ")).trim();b.textContent="เพิ่มแล้ว: "+a.join(" ")+" — แก้/ลบคำที่ไม่ต้องการได้ในช่องด้านบน"};

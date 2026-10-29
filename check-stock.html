@@ -94,15 +94,15 @@ function draw(){drawSum();if(spCanEdit()){document.getElementById("npn").textCon
  a.sort(function(x,y){return sort==="r"?((x.r||'')+(x.s||'')).localeCompare((y.r||'')+(y.s||'')):x.n.localeCompare(y.n)});
  var l=document.getElementById("list");l.innerHTML="";
  if(!a.length)l.innerHTML='<div class="empty">'+(SP_ITEMS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มรายการในไฟล์ data.js แล้วรีเฟรชหน้านี้')+'</div>';
- a.forEach(function(i){var s=spStatus(i),d=document.createElement("div");d.className="rw"+(sel&&sel.c===i.c?" sel":"");
+ spChunk(l,a,function(i){var s=spStatus(i),d=document.createElement("div");d.className="rw"+(sel&&sel.c===i.c?" sel":"");
   d.innerHTML='<div class="im">'+(ICON[i.c.slice(0,3)]||"📦")+'<img src="'+spImg(i)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()"></div>'
   +'<div><b>'+i.n+'</b><small>'+i.c+' · '+esc(spLocShort(i))+'</small></div>'
   +'<div class="mc mt">'+i.m.slice(0,3).map(function(m){return '<span>'+m+'</span>'}).join("")+(i.m.length>3?'<span>+'+(i.m.length-3)+'</span>':"")+'</div>'
   +'<span class="tg s-'+s+'">'+SP_TXT[s]+'</span>';
-  d.onclick=function(){showOnMap(i.c,true)};l.appendChild(d)})}
+  d.onclick=function(){showOnMap(i.c,true)};return d})}
 // ---- 3D ----
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-var S3=spScene({host:document.getElementById("cv"),info:document.getElementById("info"),onChange:function(){draw()},onSelect:function(i){sel=i;draw()}});
+var S3=spScene({readOnly:true,host:document.getElementById("cv"),info:document.getElementById("info"),onChange:function(){draw()},onSelect:function(i){sel=i;draw()}});
 window.showOnMap=function(code){var i=SP_ITEMS.filter(function(x){return x.c===code})[0];if(!i)return;sel=i;draw();S3.show(i)};
 draw();
 // ค้นหาด้วยรูป

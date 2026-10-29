@@ -154,11 +154,11 @@ MACHINES.forEach(function(m){var d=document.createElement("div");d.className="m"
 function draw(){
  Array.prototype.forEach.call(me.children,function(e){e.className="m"+(e.dataset.k===mach?" on":"")});
  var box=document.getElementById("parts");box.innerHTML="";var i=0;
- PARTS.forEach(function(p,k){
-  if((!mach||p.m.indexOf(mach)>-1)&&(p.n+p.c).toLowerCase().indexOf(qs)>-1){i++;
+var L=[];PARTS.forEach(function(p,k){if((!mach||p.m.indexOf(mach)>-1)&&(p.n+p.c).toLowerCase().indexOf(qs)>-1)L.push([p,k])});i=L.length;
+ spChunk(box,L,function(z,ix){var p=z[0],k=z[1];i=ix+1;
    var d=document.createElement("div");d.className="p";
    d.innerHTML='<span class="n">'+i+'</span><div class="im pic"></div><div class="t"><b>'+p.n+'</b><small>'+p.c+'</small></div><span class="tag">'+p.t+'</span><span class="cnt">'+p.u+'</span>';
-   slot(d.querySelector(".im"),p.f,pSvg(k));box.appendChild(d)}});
+   slot(d.querySelector(".im"),p.f,pSvg(k));return d},40);
  if(!i)box.innerHTML='<div class="empty">'+(PARTS.length?'ไม่พบอะไหล่ที่ค้นหา':'ยังไม่มีข้อมูลอะไหล่ในระบบ')+'</div>'}
 document.getElementById("q").oninput=function(e){qs=e.target.value.toLowerCase();draw()};
 draw();

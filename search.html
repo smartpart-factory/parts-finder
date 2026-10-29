@@ -111,7 +111,7 @@ function draw(){
  document.getElementById("cnt").textContent="พบ "+a.length+" รายการ"+(qs.trim()?' สำหรับ "'+qs.trim()+'"':"");
  var box=document.getElementById("res");box.innerHTML="";
  if(!a.length){box.innerHTML=!SP_ITEMS.length?'<div class="empty">ยังไม่มีข้อมูลอะไหล่ในระบบ<br>เพิ่มรายการในไฟล์ data.js แล้วรีเฟรชหน้านี้</div>':'<div class="empty">ไม่พบอะไหล่ที่ตรงกับเงื่อนไข<br>ลองใช้คำสั้นลง เปลี่ยนตัวกรอง หรือถามบอทที่ปุ่ม 💬 มุมขวาล่างครับ</div>';return}
- a.forEach(function(x){var i=x.i,s=spStatus(i),d=document.createElement("div");d.className="cd";
+ spChunk(box,a,function(x){var i=x.i,s=spStatus(i),d=document.createElement("div");d.className="cd";
   d.innerHTML='<div class="t"><div class="im" data-gal="'+esc(i.c)+'" style="cursor:zoom-in" title="กดเพื่อดูรูปใหญ่">'+(ICON[i.c.slice(0,3)]||"📦")+'<img src="'+spImg(i)+'" alt="" loading="lazy" decoding="async" onerror="this.remove()">'+(spImgs(i).length>1?'<span style="position:absolute;right:2px;bottom:2px;background:#0b2150;color:#fff;font-size:10px;padding:1px 5px;border-radius:99px">🖼 '+spImgs(i).length+'</span>':"")+'</div><div><h3>'+hl(i.n)+'</h3><small>'+hl(i.c)+'</small></div><span class="tg s-'+s+'">'+SP_TXT[s]+'</span></div>'
   +'<div class="ln"><span>ตำแหน่ง</span><div><b>'+esc(spLoc(i))+'</b></div><span>ใช้กับ</span><div class="mt">'+i.m.map(function(m){return '<i>'+m+'</i>'}).join("")+'</div></div>'
   +(i.rep?'<div class="note">🔧 '+esc(i.rep)+'</div>':'')+(s==="ordering"?'<div class="note" style="background:#ecfeff;color:#0e7490">🛒 '+esc(i.ord)+'</div>':'')
@@ -120,7 +120,7 @@ function draw(){
   d.querySelector(".p").onclick=function(){location.href="check-stock.html?item="+encodeURIComponent(i.c)};
   var rp=d.querySelector(".rpt");if(rp)rp.onclick=function(){if(!confirm("แจ้งว่า \""+i.n+"\" หมดแล้ว?"))return;var e=spSetStock(i.c,false);if(e)alert(e);draw()};
   var ob=d.querySelector(".o");if(ob)ob.onclick=function(){location.href="request-new.html?item="+encodeURIComponent(i.c)};
-  box.appendChild(d)})}
+  return d},36)}
 var pm0=new URLSearchParams(location.search).get("mach");if(pm0&&SP_MACHINES.indexOf(pm0)>-1){mc.value=pm0;mach=pm0}
 var p0=new URLSearchParams(location.search).get("q");if(p0){q.value=p0;qs=p0;addR(p0)}
 drawR();draw();
