@@ -108,3 +108,30 @@ start();
 document.addEventListener("DOMContentLoaded",function(){walk(document.documentElement);RE.lastIndex=0;document.title=strip(document.title)});
 window.spIcon=function(s){return String(s).replace(RE,function(a,k){var v=svg(k);return v===null?a:v})};
 })();
+
+/* ===== ปุ่มเปิด/ปิดแถบเมนูด้านซ้าย (คอม = พับเก็บ จำค่าไว้ · มือถือ = เมนูเลื่อนออกมาทับหน้า) ===== */
+(function(){
+function ready(f){if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",f);else f()}
+ready(function(){
+ var side=document.querySelector(".side"),top=document.querySelector(".top");if(!side||!top||document.getElementById("spmenu"))return;
+ var H=document.documentElement,mob=function(){return window.matchMedia("(max-width:760px)").matches};
+ var st=document.createElement("style");
+ st.textContent=".spm{flex:none;width:40px;height:40px;border:1px solid rgba(100,116,139,.35);border-radius:10px;background:transparent;color:inherit;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}.spm:hover{background:rgba(100,116,139,.14)}.spm svg{width:22px;height:22px}"
+ +"html.sp-col .side{display:none!important}html.sp-col main{margin-left:0!important}"
+ +"#spback{display:none;position:fixed;left:0;right:0;bottom:0;top:var(--spt,64px);background:rgba(2,8,23,.5);z-index:58}"
+ +"@media(max-width:760px){html.sp-open .side{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;padding:18px 12px!important;position:fixed!important;top:var(--spt,64px)!important;bottom:0;left:0;width:262px!important;z-index:59;box-shadow:8px 0 30px rgba(0,0,0,.4);overflow-y:auto}html.sp-open .side>*{flex:none}html.sp-open .side a{white-space:nowrap}html.sp-open #spback{display:block}html.sp-col main{margin-left:0!important}}";
+ document.head.appendChild(st);
+ var b=document.createElement("button");b.id="spmenu";b.type="button";b.className="spm";b.setAttribute("aria-label","เปิด/ปิดเมนู");b.title="เปิด/ปิดเมนู";
+ b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>';
+ top.insertBefore(b,top.firstChild);
+ var bd=document.createElement("div");bd.id="spback";document.body.appendChild(bd);
+ function setT(){H.style.setProperty("--spt",Math.round(top.getBoundingClientRect().height)+"px")}setT();window.addEventListener("resize",setT);
+ try{if(localStorage.getItem("sp_side")==="0"&&!mob())H.classList.add("sp-col")}catch(e){}
+ function rs(){setTimeout(function(){try{window.dispatchEvent(new Event("resize"))}catch(e){}},60)}
+ b.onclick=function(){if(mob()){H.classList.toggle("sp-open")}else{var c=H.classList.toggle("sp-col");try{localStorage.setItem("sp_side",c?"0":"1")}catch(e){}rs()}};
+ bd.onclick=function(){H.classList.remove("sp-open")};
+ side.addEventListener("click",function(e){if(mob()&&e.target.closest&&e.target.closest("a"))H.classList.remove("sp-open")});
+ window.addEventListener("resize",function(){if(!mob())H.classList.remove("sp-open")});
+ document.addEventListener("keydown",function(e){if(e.key==="Escape")H.classList.remove("sp-open")});
+});
+})();
