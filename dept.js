@@ -346,6 +346,217 @@ D.modelX=function(t,g,box,cyl,tor,M){
   bx(.05,.004,.05,-.175,.057,.0,0x25282e,{metalness:.5});cy(.007,.007,.004,-.175,.0595,.0,0x0a0a0b,{});[-.012,.012].forEach(function(z){cy(.0035,.0035,.004,-.19,.0595,z,0x0a0a0b,{})});
   bx(.04,.02,.012,-.215,.033,.0,0x15171b,{roughness:.4,metalness:.5});cy(.0125,.0125,.016,-.215,.05,.0,0x24262b,{metalness:.6},"x");
   return true}
+ /* ===== ชุดโมเดลใหม่ 18 ชิ้น (ตามรูปถ่ายจริง) ===== */
+ function ex(sh,d,c,o,y0){var m=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:d,bevelEnabled:false,curveSegments:14}),M(c,o));m.rotation.x=-PI/2;m.position.y=y0||0;g.add(m);return m}
+ function ring(R,r){var p=new THREE.Path();p.absarc(0,0,r,0,PI*2,true);return p}
+ function grp(x,y,z,rx,ry,rz){var q=new THREE.Group();q.position.set(x,y,z);q.rotation.set(rx||0,ry||0,rz||0);g.add(q);return q}
+ function gcy(q,r1,r2,h,x,y,z,c,o,ax){var m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,22),M(c,o));if(ax==="x")m.rotation.z=PI/2;if(ax==="z")m.rotation.x=PI/2;m.position.set(x,y,z);q.add(m);return m}
+ var STL={metalness:.85,roughness:.28};
+ if(t==="sickenc"){
+  /* ตัวเข้ารหัสรอบ (encoder) สีฟ้า SICK|Stegmann ในกล่องกระดาษฟ้าลายโลโก้ SICK เปิดฝา */
+  var sk=tex("sk_pat",512,512,function(c,w,h){c.fillStyle="#0a62c8";c.fillRect(0,0,w,h);c.save();c.translate(w/2,h/2);c.rotate(-.5);c.fillStyle="#fff";for(var j=-5;j<=5;j++)for(var i=-3;i<=3;i++){var X=i*210+(j%2?105:0),Y=j*62;c.font="900 40px Arial";c.textAlign="center";c.fillText("SICK",X-40,Y);c.font="600 13px Arial";c.fillText("www.SICK.com",X+55,Y-2)}c.restore()});
+  var SM={map:sk,roughness:.7,metalness:0};function sb(w,h,d,x,y,z,ry,rx){var m=bx(w,h,d,x,y,z,0xffffff,SM);if(ry)m.rotation.y=ry;if(rx)m.rotation.x=rx;return m}
+  sb(.17,.003,.14,0,.0015,0);sb(.17,.06,.003,0,.03,.0715);sb(.003,.06,.14,-.0835,.03,0);sb(.003,.06,.14,.0835,.03,0);sb(.17,.06,.003,0,.03,-.0715);
+  var lid=grp(0,.06,-.0715,-2.05,0,0);var lm=new THREE.Mesh(new THREE.BoxGeometry(.17,.003,.14),M(0xffffff,SM));lm.position.set(0,.0015,.07);lid.add(lm);
+  bx(.164,.0015,.134,0,.0045,0,0x2f7fe0,{roughness:.35,transparent:true,opacity:.85});
+  bx(.15,.004,.03,0,.007,-.045,0x3b86e6,{roughness:.3,transparent:true,opacity:.8},0.2);bx(.04,.004,.12,-.075,.045,0,0x3b86e6,{roughness:.3,transparent:true,opacity:.7},0,.5);bx(.04,.004,.12,.075,.045,0,0x3b86e6,{roughness:.3,transparent:true,opacity:.7},0,-.5);
+  var en=grp(.005,.035,.005,0,.12,0);
+  gcy(en,.0345,.0345,.05,0,0,0,0x1e72d6,{metalness:.35,roughness:.35},"x");gcy(en,.0355,.0355,.006,.018,0,0,0x1a63b6,{metalness:.3},"x");
+  gcy(en,.0225,.0225,.018,.039,0,0,0x2b2d31,{metalness:.5,roughness:.4},"x");gcy(en,.014,.014,.022,.057,0,0,0xcfd4d8,STL,"x");
+  for(var u=0;u<4;u++)gcy(en,.0145,.0145,.0014,.049+u*.004,0,0,0x9aa0a6,STL,"x");
+  gcy(en,.02,.02,.022,-.036,0,0,0xc3c8cc,STL,"x");gcy(en,.0165,.0165,.012,-.049,0,0,0xaeb4ba,STL,"x");
+  var cl=new THREE.Mesh(new THREE.BoxGeometry(.022,.02,.034),M(0xc0c5ca,STL));cl.position.set(-.036,.006,0);en.add(cl);gcy(en,.004,.004,.012,-.036,.019,.01,0x1c1c1e,{},"y");
+  var lb=new THREE.Mesh(new THREE.PlaneGeometry(.05,.022),new THREE.MeshStandardMaterial({map:tex("sk_lb2",250,110,function(c,w,h){c.fillStyle="#e8edf3";c.fillRect(0,0,w,h);txt(c,"SICK",70,34,34,"#0a62c8","900");txt(c,"reTech",148,38,30,"#1a2b44","700");txt(c,"DFS60 · 2048",w/2,82,22,"#222","600")}),roughness:.5}));lb.rotation.x=-PI/2;lb.position.set(.005,.036,.005);en.add(lb);
+  return true}
+ if(t==="encblack"){
+  /* เอ็นโค้ดเดอร์/รีโซลเวอร์สีดำ: หน้าแปลน 3 รู + ตัวกลม + ฝาปิดมีรอยบาก + ขั้วต่อด้านข้าง */
+  var BK=0x23252a,BO={roughness:.6,metalness:.35};
+  var fl=new THREE.Shape();fl.absarc(0,0,.052,0,PI*2,false);[0,1,2].forEach(function(i){var a=i*PI*2/3+.55,h=new THREE.Path();h.absarc(Math.cos(a)*.0425,Math.sin(a)*.0425,.0034,0,PI*2,true);fl.holes.push(h)});ex(fl,.007,0x1c1e22,BO,0);
+  cy(.0395,.0395,.032,0,.023,0,BK,BO);cy(.0405,.0405,.003,0,.0405,0,0x3a342c,{metalness:.5,roughness:.5});cy(.0378,.0378,.005,0,.0075,0,0x15171a,BO);
+  cy(.0405,.0405,.018,0,.0525,0,0x2b2d32,BO);
+  var cap=new THREE.Mesh(new THREE.CylinderGeometry(.0405,.0405,.026,28,1,false,0,PI*1.5),M(BK,BO));cap.position.set(0,.0745,0);g.add(cap);
+  var tp=new THREE.Mesh(new THREE.CircleGeometry(.0405,28,-PI,PI*1.5),M(0x2a2c31,BO));tp.rotation.x=-PI/2;tp.position.y=.0875;g.add(tp);
+  cy(.0405,.0405,.004,0,.0535,0,0x1a1b1f,BO);
+  bx(.045,.02,.026,-.032,.058,.014,BK,BO);
+  cy(.0125,.0125,.036,-.056,.0635,.016,0x2d2f34,{metalness:.5},"x");cy(.0155,.0155,.014,-.082,.0635,.016,0x9b9f9a,{metalness:.85,roughness:.35},"x");cy(.0135,.0135,.008,-.092,.0635,.016,0xb7bbb6,{metalness:.9,roughness:.3},"x");cy(.0075,.0075,.004,-.0955,.0635,.016,0x1a1a1c,{},"x");
+  [0,1,2].forEach(function(i){var a=i*PI*2/3+.55;cy(.0058,.0058,.002,Math.cos(a)*.0425,.0072,Math.sin(a)*-.0425,0x0e0f11,{})});
+  return true}
+ if(t==="jawcoup"){
+  /* ข้อต่อยาง Jaw coupling: ฮับอลูมิเนียม 2 ข้าง + ยางสีแดง 6 กลีบ + สกรูล็อก */
+  var AL={metalness:.85,roughness:.3},RD=0xd22a2a;var Rr=.0125;
+  cy(Rr,Rr,.012,-.0145,Rr,0,0xc9ced2,AL,"x");cy(Rr,Rr,.012,.0145,Rr,0,0xc9ced2,AL,"x");
+  cy(.0075,.0075,.012,0,Rr,0,0xd9dde0,AL,"x");
+  for(var j=0;j<3;j++){var a=j*PI*2/3;[-1,1].forEach(function(sd){var m=bx(.011,.0072,.0068,sd*.0078,Rr+Math.sin(a)*.0097,Math.cos(a)*.0097,0xc9ced2,AL);m.rotation.x=-a})}
+  for(var k=0;k<6;k++){var b=k*PI/3;var m=bx(.0125,.0072,.0062,0,Rr+Math.sin(b)*.0098,Math.cos(b)*.0098,RD,{roughness:.8,metalness:0});m.rotation.x=-b}
+  cy(.0105,.0105,.0105,0,Rr,0,RD,{roughness:.8,metalness:0},"x");
+  cy(.0042,.0042,.003,-.0145,Rr*2+.0005,0,0x1c1c1e,{});hx(.0035,.0012,-.0145,Rr*2+.0013,0,0x555a60,{metalness:.8});cy(.0034,.0034,.003,.0145,Rr*2+.0005,0,0x1c1c1e,{});
+  cy(.0078,.0078,.0004,-.0206,Rr,0,0x777c82,{metalness:.8},"x");cy(.0078,.0078,.0004,.0206,Rr,0,0x777c82,{metalness:.8},"x");
+  return true}
+ if(t==="chainbag"){
+  /* โซ่ลูกกลิ้งชิ้นสั้น 2 ถุงพลาสติกใส */
+  function arc(cx,cz,R,a0,a1,n,ry){for(var i=0;i<=n;i++){var a=a0+(a1-a0)*i/n,x=cx+Math.cos(a)*R,z=cz+Math.sin(a)*R;var m=bx(.0078,.0034,.0036,x,.0045,z,0x8f8b7d,{metalness:.7,roughness:.45});m.rotation.y=-a-PI/2;cy(.0022,.0022,.0052,x,.0045,z,0xb0ab99,{metalness:.8,roughness:.35})}}
+  var BG={transparent:true,opacity:.26,roughness:.15,metalness:0,depthWrite:false};
+  bx(.135,.006,.075,0,.004,-.05,0xeef3ee,BG,.04);bx(.135,.006,.075,.0,.004,.052,0xeef3ee,BG,-.05);
+  arc(-.002,-.05,.042,PI*1.12,PI*1.95,22);arc(.012,-.056,.026,PI*1.1,PI*1.9,14);
+  arc(-.008,.055,.044,PI*1.05,PI*1.9,22);arc(.012,.058,.03,PI*1.1,PI*1.95,15);
+  bx(.14,.0012,.002,0,.0072,-.0125,0xffffff,{transparent:true,opacity:.5},.04);
+  return true}
+ if(t==="ledpanel"){
+  /* แผงไฟ LED แบ็คไลท์: โครงดำ + PCB เขียวเต็มไปด้วย LED + ก้านดำด้านบน + สายสีเทา */
+  bx(.215,.008,.265,0,.004,0,0x15171a,{roughness:.5,metalness:.5});
+  bx(.15,.003,.245,.003,.0095,-.001,0x1f7a3a,{roughness:.5});
+  var lt=tex("lp_led",600,980,function(c,w,h){c.fillStyle="#1d7339";c.fillRect(0,0,w,h);c.strokeStyle="rgba(120,190,130,.25)";for(var i=0;i<14;i++){c.beginPath();c.moveTo(0,i*70);c.lineTo(w,i*70);c.stroke()}
+   var cols=20,rows=34;for(var r=0;r<rows;r++)for(var q=0;q<cols;q++){var X=22+q*(w-44)/(cols-1),Y=30+r*(h-60)/(rows-1);var gr=c.createRadialGradient(X-3,Y-3,1,X,Y,10);gr.addColorStop(0,"#ffffff");gr.addColorStop(.55,"#c6cbcf");gr.addColorStop(1,"#6d7378");c.fillStyle=gr;c.beginPath();c.arc(X,Y,9.5,0,7);c.fill()}
+   c.fillStyle="#e8e4cf";c.fillRect(40,2,60,18);c.fillStyle="#111";c.fillRect(46,6,48,4)});
+  pl(.15,.245,lt,.003,.0115,-.001,"y");
+  bx(.05,.036,.265,-.0825,.018,0,0x17191c,{roughness:.55,metalness:.45});for(var rb=0;rb<9;rb++)bx(.048,.003,.012,-.0825,.0375,-.11+rb*.027,0x0e0f11,{roughness:.6,metalness:.5});
+  bx(.004,.036,.265,.1035,.018,0,0x6d7378,{metalness:.8,roughness:.4});bx(.016,.004,.265,.097,.036,0,0x555b61,{metalness:.8,roughness:.4});
+  cy(.0042,.0042,.215,0,.042,-.128,0x2a2d32,{metalness:.7,roughness:.35},"x");cy(.007,.007,.012,-.1125,.042,-.128,0xaab0b6,STL,"x");
+  tube([[.098,.02,-.12],[.13,.012,-.16],[.11,.011,-.225],[.04,.011,-.27],[-.045,.011,-.275],[-.105,.011,-.235],[-.118,.011,-.18],[-.105,.026,-.135]],.0042,0xd9d6cb,{roughness:.8,metalness:0},70);
+  tube([[-.105,.026,-.135],[-.1,.03,-.12]],.0015,0xc0762e,{roughness:.6},4);tube([[-.108,.026,-.135],[-.108,.03,-.122]],.0015,0x6b4a2d,{roughness:.6},4);
+  return true}
+ if(t==="ejpins"){
+  /* พินสแตนเลสยาว 2 เส้น หัวบานมีรอยหยัก */
+  [-.014,.014].forEach(function(z,i){var Y=.0054;cy(.0036,.0036,.15,0,Y,z,0xd7dbdf,STL,"x");cy(.0054,.0054,.009,-.0795,Y,z,0xc8ccd0,STL,"x");
+   for(var k=0;k<5;k++)cy(.0057,.0057,.0009,-.0815+k*.0019,Y,z,0x9aa0a6,STL,"x");cy(.0029,.0029,.005,-.0765,Y,z,0xbfc4c8,STL,"x")});
+  return true}
+ if(t==="sprock11"){
+  /* เฟืองโซ่ 11 ฟัน มีร่องลิ่ม วางนอน */
+  var N=11,R0=.0112,R1=.0158,sp1=new THREE.Shape();
+  for(var i=0;i<N;i++){var a=i*PI*2/N,w0=PI/N*.5,w1=PI/N*.2;var pts=[[a-w0,R0],[a-w1,R1],[a+w1,R1],[a+w0,R0]];pts.forEach(function(p,j){var X=Math.cos(p[0])*p[1],Y=Math.sin(p[0])*p[1];if(i===0&&j===0)sp1.moveTo(X,Y);else sp1.lineTo(X,Y)});var an=a+PI/N;sp1.lineTo(Math.cos(an)*(R0-.0007),Math.sin(an)*(R0-.0007))}
+  var bh=new THREE.Path();bh.absarc(0,0,.0052,.35,PI*2-.35,false);bh.lineTo(.0052*Math.cos(-.35)+0,-.0017);bh.lineTo(.0075,-.0017);bh.lineTo(.0075,.0017);bh.lineTo(.0052*Math.cos(.35),.0017);sp1.holes.push(bh);
+  ex(sp1,.0085,0xb6b1a3,{metalness:.55,roughness:.55},0);
+  var hb=new THREE.Shape();hb.absarc(0,0,.0092,0,PI*2,false);var hh=new THREE.Path();hh.absarc(0,0,.0052,.35,PI*2-.35,false);hh.lineTo(.0075,-.0017);hh.lineTo(.0075,.0017);hh.lineTo(.0052*Math.cos(.35),.0017);hb.holes.push(hh);ex(hb,.0035,0xa9a495,{metalness:.55,roughness:.55},.0085);
+  cy(.0013,.0013,.003,.0068,.0075,.0,0x1c1c1e,{});
+  return true}
+ if(t==="blkstrip"){
+  /* ชิ้นพลาสติกดำโค้งสั้น (ปลายมีบ่าบาก) */
+  var sh=new THREE.Shape();sh.moveTo(-.0085,0);sh.lineTo(.0085,0);sh.absellipse(0,0,.0085,.0078,0,PI,false);sh.lineTo(-.0085,0);
+  var gm=new THREE.ExtrudeGeometry(sh,{depth:.075,bevelEnabled:false,curveSegments:18});gm.translate(0,0,-.0375);var sm=new THREE.Mesh(gm,M(0x1f2735,{roughness:.32,metalness:.15}));sm.rotation.y=PI/2;g.add(sm);
+  bx(.012,.004,.017,.031,.0096,0,0x141a26,{roughness:.4});bx(.012,.0022,.017,.0335,.0071,0,0x2b3446,{roughness:.4});
+  bx(.0016,.012,.017,-.0372,.003,0,0x2b3446,{roughness:.5});
+  return true}
+ if(t==="matbag"){
+  /* ถุงซิปใสใส่ชิ้นส่วนเล็ก + ป้าย MAT / BIN + QR + กระดาษห่อด้านใน */
+  var bt=tex("mb_lbl",1024,768,function(c,w,h){c.fillStyle="#c8bca1";c.fillRect(0,0,w,h);for(var i=0;i<420;i++){c.fillStyle="rgba(120,100,70,"+(.04+(i*7%9)/150)+")";c.fillRect((i*131)%w,(i*57)%h,60+(i%5)*30,2)}
+   c.fillStyle="rgba(250,250,250,.78)";c.fillRect(0,0,w,200);c.fillStyle="rgba(120,120,120,.5)";c.fillRect(0,78,w,10);c.fillStyle="#555";for(var q=0;q<5;q++){c.beginPath();c.moveTo(60+q*70,150);c.lineTo(100+q*70,150);c.lineTo(80+q*70,112);c.closePath();c.fill()}
+   c.fillStyle="#fbfbfb";c.fillRect(60,210,640,420);c.fillStyle="#111";c.textAlign="left";c.textBaseline="middle";c.font="700 44px Arial";c.fillText("MAT:5012473",84,265);c.fillText("BIN:07301B05",400,265);
+   c.font="600 30px Arial";c.fillText("DESC: END PIECE BUSHING",84,340);c.font="600 26px Arial";c.fillText("SPEC: BSG-LC-32CC ½",84,392);c.fillText("PBU-5016-0118",84,436);c.font="22px Arial";c.fillText("1502",570,590);c.fillText("24.1.2026",84,590);
+   c.fillStyle="#111";var qx=470,qy=330,qs=190,u=qs/21;function fin(x,y){c.fillRect(qx+x*u,qy+y*u,7*u,7*u);c.fillStyle="#fbfbfb";c.fillRect(qx+(x+1)*u,qy+(y+1)*u,5*u,5*u);c.fillStyle="#111";c.fillRect(qx+(x+2)*u,qy+(y+2)*u,3*u,3*u)}
+   fin(0,0);fin(14,0);fin(0,14);for(var yy=0;yy<21;yy++)for(var xx=0;xx<21;xx++){if((xx<8&&yy<8)||(xx>12&&yy<8)||(xx<8&&yy>12))continue;if(((xx*37+yy*91+xx*yy*13)%7)<3)c.fillRect(qx+xx*u,qy+yy*u,u,u)}});
+  bx(.092,.004,.07,0,.002,0,0xdad0b9,{roughness:.9,metalness:0});
+  pl(.09,.068,bt,0,.0042,0,"y");
+  bx(.092,.0016,.07,0,.0045,0,0xffffff,{transparent:true,opacity:.14,roughness:.1,depthWrite:false});
+  bx(.0125,.011,.011,.034,.0095,-.006,0x16171a,{roughness:.5,metalness:.4});cy(.0042,.0042,.0112,.034,.0095,-.006,0x050506,{});
+  return true}
+ if(t==="sensdsub"){
+  /* เซ็นเซอร์แบน (หัวดำ) + สายสีเทาม้วนวง + หัว D-sub */
+  var sS=new THREE.Shape();sS.moveTo(-.028,-.012);sS.lineTo(.012,-.012);sS.lineTo(.03,.004);sS.lineTo(.03,.014);sS.lineTo(-.028,.014);sS.lineTo(-.028,-.012);var hl=new THREE.Path();hl.absarc(.008,-.0045,.0028,0,PI*2,true);sS.holes.push(hl);
+  var sb2=ex(sS,.0085,0x111214,{roughness:.55,metalness:.3},0);sb2.position.set(0,.001,0);sb2.rotation.z=0;
+  var snt=grp(0,.0045,0,0,.5,0);
+  cy(.0045,.0045,.02,-.036,.0055,.0,0x7f7b6c,{roughness:.8},"x");
+  tube([[-.04,.0055,0],[-.075,.006,.02],[-.11,.006,.06],[-.15,.006,.06],[-.16,.006,.0],[-.13,.006,-.05],[-.07,.006,-.06],[-.03,.006,-.03]],.0033,0xd2cec3,{roughness:.8,metalness:0},90);
+  tube([[-.03,.0075,-.03],[.03,.0075,-.075],[.12,.0075,-.07],[.165,.0075,-.02],[.15,.0075,.04],[.09,.0075,.085],[-.02,.0075,.08],[-.1,.0075,.05],[-.12,.0075,.012]],.0033,0xd2cec3,{roughness:.8,metalness:0},110);
+  tube([[.033,.0055,-.003],[.07,.0063,-.02],[.15,.0063,-.018]],.0033,0xd2cec3,{roughness:.8,metalness:0},20);
+  var ds=new THREE.Shape();ds.moveTo(-.0125,-.0045);ds.lineTo(.0125,-.0045);ds.lineTo(.0108,.0045);ds.lineTo(-.0108,.0045);ds.lineTo(-.0125,-.0045);
+  var dsb=ex(ds,.0105,0x7ea39d,{metalness:.85,roughness:.35},0);dsb.position.set(.17,0,-.018);dsb.rotation.z=0;
+  bx(.014,.0105,.03,.17,.0052,-.018,0x2c2d30,{roughness:.5});
+  [-1,1].forEach(function(s){cy(.0032,.0032,.012,.17+s*.0155,.0053,-.018,0xb9bec2,STL)});
+  return true}
+ if(t==="guidepl2"){
+  /* แผ่นไกด์พลาสติกดำโค้ง 2 แผ่น รู 3 รู มีตัวอักษรสลัก */
+  var sc=.0008,cx=215,cy0=290;function P(px,py){return[(px-cx)*sc,-(py-cy0)*sc]}
+  function plate(ox,oz,txt1,flip){var s=new THREE.Shape(),p=P;
+   var a=p(115,130);s.moveTo(a[0],a[1]);a=p(80,222);s.lineTo(a[0],a[1]);a=p(70,256);s.lineTo(a[0],a[1]);a=p(78,445);s.lineTo(a[0],a[1]);a=p(357,440);s.lineTo(a[0],a[1]);a=p(358,414);s.lineTo(a[0],a[1]);
+   a=p(250,395);var b=p(138,330);s.quadraticCurveTo(a[0]-.01,a[1]+.008,b[0],b[1]);b=p(118,170);s.lineTo(b[0],b[1]);s.lineTo(p(115,130)[0],p(115,130)[1]);
+   [[104,290],[113,335],[99,383]].forEach(function(h){var c=p(h[0],h[1]),q=new THREE.Path();q.absarc(c[0],c[1],.0042,0,PI*2,true);s.holes.push(q)});
+   var m=ex(s,.0075,0x202226,{roughness:.42,metalness:.2},0);m.position.set(ox,0,oz);
+   [[104,290],[113,335],[99,383]].forEach(function(h){var c=p(h[0],h[1]);cy(.0085,.0042,.0025,ox+c[0],.0075-.00125+.0001,oz-c[1],0x0a0a0b,{roughness:.5})});
+   var tt=tex("gp_"+txt1,384,56,function(c,w,h){c.clearRect(0,0,w,h);c.fillStyle="#9ea3a8";c.font="700 40px Arial";c.textAlign="center";c.textBaseline="middle";c.fillText(txt1,w/2,h/2)});
+   var q=new THREE.Mesh(new THREE.PlaneGeometry(.15,.021),new THREE.MeshBasicMaterial({map:tt,transparent:true,opacity:.8}));q.rotation.x=-PI/2;q.rotation.z=flip?PI:0;var tc=p(215,428);q.position.set(ox+tc[0],.0077,oz-tc[1]);g.add(q)}
+  plate(-.02,.03,"STK-830R-630-ML",0);plate(.07,-.06,"STK-830R-630-31",1);
+  return true}
+ if(t==="ujoint"){
+  /* เพลาข้อต่อสากล 2 ข้อ (ท่อขาวชักได้) */
+  var WH=0xe3e9ef;
+  cy(.0112,.0112,.075,0,.0125,0,WH,{roughness:.5,metalness:.15},"x");cy(.0135,.0135,.016,.034,.0125,0,0xcdd3d8,STL,"x");cy(.0125,.0125,.003,.0225,.0125,0,0xaab0b6,STL,"x");cy(.0118,.0118,.002,-.02,.0125,0,0xb7bcc2,STL,"x");
+  cy(.0016,.0016,.006,.034,.0245,0,0x222,{});
+  function yoke(sd,rx){var q=grp(sd*.046,.0125,0,rx,0,0);gcy(q,.0088,.0088,.014,0,0,0,0xcdd2d6,STL,"x");
+   var cr=new THREE.Mesh(new THREE.BoxGeometry(.011,.011,.011),M(0xb6bbc0,STL));cr.position.set(sd*.012,0,0);q.add(cr);
+   gcy(q,.0033,.0033,.027,sd*.0105,0,0,0xc0c5ca,STL,"y");gcy(q,.0033,.0033,.027,sd*.0105,0,0,0xc0c5ca,STL,"z");
+   [[0,1],[0,-1]].forEach(function(p){var pr=new THREE.Mesh(new THREE.BoxGeometry(.016,.0035,.0105),M(0xd3d7db,STL));pr.position.set(sd*.022,p[1]*.0082,0);q.add(pr)});
+   gcy(q,.0044,.0044,.007,sd*.0105,.0125,0,0xa9afb5,STL,"y");gcy(q,.0044,.0044,.007,sd*.0105,-.0125,0,0xa9afb5,STL,"y");
+   var ff=new THREE.Mesh(new THREE.CylinderGeometry(.0112,.0112,.02,20,1,true,-PI/2,PI),M(0xc7ccd1,Object.assign({side:THREE.DoubleSide},STL)));ff.rotation.z=PI/2;ff.position.set(sd*.027,0,0);q.add(ff)}
+  yoke(-1,0.0);yoke(1,PI/2);
+  return true}
+ if(t==="flatstrip"){
+  /* แผ่นสแตนเลสแบนยาว ปลายหนึ่งบากตัวยู + รูยึด */
+  var L=.3,W=.04,fs=new THREE.Shape();fs.moveTo(-L/2,-W/2);fs.lineTo(L/2,-W/2);fs.lineTo(L/2,W/2);fs.lineTo(-L/2,W/2);fs.lineTo(-L/2,W*.16);fs.lineTo(-L/2+.032,W*.16);fs.lineTo(-L/2+.032,-W*.16);fs.lineTo(-L/2,-W*.16);fs.lineTo(-L/2,-W/2);
+  [[-L/2+.007,W*.36],[-L/2+.007,-W*.36],[L/2-.006,W*.36],[L/2-.006,-W*.36]].forEach(function(h){var q=new THREE.Path();q.absarc(h[0],h[1],.0024,0,PI*2,true);fs.holes.push(q)});
+  ex(fs,.0016,0xd2d6da,{metalness:.7,roughness:.35},0);
+  return true}
+ if(t==="rodtool"){
+  /* แกนสแตนเลสบาง ปลายมีหกเหลี่ยม + คอ + ส่วนเกลียวหยัก */
+  cy(.0046,.0046,.13,0,.0046,0,0xd0d4d8,STL,"x");hx(.0054,.012,.0675,.0046,0,0xbfc4c8,STL).rotation.z=PI/2;
+  cy(.0032,.0032,.012,.081,.0046,0,0xc8ccd0,STL,"x");
+  for(var k=0;k<9;k++){cy(.0045,.0045,.0012,.0865+k*.0021,.0046,0,0xaeb3b8,STL,"x")}cy(.0034,.0034,.02,.0955,.0046,0,0xbfc4c8,STL,"x");
+  return true}
+ if(t==="ringled"){
+  /* แผงไฟวงแหวน LED (ring light) สำหรับกล้องตรวจ: PCB เขียว + LED เรียงเป็นวง + แผ่นกลางสีชมพูอ่อน */
+  bx(.125,.0032,.125,0,.0016,0,0x2e7d3a,{roughness:.45});
+  [[-.055,-.055],[.055,-.055],[-.055,.055],[.055,.055]].forEach(function(p){cy(.0032,.0032,.0036,p[0],.0016,p[1],0x0d2a12,{})});
+  bx(.014,.0006,.007,.05,.0035,-.053,0xf2f2ef,{});
+  var rg=[[.034,40],[.0385,44],[.043,48],[.0475,52],[.052,56]];
+  rg.forEach(function(r,ri){for(var i=0;i<r[1];i++){var a=i*PI*2/r[1]+ri*.05;var m=new THREE.Mesh(new THREE.SphereGeometry(.0017,8,6),M(ri%2?0xf4efe0:0xe8e2cd,{roughness:.3,metalness:.1}));m.scale.y=.7;m.position.set(Math.cos(a)*r[0],.0043,Math.sin(a)*r[0]);g.add(m)}});
+  cy(.0305,.0305,.0012,0,.0038,0,0xd7a79f,{roughness:.8});
+  return true}
+ if(t==="purollers"){
+  /* ลูกกลิ้งโพลียูรีเทน (สีน้ำตาล/ส้ม) ใส่ตลับลูกปืนตรงกลาง ในกล่องพลาสติกฟ้าแบบช่อง */
+  var BL=0x1c3fb8,BM={roughness:.55,metalness:.05},L=.5,Wd=.13,Hh=.085;
+  bx(L,.004,Wd,0,.002,0,BL,BM);bx(L,Hh,.004,0,Hh/2,-Wd/2+.002,BL,BM);bx(L,Hh,.004,0,Hh/2,Wd/2-.002,BL,BM);bx(.004,Hh,Wd,-L/2+.002,Hh/2,0,BL,BM);bx(.004,Hh,Wd,L/2-.002,Hh/2,0,BL,BM);
+  bx(.003,.05,Wd-.006,-.07,.027,0,BL,BM);bx(.003,.05,Wd-.006,.1,.027,0,BL,BM);bx(.003,.05,Wd-.006,.17,.027,0,BL,BM);
+  bx(.06,.04,.002,-.15,.03,Wd/2+.001,0x0d2570,{roughness:.5});
+  function rl(x,z,ry,rz,col,y){var q=grp(x,0,z,0,ry,rz);var hh=.024,R=.0265;gcy(q,R,R,hh,0,0,0,col,{roughness:.7,metalness:0});gcy(q,R*.97,R*.97,.0012,0,hh/2+.0001,0,col===0xd9612f?0xe27a48:0x7a4a30,{roughness:.7});
+   gcy(q,.0098,.0098,hh+.0016,0,0,0,0xc9cdd0,{metalness:.85,roughness:.28});gcy(q,.0046,.0046,hh+.0022,0,0,0,0x1a1b1d,{});gcy(q,.0075,.0075,hh+.0019,0,0,0,0xa4a9ad,{metalness:.9,roughness:.3});
+   var h=R+.0001;if(rz&&Math.abs(rz)>1)h=hh/2;q.position.y=y;return q}
+  var BR=0x6d3a24,OR=0xd9612f;
+  rl(-.2,.03,.3,0,BR,.0125);rl(-.165,-.02,.2,1.5708,BR,.0265+.004);rl(-.215,-.035,0,1.5708,BR,.0265+.004);rl(-.13,.03,.5,0,BR,.0125);rl(-.17,-.0,1,1.5708,BR,.0225);
+  rl(-.09,.02,.2,0,BR,.0125);rl(-.045,-.025,.9,1.5708,BR,.0265+.004);rl(-.03,.03,.1,.1,BR,.0125);rl(.0,0,.4,0,BR,.0125);rl(.03,.04,1.2,0,BR,.0125);
+  rl(.03,-.035,.2,.0,BR,.0125);rl(.06,.015,.7,1.5708,BR,.0265+.004);rl(.09,-.03,.3,0,BR,.0125);rl(.12,.03,.1,0,OR,.0125);rl(.14,-.01,.5,0,OR,.0125);rl(.16,.04,.2,1.5708,OR,.0265+.004);
+  rl(.17,-.04,.9,0,BR,.0125);rl(.195,.0,.4,0,OR,.0125);rl(.21,.035,.2,0,BR,.0125);rl(.22,-.03,.7,0,BR,.0125);rl(-.1,-.03,1.1,0,BR,.0125);
+  return true}
+ if(t==="heyeled"){
+  /* กล่องควบคุมไฟ LED 24 ช่อง heye international: ตัวถังอลูมิเนียมครีม + แผงหน้า 24 ขั้ว M12 + สวิตช์ก้านขาว */
+  var W=.27,H=.17,DD=.09,AL2=0xd7d7d2,AO={roughness:.6,metalness:.25};
+  bx(W,H,DD,0,H/2,0,AL2,AO);bx(W+.004,.012,DD+.002,0,H-.006,0,0xcfcfca,AO);bx(W+.004,.012,DD+.002,0,.006,0,0xcfcfca,AO);
+  pl(.215,.032,tex("hy_sticker",860,128,function(c,w,h){c.fillStyle="#f3f1e8";c.fillRect(0,0,w,h);c.strokeStyle="#777";c.strokeRect(2,2,w-4,h-4);c.fillStyle="#222";c.textBaseline="middle";c.font="600 34px Arial";c.textAlign="left";c.fillText("+12V -12V -5V CONV + 5V",20,62);[["L",650],["N",730],["⏚",800]].forEach(function(s){c.strokeRect(s[1]-34,16,64,96);c.font="700 40px Arial";c.textAlign="center";c.fillText(s[0],s[1],64)})}),.0,H+.0004,.0,"y",0);
+  var pn=tex("hy_panel",1024,640,function(c,w,h){c.fillStyle="#c9cbca";c.fillRect(0,0,w,h);for(var i=0;i<1400;i++){c.fillStyle="rgba(90,90,90,"+(i%7)/90+")";c.fillRect((i*97)%w,(i*53)%h,2+i%6,1)}
+   var PW=.26,PH=.145,cxp=0,cyp=.085;function PX(x){return (x-cxp+PW/2)/PW*w}function PY(y){return (cyp+PH/2-y)/PH*h}
+   c.fillStyle="#2a2a2a";c.fillRect(PX(-.12),PY(.136),70,50);c.fillStyle="#6b1c1c";c.font="700 36px Arial";c.textBaseline="middle";c.textAlign="center";c.fillText("8.8",PX(-.12)+36,PY(.136)+26);
+   c.fillStyle="#222";c.textAlign="left";c.font="500 22px Arial";c.fillText("STATUS",PX(-.105)+46,PY(.136)+26);c.font="500 36px Arial";c.fillText("LED 24",PX(-.065),PY(.134)+10);
+   c.fillStyle="#d4242b";c.fillRect(PX(.075),PY(.126),50,64);c.fillStyle="#fff";c.font="900 44px Arial";c.textAlign="center";c.fillText("h",PX(.075)+25,PY(.126)+34);c.fillStyle="#d4242b";c.font="700 42px Arial";c.textAlign="left";c.fillText("heye",PX(.09)+22,PY(.115)+4);c.font="500 15px Arial";c.fillText("international",PX(.09)+26,PY(.115)+34);
+   for(var r=0;r<4;r++){var y=.105-r*.025;c.fillStyle="#111";c.beginPath();c.arc(PX(-.108),PY(y+.01),5,0,7);c.fill();c.font="500 11px Arial";c.fillStyle="#333";c.textAlign="center";["5 KHz","7.5 KHz","9.2 KHz","11 KHz"].forEach(function(s,i){c.fillStyle="#2f9e44";c.beginPath();c.arc(PX(-.1+i*.0075),PY(y+.01),5,0,7);c.fill();c.fillStyle="#333";c.save();c.translate(PX(-.1+i*.0075),PY(y-.001));c.rotate(-PI/2);c.textAlign="right";c.fillText(s,0,0);c.restore()});
+    c.save();c.translate(PX(-.113),PY(y-.001));c.rotate(-PI/2);c.textAlign="right";c.font="500 11px Arial";c.fillText("Freq",0,0);c.restore();
+    for(var q=0;q<6;q++){c.fillStyle="#333";c.font="500 16px Arial";c.textAlign="center";c.fillText((r+1)+"/"+(q+1),PX(-.07+q*.04),PY(y-.0135))}}});
+  pl(.26,.145,pn,0,.085,DD/2+.0004,"z");
+  bx(W,H,.004,0,H/2,DD/2-.0015,0xb8bab9,AO);
+  for(var r=0;r<4;r++)for(var q=0;q<6;q++){var X=-.07+q*.04,Y=.105-r*.025,Z=DD/2+.0005;
+   var m=hx(.0108,.0055,X,Y,Z+.0027,0x8a8268,{metalness:.7,roughness:.45});m.rotation.x=PI/2;
+   cy(.0092,.0092,.0035,X,Y,Z+.0062,0x6f6a52,{metalness:.7,roughness:.4},"z");cy(.0068,.0068,.0016,X,Y,Z+.0072,0x2b2d30,{},"z");
+   for(var k=0;k<4;k++){var a=k*PI/2+PI/4;cy(.0008,.0008,.0016,X+Math.cos(a)*.0034,Y+Math.sin(a)*.0034,Z+.0076,0xc9a143,{metalness:.8},"z")}
+   cy(.0042,.0042,.0045,X+.017,Y-.003,Z+.0022,0x2f5fd0,{roughness:.5},"z");var lv=cy(.0016,.0016,.0155,X+.0172,Y-.0095,Z+.0075,0xf2e8c8,{roughness:.6},"z");lv.rotation.x=PI/2+.12}
+  return true}
+ if(t==="blkplate"){
+  /* แผ่นพลาสติกดำโค้ง (วางแผ่นรอง/ไกด์) มี 3 รูฝังหัวกรวย */
+  var sc=.00028,cx=760,cy0=1010;function P(px,py){return[(px-cx)*sc,-(py-cy0)*sc]}
+  var s=new THREE.Shape(),a=P(345,432);s.moveTo(a[0],a[1]);a=P(1175,625);s.lineTo(a[0],a[1]);a=P(1190,1335);s.lineTo(a[0],a[1]);a=P(468,1595);s.lineTo(a[0],a[1]);
+  var b=P(300,900);a=P(345,432);s.quadraticCurveTo(b[0],b[1],a[0],a[1]);
+  var H3=[[915,695],[1140,975],[952,1285]];H3.forEach(function(h){var c=P(h[0],h[1]),q=new THREE.Path();q.absarc(c[0],c[1],.0082,0,PI*2,true);s.holes.push(q)});
+  var nt=tex("bp_noise",256,256,function(c,w,h){c.fillStyle="#2d3037";c.fillRect(0,0,w,h);for(var i=0;i<2600;i++){var v=(i*37%60)+30;c.fillStyle="rgba("+v+","+v+","+(v+6)+",.55)";c.fillRect((i*89)%w,(i*151)%h,2,2)}});nt.wrapS=nt.wrapT=THREE.RepeatWrapping;nt.repeat.set(30,30);
+  ex(s,.012,0xffffff,{roughness:.5,metalness:.15,map:nt},0);
+  H3.forEach(function(h){var c=P(h[0],h[1]);cy(.0155,.0082,.0036,c[0],.012-.0018+.0001,-c[1],0x090a0c,{roughness:.45})});
+  bx(.001,.0004,.01,0,.0122,0,0xffffff,{transparent:true,opacity:0});
+  return true}
  return false};
 // ===== โมเดล 3D ของอะไหล่ (สร้างด้วยโค้ด วางฐานที่ y=0, ยาวตามแกน x) =====
 D.model=function(t){
